@@ -1,0 +1,29 @@
+Faction,Unit,Upgrade,Points,Tag,ArmyLimit
+100k,Militia,Servite,30,M|R,0
+100k,Militia,Neophyte,25,,0
+100k,Militia,Errant of the Order of the Shield,20,,0
+100k,Militia,Servite,15,M|R,0
+100k,Militia,Neophyte,15,IsDevout,0
+100k,Militia,Errant of the Order of the Shield,10,,0
+100k,Men-At-Arms,Seasoned Veteran,30,IsBastion,0
+100k,Men-At-Arms,Neophyte,30,,0
+100k,Household Knights,Tourney Champion,40,,0
+100k,Steel Legion,Drillmaster,35,IsFury,0
+Spires,Force Grown Drones,Catabolic Node,25,,0
+Spires,Force Grown Drones,Pheromonic Node (Standard + Leader),25,,0
+Spires,Vanguard Clones,Ward Preceptor,45,IsBastion,0
+Spires,Vanguard Clones,Assault Preceptor,25,IsFury,0
+Dweghom,Hold Ballistae,Herald of Fire,20,IsFury,1
+Dweghom,Hold Ballistae,Herald of Magma,20,IsAuraDeath,1
+Dweghom,Hold Ballistae,Herald of Stone,20,IsBastion,1
+Dweghom,Hold Ballistae,Priest,10,,0
+Dweghom,Hold Warriors,Herald of Fire,50,IsFury,1
+Dweghom,Hold Warriors,Herald of Magma,50,IsAuraDeath,1
+Dweghom,Hold Warriors,Herald of Stone,50,IsBastion,1
+Dweghom,Hold Warriors,Priest,20,,0
+Dweghom,Hold Thanes,Herald of Fire,50,IsFury,1
+Dweghom,Hold Thanes,Herald of Magma,50,IsAuraDeath,1
+Dweghom,Hold Thanes,Herald of Stone,50,IsBastion,1
+Dweghom,Hold Thanes,Priest,20,,0
+Nords,Raiders,Shield Biter,35,,0
+Nords,Raiders,Captain,15,,0
