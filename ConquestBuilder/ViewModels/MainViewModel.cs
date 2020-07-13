@@ -6,6 +6,8 @@ using System.Windows.Input;
 using ConquestController;
 using ConquestController.Data;
 using System.Configuration;
+using ConquestController.Models;
+using System.Linq;
 
 namespace ConquestBuilder.ViewModels
 {
@@ -15,6 +17,8 @@ namespace ConquestBuilder.ViewModels
         private string _appPath;
         private string _unitInputFile;
         private string _unitOptionsFile;
+        private string _characterInputFile;
+        private string _spellFile;
 
         public MainViewModel()
         {
@@ -34,14 +38,35 @@ namespace ConquestBuilder.ViewModels
             _appPath = System.AppDomain.CurrentDomain.BaseDirectory + "Data";
             _unitInputFile = ConfigurationManager.AppSettings["UnitInputFile"];
             _unitOptionsFile = ConfigurationManager.AppSettings["UnitOptionFile"];
+            _characterInputFile = ConfigurationManager.AppSettings["CharacterInputFile"];
+            _spellFile = ConfigurationManager.AppSettings["SpellFile"];
         }
 
         private void LoadData(object obj)
         {
             try
             {
-                var units = DataRepository.GetUnitInputFromFile(_appPath + "\\" + _unitInputFile);
-                DataRepository.AssignUnitOptionsToModelsFromFile(units, _appPath + "\\" + _unitOptionsFile);
+                //assign units and their options
+                var units = DataRepository.GetInputFromFileToList<UnitInputModel>(_appPath + "\\" + _unitInputFile);
+                DataRepository.AssignUnitOptionsToModelsFromFile(units.Cast<IConquestRegimentInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
+
+                //assign characters
+                var characters = DataRepository.GetInputFromFileToList<CharacterInputModel>(_appPath + "\\" + _characterInputFile);
+
+                //assign mainstay and restricted choices
+                foreach (var character in characters)
+                {
+                    DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices, character.Mainstay);
+                    DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices, character.Restricted);
+                    DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
+                }
+
+                //assign character options
+                DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestRegimentInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
+
+                //populate spell schools
+                var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile);
+
             }
             catch(Exception ex)
             {

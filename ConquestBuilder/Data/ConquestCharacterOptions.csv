@@ -1,0 +1,31 @@
+Faction	Unit	Upgrade	Points	Tag	SelfOnly	ArmyLimit	IsRegimentUpgrade
+100k	Imperial Officer	Bastion	15	IsBastion	0	0	0
+100k	Imperial Officer	Double Time	15	[]	0	0	0
+100k	Imperial Officer	Fire and Advance	15	[]	0	0	0
+100k	Imperial Officer	Fury	15	IsFury	0	0	0
+100k	Imperial Officer	Redress Ranks	15	[]	0	0	0
+100k	Noble Lord - Infantry	Arms Master	15	Cleave2	1	0	0
+100k	Noble Lord - Infantry	Relentless	10	IsFlurry	1	0	0
+100k	Noble Lord - Infantry	Jouster	5	BrutalImpact2	1	0	0
+100k	Noble Lord - Infantry	Powerful Physique	5	Cleave1	1	0	0
+100k	Noble Lord - Infantry	Duelist	5	Parry	1	0	0
+100k	Noble Lord - Cavalry	Arms Master	15	Cleave2	1	0	0
+100k	Noble Lord - Cavalry	Relentless	10	IsFlurry	1	0	0
+100k	Noble Lord - Cavalry	Jouster	5	BrutalImpact2	1	0	0
+100k	Noble Lord - Cavalry	Powerful Physique	5	Cleave1	1	0	0
+100k	Noble Lord - Cavalry	Duelist	5	Parry	1	0	0
+Spires	High Clone Executor	Bastion	30	IsBastion	0	0	0
+Spires	High Clone Executor	Double Time	15	[]	0	0	0
+Spires	High Clone Executor	Fire and Advance	15	[]	0	0	0
+Spires	High Clone Executor	Fury	10	IsFury	0	0	0
+Dweghom	Hold Raegh	Mnemancer Apprentice	40	IsFearless|R	0	1	1
+Nords	Blooded	Eagle	35	[]	0	0	0
+Nords	Blooded	Crow	15	V|V	1	0	0
+Nords	Blooded	Dragon	15	C	1	0	0
+Nords	Blooded	Bear	10	A	1	0	0
+Nords	Blooded	Wolf	10	M	1	0	0
+Nords	Jarl	Eagle	35	[]	0	0	0
+Nords	Jarl	Crow	15	V|V	1	0	0
+Nords	Jarl	Dragon	15	C	1	0	0
+Nords	Jarl	Bear	10	A	1	0	0
+Nords	Jarl	Wolf	10	M	1	0	0

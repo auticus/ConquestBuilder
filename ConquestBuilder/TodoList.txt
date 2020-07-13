@@ -1,0 +1,21 @@
+﻿Added IsFearless - does nothing for output score but will affect unit vs unit comparisons (so for unit vs unit needs added functionality)
+Added ResistDecay (need that functionality)
+Added [DoubleCast] tag - means they will cast twice
+Added DoubleAttack tag - means it can tap twice volley or clash (so calculate unit doing either and take the highest)
+Added SelfOnly (so only character)
+Added Cleave2, Cleave1, Parry, BrutalImpact2, IsFlurry to characters - some give them that rule (so adjust their property) others add Parry (not sure if thats a rule that needs to be there in the calcs)
+---> for spells that have Cleave#, if it has hits then that is applied to the hits, it does not grant them this
+Added IsBlessed tag that needs functionality added
+Added Reroll#_Volley - reroll the value that comes up on the Volley action - needs added functionality
+Added MeleeHeal# - for every impact or clash wound on a 4+ they heal one wound needs added functionality
+Added NoObscure tag to regiment - when calculating its volley output do not worry about the obscure score
+Added Eruption tag for the eruption spell since it does 2 hits per stand within range not success
+
+* when looking at the tag, things like C|E are Clash +1, Evasion +1, or C|C would be clash +1 twice.  Things like DE would be defense OR evasion
+
+
+Carousel XAML 
+https://docs.microsoft.com/en-us/windows/communitytoolkit/controls/carousel
+
+Adding uwp controls to wpf
+https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/host-custom-control-with-xaml-islands

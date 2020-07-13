@@ -2,11 +2,11 @@
 
 namespace ConquestController.Models
 {
-    public class UnitInputModel
+    public class UnitInputModel : IConquestRegimentInput
     {
         public UnitInputModel()
         {
-            UnitOptions = new List<UnitOptionModel>();
+            Options = new List<IConquestInput>();
         }
 
         public string Faction { get; set; }
@@ -49,8 +49,9 @@ namespace ConquestController.Models
         public int IsBastion { get; set; }
         public int IsTerrifying { get; set; }
         public int IsArcOfFire { get; set; }
+        public int IsFearless { get; set; }
 
-        public List<UnitOptionModel> UnitOptions { get; }
+        public List<IConquestInput> Options { get; }
 
         public override string ToString()
         {

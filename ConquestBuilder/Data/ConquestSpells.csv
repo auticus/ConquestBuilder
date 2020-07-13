@@ -1,0 +1,41 @@
+Faction,School,Spell,Points,Range,Difficulty,IsScaling,Tag,HitsCaused,EffectCausedPer,SelfOnly,Effect
+100k,Priest,Divine Sanction,15,0,3,0,Cleave2|IsDeadlyBlades,0,[],1,May immediately perform a duel action
+100k,Priest,Fervour,15,12,3,1,[],0,[],0,Remove broken status from target
+100k,Priest,Heavenly Blessing,40,0,3,1,IsBlessed,0,[],0,All stands in the casters regiment gain Blessed until end of turn
+100k,Priest,Holy Fire,10,12,3,0,[],2,Success,0,Inflicts two hits per success
+100k,Priest,Saints Favor,50,0,3,1,DE,0,[],0,All stands in the casters regiment gain +1 Defense or +1 Evasion until end of turn
+100k,Fire,Kindle Courage,15,0,3,1,R,0,[],0,All stands in the regiment gain +1 Resolve until end of casters next activation
+100k,Fire,Fire Dart,15,16,3,0,Cleave2,1,Success,0,One hit per success with Cleave 2
+100k,Earth,Earth to Mud,40,16,3,1,[],0,[],0,Impacts targets ability to charge
+100k,Earth,Stone Spikes,20,0,3,1,[],0,[],0,If charged the charging regiment gains Decay 2
+100k,Water,Ninuahs Tears,30,0,3,0,Healing2,0,Success,0,Heals 2 wounds per success
+100k,Water,Call Fog,20,0,3,1,[],0,[],0,Caster regiment is obscured
+100k,Air,Seeking Winds,20,0,3,1,NoObscure,0,[],0,Casters regiment not impacted by obscuring by range
+100k,Air,Guide,10,0,3,1,Reroll6_Volley,0,[],0,Casters regiment rerolls 6s on volley actions
+Spires,Biomancy,Harvest Essence,40,0,0,0,MeleeHeal4,0,[],0,Target unit acts and every impact or clash wound it gains a wound back on a 4+
+Spires,Biomancy,Grant Virulence,35,0,0,0,IsDeadlyBlades|IsDeadlyShots,0,[],0,Target regiment gains Deadly Blades or Deadly shot
+Spires,Biomancy,Unstable Enhancement,30,0,0,0,[],0,[],0,Gain +4 March +2 clash +1 volley but then Decay 3... 4... or 6 depending on what it is
+Spires,Biomancy,Catalytic Rupture,25,0,0,0,[],0,[],0,Friendly regiment takes D6 wounds and enemy in contact takes D6 wounds
+Spires,Biomancy,Essence Transfer,15,18,0,0,[],0,[],0,Transfer 2d6 wounds to friendly regiment that gains 2d6 wounds
+Spires,Pheromancy,Pheromantic Drive,50,0,0,0,DoubleAttack,0,[],0,Target regiment may take two actions of the same type
+Spires,Pheromancy,Siphon Strength,45,0,0,0,C|E,0,[],0,Move cards to bottom of stack but pheromancer unit gains +1 clash and evasion
+Spires,Pheromancy,Pheromantic Compulsion,35,0,0,0,[],0,[],0,Place command cards at top of stack but they gain Decay 4
+Spires,Pheromancy,Induced Vigor,25,0,0,0,IsFluid,0,[],0,Gain fluid formation or +2 march until end of turn
+Spires,Pheromancy,Accelerated Hibernation,15,0,0,0,Healing4,0,[],0,Regiment heals D6 wounds
+Dweghom,Ardent Kerawegh,Dismay,60,12,3,1,[],0,[],0,Target becomes Broken
+Dweghom,Ardent Kerawegh,Resolve,50,12,3,1,[],0,[],0,Remove Broken status from Target
+Dweghom,Fire,Flame wall,30,8,3,0,OneHitPerFile,2,Success,0,"Two hits per success plus one hit for each file stand in the target regiment
+Dweghom,Fire,Fireball,25,12,3,0,Cleave1,1,Success,0,One hit per success with Cleave 1
+Dweghom,Fire,Coruscation,15,16,3,0,[],1,Success,0,One hit per success
+Dweghom,Earth,Broken Ground,40,10,3,0,[],0,[],0,Target cannot perform impact hits on next charge
+Dweghom,Earth,Roots of Stone,35,12,3,0,D|D,0,[],0,Target gains +2 Defense but cannot march - reform - or withdraw until its next activation
+Dweghom,Earth,Rock Shaping,30,12,3,0,[],0,[],0,Target garrison terrain +1 Defense
+Dweghom,Magma,Eruption,60,12,4,0,Eruption|Cleave1,2,Stand,0,All regiments within 6 inches of the point take 2 hits per stand
+Dweghom,Magma,Magmatic Seep,60,12,4,0,[],0,[],0,A point on the battlefield in range is hindering zonal terrain
+Dweghom,Magma,Pyroclast,50,12,3,0,[],0,[],0,Target in garrison terrain suffers Decay 3 draw event
+Dweghom,Tempered Steelshaper,Unmake Armor,35,12,3,1,[],0,[],0,Target regiment -1 Defense
+Dweghom,Tempered Steelshaper,Hone Blades,30,12,3,1,C,0,[],0,Target Regiment +1 Clash
+Dweghom,Tempered Steelshaper,Temper Plate,20,12,3,1,E,0,[],0,Target regiment +1 Evasion
+Nords,Shaman,Blurred Vision,30,14,3,0,[],0,[],0,Target regiment can only target regiments with volley or charge within 12
+Nords,Shaman,Mist Weave,25,12,3,1,[],0,[],0,Target regiment +1 Defense against all Volley actions
+Nords,Shaman,Reshape Destiny,20,8,3,1,[],0,[],0,Target regiment rerolls failed Defense rolls of a 6

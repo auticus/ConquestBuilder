@@ -7,11 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\ConquestCharactersInput.csv" />
+    <None Remove="Data\ConquestSpells.csv" />
     <None Remove="Data\ConquestUnitInput.csv" />
     <None Remove="Data\ConquestUnitOptions.csv" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Data\ConquestCharactersInput.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\ConquestSpells.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\ConquestUnitInput.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
