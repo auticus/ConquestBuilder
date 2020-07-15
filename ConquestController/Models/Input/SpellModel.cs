@@ -1,4 +1,4 @@
-﻿namespace ConquestController.Models
+﻿namespace ConquestController.Models.Input
 {
     public class SpellModel
     {

@@ -1,4 +1,13 @@
-﻿Added IsFearless - does nothing for output score but will affect unit vs unit comparisons (so for unit vs unit needs added functionality)
+﻿#TODOs from the R scripts
+#TODO - there needs to be a degeneration score on offense (brutes it takes 4 wounds to lose attacks for example)
+#perhaps score is full, score at 6 wounds etc
+#TODO - there needs to be a way to account for a buffing character with the unit (which adds its own attacks to the mix but don't count its wounds)
+#some characters can only heal their regiment - they can have their own entry with the unit
+#some characters heal anything.  add a column that shows how much to add to the output score per healing wound (def score / models to get per model then / w to get per wound)
+#other characters have attacks - add char columns that have char output (combine clash with range) and add col that is character contribution, then output includes that
+
+
+Added IsFearless - does nothing for output score but will affect unit vs unit comparisons (so for unit vs unit needs added functionality)
 Added ResistDecay (need that functionality)
 Added [DoubleCast] tag - means they will cast twice
 Added DoubleAttack tag - means it can tap twice volley or clash (so calculate unit doing either and take the highest)

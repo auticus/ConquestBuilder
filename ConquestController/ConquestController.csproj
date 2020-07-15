@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConquestAnalysis\ConquestAnalysis.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Attributes\" />
   </ItemGroup>
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ConquestController.Models
+﻿namespace ConquestController.Models.Input
 {
     public class CharacterOptionModel : IConquestInput
     {

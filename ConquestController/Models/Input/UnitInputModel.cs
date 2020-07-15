@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConquestController.Models
+namespace ConquestController.Models.Input
 {
     public class UnitInputModel : IConquestRegimentInput
     {
@@ -17,6 +17,7 @@ namespace ConquestController.Models
         public int AdditionalPoints { get; set; }
         public int LeaderPoints { get; set; }
         public int StandardPoints { get; set; }
+        public int IsReleased { get; set; }
 
         public string Intangibles { get; set; }
 

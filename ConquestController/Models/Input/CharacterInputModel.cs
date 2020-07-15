@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ConquestController.Models
+namespace ConquestController.Models.Input
 {
     public class CharacterInputModel : IConquestRegimentInput
     {
@@ -8,6 +8,9 @@ namespace ConquestController.Models
         public string Unit { get; set; }
         public string Weight { get; set; }
         public int Points { get; set; }
+        public int IsReleased { get; set; }
+
+        //****STATS AND RULES **//
         public int Volley { get; set; }
         public int Clash { get; set; }
         public int Attacks { get; set; }
