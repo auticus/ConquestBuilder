@@ -12,6 +12,10 @@ namespace ConquestController.Models.Input
         public string Faction { get; set; }
         public string Unit { get; set; }
         public string Weight { get; set; }
+
+        /// <summary>
+        /// Total model count of the regiment
+        /// </summary>
         public int Models { get; set; }
         public int Points { get; set; }
         public int AdditionalPoints { get; set; }

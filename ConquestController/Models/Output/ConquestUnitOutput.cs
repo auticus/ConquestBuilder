@@ -6,78 +6,8 @@ namespace ConquestController.Models.Output
 {
     public class ConquestUnitOutput
     {
-        #region Sub Classes
-        public class Stand
-        {
-            public class OffenseScore
-            {
-                public double ClashOutput { get; set; }
-                public double ImpactOutput { get; set; }
-                public double RangedOutput { get; set; }
-                public double MagicOutput { get; set; }
-                public double TotalOutput
-                {
-                    get
-                    {
-                        return ClashOutput + ImpactOutput + RangedOutput + MagicOutput;
-                    }
-                }
-
-                public double NormalizedOutput { get; set; }
-                public double Efficiency { get; set; } //output / point cost
-            }
-
-            public class DefenseScore
-            {
-                /// <summary>
-                /// The defensive output 
-                /// </summary>
-                public double RawOutput { get; set; }
-
-                /// <summary>
-                /// The defensive output counting resolve failures as well
-                /// </summary>
-                public double ResolveOutput { get; set; }
-
-                /// <summary>
-                /// The mean between raw defensive output and the resolve output
-                /// </summary>
-                public double TotalOutput
-                {
-                    get
-                    {
-                        return (RawOutput + ResolveOutput) / 2;
-                    }
-                }
-
-                public double Efficiency { get; set; }
-                public double NormalizedOutput { get; set; }
-            }
-
-            public class MovementScore
-            {
-                public int MovementRaw { get; set; }
-                public double NormalizedMovement { get; set; }
-            }
-
-            public OffenseScore Offense { get; }
-            public DefenseScore Defense { get; }
-            public MovementScore Movement { get; }
-
-            public Stand()
-            {
-                Offense = new OffenseScore();
-                Defense = new DefenseScore();
-                Movement = new MovementScore();
-            }
-        }
-        #endregion Sub Classes
-
         #region Constant Values
-        //region to index the normalization vectors
-        public const int OFFENSE = 0;
-        public const int DEFENSE = 1;
-        public const int MOVEMENT = 2;
+        public const int BASE_STAND_COUNT = 3;
 
         //stand array indexes
         public const int FULL_OUTPUT = 0;
@@ -108,24 +38,37 @@ namespace ConquestController.Models.Output
         /// </summary>
         public int PointsAdditional { get; set; }
 
-        /// <summary>
-        /// The normalization scores used to even out the raw scores
-        /// </summary>
-        public double[] OffensiveNormalizationVector { get; set; } //what we multiply offensive scores to even them out
-
         public Stand[] Stands { get; }
+        public AnalysisOutput Analysis { get; }
+        public AnalysisSummary Summary { get; }
         public ConquestUnitOutput()
         {
-            OffensiveNormalizationVector = new double[] { 0, 0, 0 };
-            var standfull = new Stand();
-            var stand_extra_1 = new Stand();
-            var stand_extra_2 = new Stand();
-            var stand_extra_3 = new Stand();
-            var stand_support_1 = new Stand();
-            var stand_support_2 = new Stand();
-            var stand_support_3 = new Stand();
+            var standFull = new Stand();
+            var standExtra1 = new Stand();
+            var standExtra2 = new Stand();
+            var standExtra3 = new Stand();
+            var standSupport1 = new Stand();
+            var standSupport2 = new Stand();
+            var standSupport3 = new Stand();
 
-            Stands = new Stand[] { standfull, stand_extra_1, stand_extra_2, stand_extra_3, stand_support_1, stand_support_2, stand_support_3 };
+            Analysis = new AnalysisOutput();
+            Summary = new AnalysisSummary();
+
+            Stands = new[] { standFull, standExtra1, standExtra2, standExtra3, standSupport1, standSupport2, standSupport3 };
+        }
+
+        /// <summary>
+        /// Apply all of the score given to every stand within the output model
+        /// </summary>
+        /// <param name="rawMovement"></param>
+        /// <param name="normalizedMovement"></param>
+        public void ApplyMovementScoresToAllStands(int rawMovement, double normalizedMovement)
+        {
+            foreach (var stand in Stands)
+            {
+                stand.Movement.MovementRaw = rawMovement;
+                stand.Movement.NormalizedMovement = normalizedMovement;
+            }
         }
     }
 }

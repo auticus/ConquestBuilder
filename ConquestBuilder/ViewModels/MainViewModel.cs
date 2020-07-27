@@ -8,6 +8,7 @@ using ConquestController.Data;
 using System.Configuration;
 using ConquestController.Models;
 using System.Linq;
+using ConquestController.Models.Input;
 
 namespace ConquestBuilder.ViewModels
 {
