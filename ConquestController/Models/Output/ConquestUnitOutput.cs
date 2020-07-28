@@ -83,6 +83,11 @@ namespace ConquestController.Models.Output
                 full.Defense.TotalOutput, full.OutputScore, full.Offense.Efficiency, full.Defense.Efficiency,
                 full.Efficiency);
         }
+
+        public override string ToString()
+        {
+            return Unit;
+        }
     }
 }
 

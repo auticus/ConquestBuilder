@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ConquestController.Analysis.Components;
 using ConquestController.Models.Input;
@@ -13,15 +14,14 @@ namespace ConquestController.Analysis
         /// Given a list of unit models and options, calculate the output scores and return them back
         /// </summary>
         /// <param name="models"></param>
-        /// <param name="modelOptions"></param>
         /// <returns></returns>
-        public IList<ConquestUnitOutput> AnalyzeTotalGame(List<UnitInputModel> models, List<UnitOptionModel> modelOptions)
+        public IList<ConquestUnitOutput> AnalyzeTotalGame(List<UnitInputModel> models)
         {
             var rawOutput = InitializeModels(models, analysisStandCount: 3, frontageCount: 3, applyFullyDeadly: false);
             NormalizeData(ref rawOutput);
             FinalizeEfficiency(ref rawOutput);
             FinalizeAnalysis(ref rawOutput);
-
+            
             return rawOutput;
         }
 
@@ -46,7 +46,8 @@ namespace ConquestController.Analysis
                     StandCount = analysisStandCount,
                     FrontageCount = frontageCount,
                     PointsAdditional = model.AdditionalPoints,
-                    Weight = model.Weight
+                    Weight = model.Weight,
+                    Points = model.Points
                 };
 
                 output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput = RangedOffense.CalculateOutput(model, allDefenses, supportOnly: false, applyFullyDeadly);
@@ -206,12 +207,27 @@ namespace ConquestController.Analysis
             }
         }
 
+        private static double[] GetAverageScores(IList<ConquestUnitOutput> data)
+        {
+            var totalOutput = data.Sum(dataPoint => dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore);
+            var totalOffenseEfficiency = data.Sum(dataPoint => dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency);
+            var totalDefenseEfficiency = data.Sum(dataPoint => dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency);
+            var totalEfficiency = data.Sum(dataPoint => dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency);
+
+            return new[]
+            {
+                totalOutput / data.Count, totalOffenseEfficiency / data.Count, totalDefenseEfficiency / data.Count,
+                totalEfficiency / data.Count
+            };
+        }
+
         private static void FinalizeAnalysis(ref IList<ConquestUnitOutput> data)
         {
-            var avgOutput = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore);
-            var avgOffenseEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency);
-            var avgDefenseEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency);
-            var avgEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency);
+            var avgScores = GetAverageScores(data);
+            var avgOutput = avgScores[0];
+            var avgOffenseEfficiency = avgScores[1];
+            var avgDefenseEfficiency = avgScores[2];
+            var avgEfficiency = avgScores[3];
 
             foreach (var dataPoint in data)
             {

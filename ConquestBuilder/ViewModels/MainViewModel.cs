@@ -8,6 +8,7 @@ using ConquestController.Data;
 using System.Configuration;
 using ConquestController.Models;
 using System.Linq;
+using ConquestController.Analysis;
 using ConquestController.Models.Input;
 
 namespace ConquestBuilder.ViewModels
@@ -20,6 +21,7 @@ namespace ConquestBuilder.ViewModels
         private string _unitOptionsFile;
         private string _characterInputFile;
         private string _spellFile;
+        private string _analysisFile;
 
         public MainViewModel()
         {
@@ -41,6 +43,7 @@ namespace ConquestBuilder.ViewModels
             _unitOptionsFile = ConfigurationManager.AppSettings["UnitOptionFile"];
             _characterInputFile = ConfigurationManager.AppSettings["CharacterInputFile"];
             _spellFile = ConfigurationManager.AppSettings["SpellFile"];
+            _analysisFile = ConfigurationManager.AppSettings["AnalysisFile"];
         }
 
         private void LoadData(object obj)
@@ -68,6 +71,9 @@ namespace ConquestBuilder.ViewModels
                 //populate spell schools
                 var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile);
 
+                var analysis = new AnalysisController();
+                var output = analysis.AnalyzeTotalGame(units);
+                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, output);
             }
             catch(Exception ex)
             {

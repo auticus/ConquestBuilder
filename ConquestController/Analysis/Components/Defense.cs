@@ -25,7 +25,7 @@ namespace ConquestController.Analysis.Components
             if (model.IsBastion == 1) defense++;
             if (!noShields && model.IsShields == 1) defense++;
 
-            var copyQ = GetResolveWoundArray(model.Resolve, standCount, model.Wounds * model.Models);
+            var copyQ = GetResolveWoundArray(model.Resolve, standCount, (model.Wounds * model.Models)/standCount);
             var mainQ = new Queue<Tuple<int, int>>();
             double defenseScore = 0;
             double defenseResolve = 0;
@@ -42,7 +42,6 @@ namespace ConquestController.Analysis.Components
                 //queue should be organized from highest resolve down to its base resolve
                 while (mainQ.Count > 0)
                 {
-                    //todo: iterate through stack and calculate and store in a place that can hold the total sum
                     //looking at based off of the current defense Modification value and the current clash/volley score
                     //how many hits does it take to reduce this output object to 0 wounds?
                     //afterwards calculate the mean of all of these
@@ -54,22 +53,24 @@ namespace ConquestController.Analysis.Components
                     //defense score means that the def probability (how many hits it takes on average to drop one model) is multiplied by
                     //how many wounds have to be chewed through with just pure hits
                     //ex 12 wounds with a D score of 2 is 1.33 hits to drop one model or 15.96 hits on average to destroy the unit
-                    defenseScore += defenseProbability * output.Item2;
+                    
+                    var tally = defenseProbability * output.Item2; //keeping this separate because this value is needed below
+                    defenseScore += tally;
 
                     //now how many hits does it take when you take into account the resolve score?
                     var resolveFailureProbability = 1 - Probabilities[output.Item1];
 
                     //so if defense score was 15.96 and they have a resolve of 2, that means 0.67 models will run for every hit (as 0.33 will stay)
                     //so it takes much less than 15.96 hits to run the unit off, it would be 15.96 - (6 * 0.66) or 12 (15.96 - 3.96)
-                    defenseResolve += defenseScore - (6 * resolveFailureProbability);
+                    defenseResolve += (tally - (6 * resolveFailureProbability)); //6 represents d6
 
                     copyQ.Enqueue(output); //put the item back in the copyQ so that we can do this all over again
                 }
             }
 
             //get the average defense score and then the average defense resolve
-            defenseScore /= (copyQ.Count + defenseModificationValues.Count);
-            defenseResolve /= (copyQ.Count + defenseModificationValues.Count);
+            defenseScore /= (defenseModificationValues.Count);
+            defenseResolve /= (defenseModificationValues.Count);
 
             //now get the mean value between those two values
             returnOutput[0] = defenseScore;

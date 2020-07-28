@@ -10,7 +10,7 @@ namespace ConquestController.Data
 {
     public class DataRepository
     {
-        private static string DATAFILE_NULL = "[]";
+        private static readonly string DATAFILE_NULL = "[]";
         /// <summary>
         /// Loads a file and returns back a list of the model contained within
         /// </summary>
@@ -46,24 +46,29 @@ namespace ConquestController.Data
         /// <param name="filePath">The file path of the options file</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"/>
-        public static void AssignUnitOptionsToModelsFromFile(List<IConquestRegimentInput> models, string filePath) 
+        public static void AssignUnitOptionsToModelsFromFile(List<IConquestRegimentInput> models, string filePath)
         {
-            using (var rdr = new StreamReader(filePath))
+            using var rdr = new StreamReader(filePath);
+
+            if (rdr == null) throw new InvalidOperationException("The file path passed resulted in no viable data to pull");
+
+            var header = rdr.ReadLine()?.Split(',');
+
+            if (header == null) throw new InvalidOperationException("There was no header line within the file passed");
+
+            while (!rdr.EndOfStream)
             {
-                var header = rdr.ReadLine().Split(',');
+                var line = rdr.ReadLine()?.Split(',');
 
-                while (!rdr.EndOfStream)
-                {
-                    var line = rdr.ReadLine().Split(',');
+                if (line == null) throw new InvalidOperationException("Null data found within the file passed");
 
-                    if (header.Length != line.Length)
-                        throw new InvalidOperationException("The header and the data line do not match length of field count");
+                if (header.Length != line.Length)
+                    throw new InvalidOperationException("The header and the data line do not match length of field count");
 
-                    var option = ProcessModel<UnitOptionModel>(header, line);
-                    var model = models.FirstOrDefault(x => x.Faction == option.Faction && x.Unit == option.Unit);
+                var option = ProcessModel<UnitOptionModel>(header, line);
+                var model = models.FirstOrDefault(x => x.Faction == option.Faction && x.Unit == option.Unit);
 
-                    if (model != null) model.Options.Add(option);
-                }
+                model?.Options.Add(option);
             }
         }
 
