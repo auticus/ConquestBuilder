@@ -40,6 +40,18 @@ namespace ConquestController.Models.Output
         /// </summary>
         public int PointsAdditional { get; set; }
 
+        /// <summary>
+        /// This record is a modified core record with an option added to it
+        /// </summary>
+        public bool HasOptionAdded { get; set; }
+
+        /// <summary>
+        /// This record is a modified core record with an option that does nothing to output score added to it
+        /// </summary>
+        public bool HasNoImpactOptionAdded { get; set; }
+
+        public int IsReleased { get; set; }
+
         public Stand[] Stands { get; }
         public AnalysisOutput Analysis { get; }
         public AnalysisSummary Summary { get; }
@@ -81,7 +93,7 @@ namespace ConquestController.Models.Output
                 full.Offense.NormalizedClashOutput, full.Offense.NormalizedRangedOutput,
                 full.Offense.NormalizedTotalOutput,
                 full.Defense.TotalOutput, full.OutputScore, full.Offense.Efficiency, full.Defense.Efficiency,
-                full.Efficiency);
+                full.Efficiency, HasOptionAdded ? 1 : 0, HasNoImpactOptionAdded ? 1 : 0, IsReleased, full.Offense.NormalizedVector);
         }
 
         public override string ToString()

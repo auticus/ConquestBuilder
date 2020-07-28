@@ -1,10 +1,10 @@
 Faction,Unit,Upgrade,Points,Tag,ArmyLimit,Notes
 100k,Militia,Servite,30,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
 100k,Militia,Neophyte,25,[],0,Whilte the Neophyte is alive the Regiment has the Devout special rule
-100k,Militia,Errant of the Order of the Shield,20,[],0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
-100k,Militia,Servite,15,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
-100k,Militia,Neophyte,15,IsDevout,0,While the Neophyte is alive the Regiment has the Devout special rule
-100k,Militia,Errant of the Order of the Shield,10,[],0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
+100k,Militia,Errant of the Order of the Shield,20,AlwaysInspire,0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
+100k,Militia Bowmen,Servite,15,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
+100k,Militia Bowmen,Neophyte,15,IsDevout,0,While the Neophyte is alive the Regiment has the Devout special rule
+100k,Militia Bowmen,Errant of the Order of the Shield,10,[],0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
 100k,Men-At-Arms,Seasoned Veteran,30,IsBastion,0,While the Veteran is alive the Regiment has the Bastion draw event
 100k,Men-At-Arms,Neophyte,30,[],0,While the Neophyte is alive the Regiment has the Devout special rule
 100k,Household Knights,Tourney Champion,40,[],0,While the Tourney Champion is alive the Regiment adds 2 to its charge distance

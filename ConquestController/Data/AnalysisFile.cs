@@ -14,7 +14,8 @@ namespace ConquestController.Data
             //header
             writer.WriteLine(
                 "Faction,Unit,Weight,Points,Additional,NormalizedMovement,ClashOffense,RangedOffense,NormalizedOffense," +
-                "TotalDefense,OutputScore,OffenseEfficiency,DefenseEfficiency,Efficiency");
+                "TotalDefense,OutputScore,OffenseEfficiency,DefenseEfficiency,Efficiency,HasOptionApplied," +
+                "HasUselessOptionApplied, IsReleased, NormalizationVector");
 
             foreach (var dataPoint in data)
             {

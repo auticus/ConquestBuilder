@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace ConquestController.Models.Input
 {
@@ -58,11 +59,63 @@ namespace ConquestController.Models.Input
 
         public int ResistDecay { get; set; }
 
+        public int AlwaysInspire { get; set; }
+
         public List<IConquestInput> Options { get; }
 
         public override string ToString()
         {
             return Unit;
+        }
+
+        public UnitInputModel Copy()
+        {
+            var model = new UnitInputModel();
+            model.Faction = Faction;
+            model.Unit = Unit;
+            model.Weight = Weight;
+            model.Models = Models;
+            model.Points = Points;
+            model.AdditionalPoints = AdditionalPoints;
+            model.LeaderPoints = LeaderPoints;
+            model.StandardPoints = StandardPoints;
+            model.IsReleased = IsReleased;
+            model.Move = Move;
+            model.Volley = Volley;
+            model.Clash = Clash;
+            model.Attacks = Attacks;
+            model.Wounds = Wounds;
+            model.Resolve = Resolve;
+            model.Defense = Defense;
+            model.Evasion = Evasion;
+            model.Barrage = Barrage;
+            model.Range = Range;
+            model.ArmorPiercing = ArmorPiercing;
+            model.Cleave = Cleave;
+            model.IsImpact = IsImpact;
+            model.BrutalImpact = BrutalImpact;
+            model.IsShields = IsShields;
+            model.IsFury = IsFury;
+            model.IsFlurry = IsFlurry;
+            model.IsFluid = IsFluid;
+            model.IsFly = IsFly;
+            model.IsDeadlyBlades = IsDeadlyBlades;
+            model.IsDeadlyShot = IsDeadlyShot;
+            model.IsAuraDeath = IsAuraDeath;
+            model.IsSupport = IsSupport;
+            model.IsBastion = IsBastion;
+            model.IsTerrifying = IsTerrifying;
+            model.IsArcOfFire = IsArcOfFire;
+            model.IsFearless = IsFearless;
+            model.ResistDecay = ResistDecay;
+            model.AlwaysInspire = AlwaysInspire;
+
+            foreach (var option in Options)
+            {
+                model.Options.Add(option);
+            }
+
+            return model;
         }
     }
 }

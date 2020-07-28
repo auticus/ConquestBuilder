@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
 
@@ -85,10 +84,13 @@ namespace ConquestController.Analysis.Components
                 var finalOutput = 0.0d;
 
                 //calculate standard hits
-                finalOutput = CalculateClashFragment(defense, model, attacks, hitProbability, resolveValues, applyFullyDeadly);
+                var normalHitProbability = model.AlwaysInspire == 1 ? inspiredHitProbability : hitProbability;
+                finalOutput = CalculateClashFragment(defense, model, attacks, normalHitProbability, 
+                    resolveValues, applyFullyDeadly, thisIsImpactHits: false);
 
                 //calculate inspired hits
-                finalOutput += CalculateClashFragment(defense, model, attacks, inspiredHitProbability, resolveValues, applyFullyDeadly);
+                finalOutput += CalculateClashFragment(defense, model, attacks, inspiredHitProbability, 
+                    resolveValues, applyFullyDeadly, thisIsImpactHits: false);
 
                 totalScores += 2;
 
@@ -97,7 +99,8 @@ namespace ConquestController.Analysis.Components
                 {
                     //impact hits are half of the attack value of the stands in contact (rounded down).  support stands grant +1 impact hit each;
                     var impactHits = attacks / 2.0d;
-                    totalImpact += CalculateClashFragment(defense, model, Math.Floor(impactHits), hitProbability, resolveValues, applyFullyDeadly);
+                    totalImpact += CalculateClashFragment(defense, model, Math.Floor(impactHits), hitProbability, 
+                        resolveValues, applyFullyDeadly, thisIsImpactHits: true);
                     totalImpacts++;
                 }
 
@@ -109,13 +112,13 @@ namespace ConquestController.Analysis.Components
         }
 
         private static double CalculateClashFragment(int defense, UnitInputModel model, double attacks, double hitProbability, 
-            List<int> resolveValues, bool applyFullyDeadly)
+            List<int> resolveValues, bool applyFullyDeadly, bool thisIsImpactHits)
         {
             var finalD = Math.Clamp(defense - model.Cleave, 0, 6);
             var defenseProbability = Probabilities[finalD];
 
             var totalHits = attacks * hitProbability;
-            if (model.IsFlurry == 1)
+            if (!thisIsImpactHits && model.IsFlurry == 1)
             {
                 var misses = attacks - totalHits;
                 totalHits += (misses * hitProbability);

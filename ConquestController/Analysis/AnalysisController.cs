@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
 using ConquestController.Analysis.Components;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
@@ -10,6 +11,13 @@ namespace ConquestController.Analysis
 {
     public class AnalysisController
     {
+        private enum ApplyOptionResult
+        {
+            NotOption = 0,
+            ImpactfulOption,
+            NonImpactfulOption
+        }
+
         /// <summary>
         /// Given a list of unit models and options, calculate the output scores and return them back
         /// </summary>
@@ -37,88 +45,129 @@ namespace ConquestController.Analysis
             var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
             var allResolve = new List<int>() { 1, 2, 3, 4, 5, 6 };
             var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
-            foreach (var model in models)
+            foreach (var primeModel in models)
             {
-                var output = new ConquestUnitOutput
+                var primaryModelInitialized = false;
+
+                var optionQueue = new Queue<IConquestInput>();
+                foreach(var opt in primeModel.Options)
+                    optionQueue.Enqueue(opt);
+
+                while (!primaryModelInitialized || optionQueue.Count > 0)
                 {
-                    Faction = model.Faction,
-                    Unit = model.Unit,
-                    StandCount = analysisStandCount,
-                    FrontageCount = frontageCount,
-                    PointsAdditional = model.AdditionalPoints,
-                    Weight = model.Weight,
-                    Points = model.Points
-                };
+                    var model = primeModel;
+                    ApplyOptionResult optionResult = ApplyOptionResult.NotOption;
 
-                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput = RangedOffense.CalculateOutput(model, allDefenses, supportOnly: false, applyFullyDeadly);
-
-                var clashOutputs = ClashOffense.CalculateOutput(model, allDefenses, allResolve, supportOnly: false, applyFullyDeadly);
-                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput = clashOutputs[0];
-                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ImpactOutput = clashOutputs[1];
-
-                //*************************calculate its partial stand data*********************************************************//
-                //full output by stand (indices 1-3 which represent the full extra output constants
-                if (model.AdditionalPoints > 0) //if its 0, you can't add models to it so these partial stats don't exist
-                {
-                    //the output is for the base stand count output (so 3 stands).  so in that case, just divide by that to see what each stand
-                    //provides by itself
-                    for (var i = 1; i < 4; i++)
+                    if (!primaryModelInitialized)
                     {
-                        output.Stands[i].Offense.RangedOutput =
-                            output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput /
-                            ConquestUnitOutput.BASE_STAND_COUNT;
-                        output.Stands[i].Offense.ClashOutput =
-                            output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput /
-                            ConquestUnitOutput.BASE_STAND_COUNT;
-                        output.Stands[i].Offense.ImpactOutput =
-                            output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ImpactOutput /
-                            ConquestUnitOutput.BASE_STAND_COUNT;
+                        primaryModelInitialized = true;
                     }
-                }
-
-                //support stand output by stand (typically get one attack per stand, though support rule will give two attacks per stand)
-                if (model.AdditionalPoints > 0)
-                {
-                    //calculate the output of just one attack out of the stand
-                    clashOutputs = ClashOffense.CalculateOutput(model, allDefenses, allResolve, supportOnly: true, applyFullyDeadly);
-                    var rangedOutput = RangedOffense.CalculateOutput(model, allDefenses, supportOnly: true, applyFullyDeadly);
-
-                    for (var i = 4; i < 7; i++)
+                    else
                     {
-                        output.Stands[i].Offense.ClashOutput = clashOutputs[0];
-                        output.Stands[i].Offense.ImpactOutput = clashOutputs[1];
-                        output.Stands[i].Offense.RangedOutput = rangedOutput;
+                        var option = optionQueue.Dequeue() as UnitOptionModel;
+                        model = model.Copy();
+                        optionResult = ApplyOptionToUnit(model, option);
                     }
+
+                    var output = new ConquestUnitOutput
+                    {
+                        Faction = model.Faction,
+                        Unit = model.Unit,
+                        StandCount = analysisStandCount,
+                        FrontageCount = frontageCount,
+                        PointsAdditional = model.AdditionalPoints,
+                        Weight = model.Weight,
+                        Points = model.Points,
+                        IsReleased =  model.IsReleased
+                    };
+
+                    switch (optionResult)
+                    {
+                        case ApplyOptionResult.ImpactfulOption:
+                            output.HasOptionAdded = true;
+                            break;
+                        case ApplyOptionResult.NonImpactfulOption:
+                            output.HasNoImpactOptionAdded = true;
+                            break;
+                    }
+
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput =
+                        RangedOffense.CalculateOutput(model, allDefenses, supportOnly: false, applyFullyDeadly);
+
+                    var clashOutputs = ClashOffense.CalculateOutput(model, allDefenses, allResolve, supportOnly: false,
+                        applyFullyDeadly);
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput = clashOutputs[0];
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ImpactOutput = clashOutputs[1];
+
+                    //*************************calculate its partial stand data*********************************************************//
+                    //full output by stand (indices 1-3 which represent the full extra output constants
+                    if (model.AdditionalPoints > 0
+                    ) //if its 0, you can't add models to it so these partial stats don't exist
+                    {
+                        //the output is for the base stand count output (so 3 stands).  so in that case, just divide by that to see what each stand
+                        //provides by itself
+                        for (var i = 1; i < 4; i++)
+                        {
+                            output.Stands[i].Offense.RangedOutput =
+                                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput /
+                                ConquestUnitOutput.BASE_STAND_COUNT;
+                            output.Stands[i].Offense.ClashOutput =
+                                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput /
+                                ConquestUnitOutput.BASE_STAND_COUNT;
+                            output.Stands[i].Offense.ImpactOutput =
+                                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ImpactOutput /
+                                ConquestUnitOutput.BASE_STAND_COUNT;
+                        }
+                    }
+
+                    //support stand output by stand (typically get one attack per stand, though support rule will give two attacks per stand)
+                    if (model.AdditionalPoints > 0)
+                    {
+                        //calculate the output of just one attack out of the stand
+                        clashOutputs = ClashOffense.CalculateOutput(model, allDefenses, allResolve, supportOnly: true,
+                            applyFullyDeadly);
+                        var rangedOutput =
+                            RangedOffense.CalculateOutput(model, allDefenses, supportOnly: true, applyFullyDeadly);
+
+                        for (var i = 4; i < 7; i++)
+                        {
+                            output.Stands[i].Offense.ClashOutput = clashOutputs[0];
+                            output.Stands[i].Offense.ImpactOutput = clashOutputs[1];
+                            output.Stands[i].Offense.RangedOutput = rangedOutput;
+                        }
+                    }
+
+                    //calculate defense scores
+                    var defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 3);
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.ResolveOutput = defenseOutputs[1];
+
+                    defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 6);
+                    output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_4_6].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_4_6].Defense.ResolveOutput = defenseOutputs[1];
+                    output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_4_6].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_4_6].Defense.ResolveOutput =
+                        defenseOutputs[1];
+
+                    defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 9);
+                    output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_7_9].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_7_9].Defense.ResolveOutput = defenseOutputs[1];
+                    output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_7_9].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_7_9].Defense.ResolveOutput =
+                        defenseOutputs[1];
+
+                    defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 12);
+                    output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_10].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_10].Defense.ResolveOutput = defenseOutputs[1];
+                    output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_10].Defense.RawOutput = defenseOutputs[0];
+                    output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_10].Defense.ResolveOutput = defenseOutputs[1];
+
+                    //apply misc modifiers to the scores
+                    var normalizeMove = Movement.CalculateOutput(model);
+                    output.ApplyMovementScoresToAllStands(model.Move, normalizeMove);
+
+                    returnList.Add(output);
                 }
-
-                //calculate defense scores
-                var defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 3);
-                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.ResolveOutput = defenseOutputs[1];
-
-                defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 6);
-                output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_4_6].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_4_6].Defense.ResolveOutput = defenseOutputs[1];
-                output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_4_6].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_4_6].Defense.ResolveOutput = defenseOutputs[1];
-
-                defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 9);
-                output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_7_9].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_7_9].Defense.ResolveOutput = defenseOutputs[1];
-                output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_7_9].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_7_9].Defense.ResolveOutput = defenseOutputs[1];
-
-                defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 12);
-                output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_10].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.FULL_EXTRA_OUTPUT_10].Defense.ResolveOutput = defenseOutputs[1];
-                output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_10].Defense.RawOutput = defenseOutputs[0];
-                output.Stands[ConquestUnitOutput.SUPPORT_EXTRA_OUTPUT_10].Defense.ResolveOutput = defenseOutputs[1];
-
-                //apply misc modifiers to the scores
-                var normalizeMove = Movement.CalculateOutput(model);
-                output.ApplyMovementScoresToAllStands(model.Move, normalizeMove);
-
-                returnList.Add(output);
             }
 
             return returnList;
@@ -262,6 +311,70 @@ namespace ConquestController.Analysis
                 dataPoint.Summary.MeanDefenseEfficiency = avgDefenseEfficiency;
                 dataPoint.Summary.MeanEfficiency = avgEfficiency;
             }
+        }
+
+        /// <summary>
+        /// Will attempt to apply the given option to the model.  However, if the option does not impact the output score, will return false
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="option"></param>
+        /// <returns>TRUE if option affects output, FALSE otherwise</returns>
+        private static ApplyOptionResult ApplyOptionToUnit(UnitInputModel model, UnitOptionModel option)
+        {
+            model.Unit += $" ({option.Upgrade})";
+            model.Points += option.Points;
+
+            //whether the rule is useful or not depends on the tag
+            var isUseful = false;
+            var tags = new List<string>(option.Tag.Split('|'));
+            foreach (var tag in tags)
+            {
+                switch (tag.ToLower())
+                {
+                    case "m":
+                        model.Move++;
+                        isUseful = true;
+                        break;
+                    case "v":
+                        model.Volley++;
+                        isUseful = true;
+                        break;
+                    case "c":
+                        model.Clash++;
+                        isUseful = true;
+                        break;
+                    case "r":
+                        model.Resolve++;
+                        isUseful = true;
+                        break;
+                    case "d":
+                        model.Defense++;
+                        isUseful = true;
+                        break;
+                    case "e":
+                        model.Evasion++;
+                        isUseful = true;
+                        break;
+                    case "alwaysinspire":
+                        model.AlwaysInspire = 1;
+                        isUseful = true;
+                        break;
+                    case "isbastion":
+                        model.IsBastion = 1;
+                        isUseful = true;
+                        break;
+                    case "isfury":
+                        model.IsFury = 1;
+                        isUseful = true;
+                        break;
+                    case "isauradeath":
+                        model.IsAuraDeath = 1;
+                        isUseful = true;
+                        break;
+                }
+            }
+
+            return isUseful ? ApplyOptionResult.ImpactfulOption : ApplyOptionResult.NonImpactfulOption;
         }
     }
 }
