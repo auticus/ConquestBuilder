@@ -21,6 +21,8 @@ namespace ConquestController.Models.Output
 
         public string Faction { get; set; }
         public string Unit { get; set; }
+
+        public string Weight { get; set; }
         public int Points { get; set; }
 
         /// <summary>
@@ -70,5 +72,17 @@ namespace ConquestController.Models.Output
                 stand.Movement.NormalizedMovement = normalizedMovement;
             }
         }
+
+        public string FullStandToCommaFormat()
+        {
+            var full = Stands[FULL_OUTPUT];
+
+            return string.Join(",", Faction, Unit, Weight, Points, PointsAdditional, full.Movement.NormalizedMovement,
+                full.Offense.NormalizedClashOutput, full.Offense.NormalizedRangedOutput,
+                full.Offense.NormalizedTotalOutput,
+                full.Defense.TotalOutput, full.OutputScore, full.Offense.Efficiency, full.Defense.Efficiency,
+                full.Efficiency);
+        }
     }
 }
+

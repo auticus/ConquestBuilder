@@ -56,6 +56,8 @@ namespace ConquestController.Models.Input
         public int IsArcOfFire { get; set; }
         public int IsFearless { get; set; }
 
+        public int ResistDecay { get; set; }
+
         public List<IConquestInput> Options { get; }
 
         public override string ToString()

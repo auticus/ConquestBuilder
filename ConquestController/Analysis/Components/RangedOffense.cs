@@ -17,9 +17,7 @@ namespace ConquestController.Analysis.Components
         /// <returns>The average ranged output against the range of defense values passed</returns>
         public static double CalculateOutput(UnitInputModel model, List<int> defenseValues, bool supportOnly = false, bool applyFullDeadly = false)
         {
-            int shotsFired = 0;
-
-            shotsFired = supportOnly ? 1 : model.Models * model.Barrage;
+            var shotsFired = supportOnly ? 1 : model.Models * model.Barrage;
 
             var shotsHitProbability = Probabilities[model.Volley];
             var shotsHitProbabilityAim = Probabilities[model.Volley + 1];

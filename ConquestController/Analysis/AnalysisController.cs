@@ -39,12 +39,15 @@ namespace ConquestController.Analysis
             var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
             foreach (var model in models)
             {
-                var output = new ConquestUnitOutput();
-                output.Faction = model.Faction;
-                output.Unit = model.Unit;
-                output.StandCount = analysisStandCount;
-                output.FrontageCount = frontageCount;
-                output.PointsAdditional = model.AdditionalPoints;
+                var output = new ConquestUnitOutput
+                {
+                    Faction = model.Faction,
+                    Unit = model.Unit,
+                    StandCount = analysisStandCount,
+                    FrontageCount = frontageCount,
+                    PointsAdditional = model.AdditionalPoints,
+                    Weight = model.Weight
+                };
 
                 output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput = RangedOffense.CalculateOutput(model, allDefenses, supportOnly: false, applyFullyDeadly);
 
