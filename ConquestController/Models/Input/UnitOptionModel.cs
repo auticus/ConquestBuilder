@@ -9,6 +9,7 @@
         public string Tag { get; set; }
         public int ArmyLimit { get; set; }
         public string Notes { get; set; }
+        public int Grouping { get; set; }
 
         public override string ToString()
         {

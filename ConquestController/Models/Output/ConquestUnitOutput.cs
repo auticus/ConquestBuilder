@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ConquestController.Models.Output
+﻿namespace ConquestController.Models.Output
 {
     public class ConquestUnitOutput
     {
@@ -52,9 +48,9 @@ namespace ConquestController.Models.Output
 
         public int IsReleased { get; set; }
 
-        public Stand[] Stands { get; }
-        public AnalysisOutput Analysis { get; }
-        public AnalysisSummary Summary { get; }
+        public Stand[] Stands { get; private set; }
+        public AnalysisOutput Analysis { get; private set; }
+        public AnalysisSummary Summary { get; private set; }
         public ConquestUnitOutput()
         {
             var standFull = new Stand();
@@ -99,6 +95,32 @@ namespace ConquestController.Models.Output
         public override string ToString()
         {
             return Unit;
+        }
+
+        public ConquestUnitOutput Copy()
+        {
+            var output = new ConquestUnitOutput
+            {
+                Faction = this.Faction,
+                FrontageCount = this.FrontageCount,
+                HasNoImpactOptionAdded = this.HasNoImpactOptionAdded,
+                HasOptionAdded = this.HasOptionAdded,
+                IsReleased = this.IsReleased,
+                Points = this.Points,
+                PointsAdditional = this.PointsAdditional,
+                StandCount = this.StandCount,
+                Unit = this.Unit,
+                Weight = this.Weight,
+                Summary = this.Summary.Copy(),
+                Analysis = this.Analysis.Copy(),
+                Stands = new[]{
+                    Stands[FULL_OUTPUT].Copy(), Stands[FULL_EXTRA_OUTPUT_4_6].Copy(), Stands[FULL_EXTRA_OUTPUT_7_9].Copy(),
+                    Stands[FULL_EXTRA_OUTPUT_10].Copy(), Stands[SUPPORT_EXTRA_OUTPUT_4_6].Copy(),
+                    Stands[SUPPORT_EXTRA_OUTPUT_7_9].Copy(), Stands[SUPPORT_EXTRA_OUTPUT_10].Copy()
+                }
+            };
+
+            return output;
         }
     }
 }

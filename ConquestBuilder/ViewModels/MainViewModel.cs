@@ -22,6 +22,7 @@ namespace ConquestBuilder.ViewModels
         private string _characterInputFile;
         private string _spellFile;
         private string _analysisFile;
+        private string _characterAnalysisFile;
 
         public MainViewModel()
         {
@@ -44,6 +45,7 @@ namespace ConquestBuilder.ViewModels
             _characterInputFile = ConfigurationManager.AppSettings["CharacterInputFile"];
             _spellFile = ConfigurationManager.AppSettings["SpellFile"];
             _analysisFile = ConfigurationManager.AppSettings["AnalysisFile"];
+            _characterAnalysisFile = ConfigurationManager.AppSettings["CharacterAnalysisFile"];
         }
 
         private void LoadData(object obj)
@@ -52,7 +54,7 @@ namespace ConquestBuilder.ViewModels
             {
                 //assign units and their options
                 var units = DataRepository.GetInputFromFileToList<UnitInputModel>(_appPath + "\\" + _unitInputFile);
-                DataRepository.AssignUnitOptionsToModelsFromFile(units.Cast<IConquestRegimentInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
+                DataRepository.AssignUnitOptionsToModelsFromFile(units.Cast<IConquestOptionInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
 
                 //assign characters
                 var characters = DataRepository.GetInputFromFileToList<CharacterInputModel>(_appPath + "\\" + _characterInputFile);
@@ -66,14 +68,17 @@ namespace ConquestBuilder.ViewModels
                 }
 
                 //assign character options
-                DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestRegimentInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
+                DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestOptionInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
 
                 //populate spell schools
                 var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile);
 
                 var analysis = new AnalysisController();
-                var output = analysis.AnalyzeTotalGame(units);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, output);
+                var unitOutput = analysis.AnalyzeAllUnits(units, spells);
+                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, unitOutput);
+
+                var characterOutput = analysis.AnalyzeAllUnits(characters, spells);
+                AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, characterOutput);
             }
             catch(Exception ex)
             {

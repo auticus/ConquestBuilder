@@ -24,7 +24,7 @@ Spires,Pheromancy,Induced Vigor,25,0,0,0,IsFluid,0,[],0,Gain fluid formation or 
 Spires,Pheromancy,Accelerated Hibernation,15,0,0,0,Healing4,0,[],0,Regiment heals D6 wounds
 Dweghom,Ardent Kerawegh,Dismay,60,12,3,1,[],0,[],0,Target becomes Broken
 Dweghom,Ardent Kerawegh,Resolve,50,12,3,1,[],0,[],0,Remove Broken status from Target
-Dweghom,Fire,Flame wall,30,8,3,0,OneHitPerFile,2,Success,0,"Two hits per success plus one hit for each file stand in the target regiment
+Dweghom,Fire,Flame wall,45,8,3,1,OneHitPerFile,1,Success,0,"One hit per success plus one hit for each file stand in the target regiment
 Dweghom,Fire,Fireball,25,12,3,0,Cleave1,1,Success,0,One hit per success with Cleave 1
 Dweghom,Fire,Coruscation,15,16,3,0,[],1,Success,0,One hit per success
 Dweghom,Earth,Broken Ground,40,10,3,0,[],0,[],0,Target cannot perform impact hits on next charge
@@ -38,4 +38,18 @@ Dweghom,Tempered Steelshaper,Hone Blades,30,12,3,1,C,0,[],0,Target Regiment +1 C
 Dweghom,Tempered Steelshaper,Temper Plate,20,12,3,1,E,0,[],0,Target regiment +1 Evasion
 Nords,Shaman,Blurred Vision,30,14,3,0,[],0,[],0,Target regiment can only target regiments with volley or charge within 12
 Nords,Shaman,Mist Weave,25,12,3,1,[],0,[],0,Target regiment +1 Defense against all Volley actions
-Nords,Shaman,Reshape Destiny,20,8,3,1,[],0,[],0,Target regiment rerolls failed Defense rolls of a 6
+Nords,Shaman,Reshape Destiny,20,8,3,1,[],0,[],0,Target regiment rerolls failed Defense rolls of a 6"
+Dweghom,Fire,Coruscation,15,16,3,0,[],1,Success,0,[]
+Dweghom,Fire,Fireball,25,12,3,0,Cleave1,1,Success,0,[]
+Dweghom,Earth,Roots of Stone,35,12,3,0,D|D,0,[],0,"Target receives +2 Defense but cannot march, reform, or withdraw until after its next activation"
+Dweghom,Earth,Broken Ground,40,10,3,0,[],0,[],0,Target cannot perform impact hits on its next charge
+Dweghom,Earth,Rock Shaping,30,12,3,0,[],0,[],0,Target garrison terrain lowers defense value by 1
+Dweghom,Magma,Eruption,45,18,3,1,Cleave1,1,StandsInRange,0,"If one success is rolled, any stand in range takes 1 hit"
+Dweghom,Magma,Magmatic Seep,60,12,4,0,[],0,[],0,Terrain in range becomes hindering
+Dweghom,Magma,Pyroclast,50,12,3,0,[],0,[],0,Target regiment suffers Decay 3 draw event in its next activation
+Dweghom,Tempered Steelshaper,Hone Blades,30,12,3,1,C,0,[],0,Regiment has clash increased by 1
+Dweghom,Tempered Steelshaper,Temper Plate,20,12,3,1,E,0,[],0,Regiment has Evasion increased by 1
+Dweghom,Tempered Steelshaper,Unmake Armor,35,12,3,1,D-,0,[],0,Regiment has Defense decreased by 1
+Nords,Shaman,Blurred Vision,30,14,3,0,[],0,[],0,Target regiment can only select targets to volley or charge within 12 inches
+Nords,Shaman,Mist Weave,25,12,3,1,D_Volley,0,[],0,Target regiment +1 Defense against volley actions until end of turn
+Nords,Shaman,Reshape Destiny,20,8,3,1,Reroll6_Defense,0,[],0,Target regiment rerolls failed Defense rolls of 6

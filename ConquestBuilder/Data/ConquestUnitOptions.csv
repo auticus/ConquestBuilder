@@ -1,29 +1,30 @@
-Faction,Unit,Upgrade,Points,Tag,ArmyLimit,Notes
-100k,Militia,Servite,30,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
-100k,Militia,Neophyte,25,[],0,Whilte the Neophyte is alive the Regiment has the Devout special rule
-100k,Militia,Errant of the Order of the Shield,20,AlwaysInspire,0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
-100k,Militia Bowmen,Servite,15,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
-100k,Militia Bowmen,Neophyte,15,IsDevout,0,While the Neophyte is alive the Regiment has the Devout special rule
-100k,Militia Bowmen,Errant of the Order of the Shield,10,[],0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
-100k,Men-At-Arms,Seasoned Veteran,30,IsBastion,0,While the Veteran is alive the Regiment has the Bastion draw event
-100k,Men-At-Arms,Neophyte,30,[],0,While the Neophyte is alive the Regiment has the Devout special rule
-100k,Household Knights,Tourney Champion,40,[],0,While the Tourney Champion is alive the Regiment adds 2 to its charge distance
-100k,Steel Legion,Drillmaster,35,IsFury,0,While the Drillmaster is alive the regiment has the fury draw event
-Spires,Force Grown Drones,Catabolic Node,25,[],0,Bio bomb that inflicts 2D6 hits on an enemy regiment in contact with it during its first clash action.  It inflicts the highest D6 value to its own unit in hits. 
-Spires,Force Grown Drones,Pheromonic Node (Standard + Leader),25,[],0,Counts as standard and leader
-Spires,Vanguard Clones,Ward Preceptor,45,IsBastion,0,Grants the Bastion Draw Event
-Spires,Vanguard Clones,Assault Preceptor,25,IsFury,0,Grants the Fury Draw Event
-Dweghom,Hold Ballistae,Herald of Fire,20,IsFury,1,Grants the Fury Draw Event.  Additionaly grants +1 Clash to character fighting in a duel
-Dweghom,Hold Ballistae,Herald of Magma,20,IsAuraDeath,1,Grants the Aura of Death rule.  Additionally grants +1 Attack to character fighting in a duel
-Dweghom,Hold Ballistae,Herald of Stone,20,IsBastion,1,Grants the Bastion Draw Event.  Additionally grants +1 Defense to character fighting in a duel
-Dweghom,Hold Ballistae,Priest,10,[],0,Grants the fearless special rule
-Dweghom,Hold Warriors,Herald of Fire,50,IsFury,1,Grants the Fury Draw Event.  Additionaly grants +1 Clash to character fighting in a duel
-Dweghom,Hold Warriors,Herald of Magma,50,IsAuraDeath,1,Grants the Aura of Death rule.  Additionally grants +1 Attack to character fighting in a duel
-Dweghom,Hold Warriors,Herald of Stone,50,IsBastion,1,Grants the Bastion Draw Event.  Additionally grants +1 Defense to character fighting in a duel
-Dweghom,Hold Warriors,Priest,20,[],0,Grants the fearless special rule
-Dweghom,Hold Thanes,Herald of Fire,50,IsFury,1,Grants the Fury Draw Event.  Additionaly grants +1 Clash to character fighting in a duel
-Dweghom,Hold Thanes,Herald of Magma,50,IsAuraDeath,1,Grants the Aura of Death rule.  Additionally grants +1 Attack to character fighting in a duel
-Dweghom,Hold Thanes,Herald of Stone,50,IsBastion,1,Grants the Bastion Draw Event.  Additionally grants +1 Defense to character fighting in a duel
-Dweghom,Hold Thanes,Priest,20,[],0,Grants the fearless special rule
-Nords,Raiders,Shield Biter,35,[],0,Grants +2 to charge rolls.  Additionally character in regiment gains +1 attack while fighting in a duel
-Nords,Raiders,Captain,15,[],0,When rolling reinforcements choose to treat captains regiment as one class heavier.  Character in the regiment has +1 clash while fighting a duel
+Faction,Unit,Upgrade,Grouping,Points,Tag,ArmyLimit,Notes
+100k,Militia,Servite,1,30,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
+100k,Militia,Neophyte,1,25,[],0,Whilte the Neophyte is alive the Regiment has the Devout special rule
+100k,Militia,Errant of the Order of the Shield,1,20,AlwaysInspire,0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
+100k,Militia Bowmen,Servite,1,15,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
+100k,Militia Bowmen,Neophyte,1,15,IsDevout,0,While the Neophyte is alive the Regiment has the Devout special rule
+100k,Militia Bowmen,Errant of the Order of the Shield,1,10,[],0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
+100k,Men-At-Arms,Seasoned Veteran,1,30,IsBastion,0,While the Veteran is alive the Regiment has the Bastion draw event
+100k,Men-At-Arms,Neophyte,1,30,[],0,While the Neophyte is alive the Regiment has the Devout special rule
+100k,Household Knights,Tourney Champion,1,40,[],0,While the Tourney Champion is alive the Regiment adds 2 to its charge distance
+100k,Steel Legion,Drillmaster,0,35,IsFury,0,While the Drillmaster is alive the regiment has the fury draw event
+Spires,Force Grown Drones,Catabolic Node,0,25,[],0,Bio bomb that inflicts 2D6 hits on an enemy regiment in contact with it during its first clash action.  It inflicts the highest D6 value to its own unit in hits. 
+Spires,Force Grown Drones,Pheromonic Node (Standard + Leader),0,25,[],0,Counts as standard and leader
+Spires,Vanguard Clones,Ward Preceptor,0,45,IsBastion,0,Grants the Bastion Draw Event
+Spires,Vanguard Clones,Assault Preceptor,0,25,IsFury,0,Grants the Fury Draw Event
+Dweghom,Hold Ballistae,Herald of Fire,1,20,IsFury,1,Grants the Fury Draw Event.  Additionaly grants +1 Clash to character fighting in a duel
+Dweghom,Hold Ballistae,Herald of Magma,1,20,IsAuraDeath,1,Grants the Aura of Death rule.  Additionally grants +1 Attack to character fighting in a duel
+Dweghom,Hold Ballistae,Herald of Stone,1,20,IsBastion,1,Grants the Bastion Draw Event.  Additionally grants +1 Defense to character fighting in a duel
+Dweghom,Hold Ballistae,Priest,1,10,[],0,Grants the fearless special rule
+Dweghom,Hold Warriors,Herald of Fire,1,50,IsFury,1,Grants the Fury Draw Event.  Additionaly grants +1 Clash to character fighting in a duel
+Dweghom,Hold Warriors,Herald of Magma,1,50,IsAuraDeath,1,Grants the Aura of Death rule.  Additionally grants +1 Attack to character fighting in a duel
+Dweghom,Hold Warriors,Herald of Stone,1,50,IsBastion,1,Grants the Bastion Draw Event.  Additionally grants +1 Defense to character fighting in a duel
+Dweghom,Hold Warriors,Priest,1,20,[],0,Grants the fearless special rule
+Dweghom,Hold Warriors,Exemplar,0,25,R,0,Grants +1 Resolve to regiment and any character in regiment is +1 Defence in a duel
+Dweghom,Hold Thanes,Herald of Fire,1,50,IsFury,1,Grants the Fury Draw Event.  Additionaly grants +1 Clash to character fighting in a duel
+Dweghom,Hold Thanes,Herald of Magma,1,50,IsAuraDeath,1,Grants the Aura of Death rule.  Additionally grants +1 Attack to character fighting in a duel
+Dweghom,Hold Thanes,Herald of Stone,1,50,IsBastion,1,Grants the Bastion Draw Event.  Additionally grants +1 Defense to character fighting in a duel
+Dweghom,Hold Thanes,Priest,1,20,[],0,Grants the fearless special rule
+Nords,Raiders,Shield Biter,0,35,[],0,Grants +2 to charge rolls.  Additionally character in regiment gains +1 attack while fighting in a duel
+Nords,Raiders,Captain,0,15,[],0,When rolling reinforcements choose to treat captains regiment as one class heavier.  Character in the regiment has +1 clash while fighting a duel

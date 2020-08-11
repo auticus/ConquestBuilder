@@ -17,8 +17,8 @@ namespace ConquestController.Analysis.Components
         /// <param name="standCount">How many stands are we calculating defense for here</param>
         /// <param name="noShields">If shields are being bypassed in this analysis</param>
         /// <returns>an array of doubles in the format of [raw, resolve] where the mean of the two is the total</returns>
-        public static double[] CalculateOutput(UnitInputModel model, List<int> defenseModificationValues, 
-            int standCount, bool noShields = false)
+        public static double[] CalculateOutput<T>(T model, List<int> defenseModificationValues, 
+            int standCount, bool noShields = false) where T: ConquestInput<T>
         {
             var returnOutput = new[] {0.0d, 0.0d};
             var defense = model.Defense;
@@ -48,6 +48,10 @@ namespace ConquestController.Analysis.Components
 
                     var output = mainQ.Dequeue();
                     var analysisDefense = Math.Clamp(defense - defenseMod, 0, 6);
+
+                    //evasion score is not modified by anything so use it if the modified defense is now lower
+                    if (analysisDefense < model.Evasion) analysisDefense = model.Evasion;
+
                     var defenseProbability = Probabilities[analysisDefense] + 1.0d; //so a [2] is 0.33 and probability would then be 1.33
                     
                     //defense score means that the def probability (how many hits it takes on average to drop one model) is multiplied by

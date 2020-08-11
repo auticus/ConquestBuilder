@@ -7,13 +7,56 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\ConquestCharacterOptions.csv" />
     <None Remove="Data\ConquestCharactersInput.csv" />
     <None Remove="Data\ConquestSpells.csv" />
     <None Remove="Data\ConquestUnitInput.csv" />
     <None Remove="Data\ConquestUnitOptions.csv" />
+    <None Remove="Images\Abomination.PNG" />
+    <None Remove="Images\ArdentKerawegh.PNG" />
+    <None Remove="Images\Biomancer.PNG" />
+    <None Remove="Images\Blooded.PNG" />
+    <None Remove="Images\BruteDrones.PNG" />
+    <None Remove="Images\Cardback.jpg" />
+    <None Remove="Images\ChapterMage.PNG" />
+    <None Remove="Images\Crossbow.PNG" />
+    <None Remove="Images\DragonSlayers.PNG" />
+    <None Remove="Images\FlameBerzerkers.PNG" />
+    <None Remove="Images\ForceGrownDrones.PNG" />
+    <None Remove="Images\HHKnights.PNG" />
+    <None Remove="Images\HighCloneExecutor.PNG" />
+    <None Remove="Images\HoldBallistae.PNG" />
+    <None Remove="Images\HoldRaegh.PNG" />
+    <None Remove="Images\HoldThanes.PNG" />
+    <None Remove="Images\HoldWarriors.PNG" />
+    <None Remove="Images\ImperialOfficer.PNG" />
+    <None Remove="Images\InfernoAutomata.PNG" />
+    <None Remove="Images\Jarl.PNG" />
+    <None Remove="Images\MarksmanClones.PNG" />
+    <None Remove="Images\MenAtArms.PNG" />
+    <None Remove="Images\Militia.PNG" />
+    <None Remove="Images\MilitiaBowmen.PNG" />
+    <None Remove="Images\MimeticAssassin.PNG" />
+    <None Remove="Images\MountainJotnar.PNG" />
+    <None Remove="Images\NobleLordCav.PNG" />
+    <None Remove="Images\NobleLordInfantry.PNG" />
+    <None Remove="Images\Pheromancer.PNG" />
+    <None Remove="Images\Raiders.PNG" />
+    <None Remove="Images\Shaman.PNG" />
+    <None Remove="Images\Stalkers.PNG" />
+    <None Remove="Images\SteelLegion.PNG" />
+    <None Remove="Images\TemperedSorcerer.PNG" />
+    <None Remove="Images\TemperedSteelshaper.PNG" />
+    <None Remove="Images\TheistPriest.PNG" />
+    <None Remove="Images\Ugr.PNG" />
+    <None Remove="Images\VanguardCloneInfiltrators.PNG" />
+    <None Remove="Images\VanguardClones.PNG" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Data\ConquestCharacterOptions.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\ConquestCharactersInput.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -24,6 +67,126 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\ConquestUnitOptions.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\Abomination.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\ArdentKerawegh.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Biomancer.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Blooded.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\BruteDrones.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Cardback.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\ChapterMage.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Crossbow.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DragonSlayers.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\FlameBerzerkers.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\ForceGrownDrones.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HHKnights.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HighCloneExecutor.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HoldBallistae.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HoldRaegh.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HoldThanes.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HoldWarriors.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\ImperialOfficer.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\InfernoAutomata.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Jarl.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MarksmanClones.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenAtArms.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Militia.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MilitiaBowmen.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MimeticAssassin.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MountainJotnar.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\NobleLordCav.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\NobleLordInfantry.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Pheromancer.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Raiders.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Shaman.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Stalkers.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\SteelLegion.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\TemperedSorcerer.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\TemperedSteelshaper.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\TheistPriest.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Ugr.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\VanguardCloneInfiltrators.PNG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\VanguardClones.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

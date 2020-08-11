@@ -12,5 +12,22 @@
 
         public double DeviationEfficiency { get; set; }
         public double DeviationEfficiencyPercent { get; set; }
+
+        public AnalysisOutput Copy()
+        {
+            var output = new AnalysisOutput()
+            {
+                DeviationScore = this.DeviationScore,
+                DeviationScorePercent = this.DeviationScorePercent,
+                DeviationOffenseEfficiency = this.DeviationOffenseEfficiency,
+                DeviationOffenseEfficiencyPercent = this.DeviationOffenseEfficiencyPercent,
+                DeviationDefenseEfficiency = this.DeviationDefenseEfficiency,
+                DeviationDefenseEfficiencyPercent = this.DeviationDefenseEfficiencyPercent,
+                DeviationEfficiency = this.DeviationEfficiency,
+                DeviationEfficiencyPercent = this.DeviationEfficiencyPercent
+            };
+
+            return output;
+        }
     }
 }

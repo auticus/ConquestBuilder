@@ -1,24 +1,24 @@
-Faction,Unit,Weight,Models,Move,Volley,Clash,Attacks,Wounds,Resolve,Defense,Evasion,Barrage,Range,ArmorPiercing,Cleave,IsImpact,BrutalImpact,Points,AdditionalPoints,IsReleased,LeaderPoints,StandardPoints,IsShields,IsFury,IsFlurry,IsFluid,IsFly,IsDeadlyShot,IsDeadlyBlades,IsAuraDeath,IsSupport,IsBastion,IsTerrifying,IsArcOfFire,ResistDecay,Intangibles
-100k,Mercenary Crossbow,Light,12,5,2,1,1,1,2,1,0,1,20,1,0,0,0,105,35,1,10,10,0,0,0,0,0,0,0,0,0,0,0,0,0,
-100k,Militia,Light,12,5,1,1,1,1,2,1,0,0,0,0,0,0,0,90,30,1,10,15,1,0,0,0,0,0,0,0,0,0,0,0,0,
-100k,Militia Bowmen,Light,12,5,1,1,1,1,2,1,0,1,24,0,0,0,0,75,25,1,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,
-100k,Men-At-Arms,Medium,12,5,1,2,1,1,2,2,0,0,0,0,0,0,0,105,35,1,10,20,1,0,0,0,0,0,0,0,0,0,0,0,0,
-100k,Household Knights,Medium,3,8,1,2,4,4,3,3,0,0,0,0,0,1,2,165,55,1,15,20,1,0,0,0,0,0,0,0,0,0,0,0,0,
-100k,Steel Legion,Heavy,12,5,1,3,1,1,3,3,0,0,0,0,2,0,0,150,50,1,10,25,0,0,0,0,0,0,0,0,0,0,0,0,0,
-Spires,Force Grown Drones,Light,12,5,1,1,1,1,1,1,0,0,0,0,0,0,0,80,25,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,Catabolic Node
-Spires,Marksman Clones,Medium,12,5,2,1,1,1,2,1,0,2,28,0,0,0,0,165,55,1,5,5,0,0,0,0,0,0,0,0,0,0,0,1,0,
-Spires,Brute Drones,Medium,3,6,1,2,5,4,4,3,0,0,0,0,0,1,0,180,60,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,Unstoppable
-Spires,Abomination,Heavy,1,10,1,2,10,10,4,3,0,0,0,0,1,1,0,145,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,
-Spires,Vanguard Clone Infiltrators,Light,12,6,2,2,2,1,3,1,2,2,18,0,0,0,0,195,65,1,10,0,0,0,0,1,0,0,0,0,0,0,0,0,0,Vanguard; Snap Fire
-Spires,Vanguard Clones,Medium,12,6,2,2,2,1,3,2,2,0,0,0,0,0,0,165,55,1,15,10,1,0,0,0,0,0,0,0,0,0,0,0,0,
-Spires,Avatara,Medium,3,7,2,2,4,4,4,4,2,0,0,0,1,1,0,165,55,1,20,20,0,0,0,0,0,0,0,0,1,0,0,0,1,
-Dweghom,Flame Berserkers,Light,12,5,1,3,1,1,5,3,0,0,0,0,0,0,0,170,55,1,25,25,0,0,1,0,0,0,0,1,0,0,0,0,0,
-Dweghom,Hold Ballistae,Light,12,5,2,1,1,1,2,2,0,1,24,1,0,0,0,150,50,1,15,15,0,0,0,0,0,0,0,0,0,0,0,0,0,
-Dweghom,Hold Warriors,Medium,12,5,1,2,1,1,2,2,0,0,0,0,0,0,0,120,40,1,10,25,1,0,0,0,0,0,0,0,0,0,0,0,0,
-Dweghom,Inferno Automata,Light,3,8,2,3,4,4,3,3,1,0,0,0,0,0,0,200,65,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,Fearsome
-Dweghom,Hold Thanes,Heavy,12,5,1,3,1,1,3,3,0,0,0,0,1,0,0,180,60,1,20,20,1,0,0,0,0,0,0,0,0,0,0,0,0,
-Dweghom,Dragonslayers,Heavy,12,5,1,4,1,1,4,4,2,0,0,0,4,0,0,230,75,1,20,25,0,0,0,0,0,0,0,0,0,0,0,0,0,
-Nords,Raiders,Light,12,5,1,2,1,1,2,1,0,1,12,0,0,0,0,135,45,1,10,15,0,0,0,0,0,0,0,0,0,0,0,0,0,
-Nords,Stalkers,Light,12,6,3,2,1,1,3,1,0,1,18,0,0,0,0,180,60,1,10,10,0,0,0,0,0,0,0,0,0,0,0,0,0,Flank; Vanguard
-Nords,Mountain Jotnar,Heavy,1,6,1,3,12,12,3,1,0,0,0,0,1,1,0,155,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,
-Nords,Ugr,Medium,3,6,1,3,4,4,2,2,0,0,0,0,2,1,0,150,50,1,15,25,0,0,0,0,0,0,0,0,0,0,0,0,0,Fearless
+Faction,Unit,Image,Weight,Models,Move,Volley,Clash,Attacks,Wounds,Resolve,Defense,Evasion,Barrage,Range,ArmorPiercing,Cleave,IsImpact,BrutalImpact,Points,AdditionalPoints,IsReleased,LeaderPoints,StandardPoints,IsShields,IsFury,IsFlurry,IsFluid,IsFly,IsDeadlyShot,IsDeadlyBlades,IsAuraDeath,IsSupport,IsBastion,IsTerrifying,IsArcOfFire,ResistDecay,Intangibles,AnalysisOnly
+100k,Mercenary Crossbow,Crossbow.PNG,Light,12,5,2,1,1,1,2,1,0,1,20,1,0,0,0,105,35,1,10,10,0,0,0,0,0,0,0,0,0,0,0,0,0,,0
+100k,Militia,Militia.PNG,Light,12,5,1,1,1,1,2,1,0,0,0,0,0,0,0,90,30,1,10,15,1,0,0,0,0,0,0,0,0,0,0,0,0,,0
+100k,Militia Bowmen,MilitiaBowmen.PNG,Light,12,5,1,1,1,1,2,1,0,1,24,0,0,0,0,75,25,1,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,,0
+100k,Men-At-Arms,MenAtArms.PNG,Medium,12,5,1,2,1,1,2,2,0,0,0,0,0,0,0,105,35,1,10,20,1,0,0,0,0,0,0,0,0,0,0,0,0,,0
+100k,Household Knights,HHKnights.PNG,Medium,3,8,1,2,4,4,3,3,0,0,0,0,0,1,2,165,55,1,15,20,1,0,0,0,0,0,0,0,0,0,0,0,0,,0
+100k,Steel Legion,SteelLegion.PNG,Heavy,12,5,1,3,1,1,3,3,0,0,0,0,2,0,0,150,50,1,10,25,0,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Spires,Force Grown Drones,ForceGrownDrones.PNG,Light,12,5,1,1,1,1,1,1,0,0,0,0,0,0,0,80,25,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,Catabolic Node,0
+Spires,Marksman Clones,MarksmanClones.PNG,Medium,12,5,2,1,1,1,2,1,0,2,28,0,0,0,0,165,55,1,5,5,0,0,0,0,0,0,0,0,0,0,0,1,0,,0
+Spires,Brute Drones,BruteDrones.PNG,Medium,3,6,1,2,5,4,4,3,0,0,0,0,0,1,0,180,60,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,Unstoppable,0
+Spires,Abomination,Abomination.PNG,Heavy,1,10,1,2,10,10,4,3,0,0,0,0,1,1,0,145,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,,0
+Spires,Vanguard Clone Infiltrators,VanguardCloneInfiltrators.PNG,Light,12,6,2,2,2,1,3,1,2,2,18,0,0,0,0,195,65,1,10,0,0,0,0,1,0,0,0,0,0,0,0,0,0,Vanguard; Snap Fire,0
+Spires,Vanguard Clones,VanguardClones.PNG,Medium,12,6,2,2,2,1,3,2,2,0,0,0,0,0,0,165,55,1,15,10,1,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Spires,Avatara,[],Medium,3,7,2,2,4,4,4,4,2,0,0,0,1,1,0,165,55,1,20,20,0,0,0,0,0,0,0,0,1,0,0,0,1,,0
+Dweghom,Flame Berserkers,FlameBerzerkers.PNG,Light,12,5,1,3,1,1,5,3,0,0,0,0,0,0,0,170,55,1,25,25,0,0,1,0,0,0,0,1,0,0,0,0,0,,0
+Dweghom,Hold Ballistae,HoldBallistae.PNG,Light,12,5,2,1,1,1,2,2,0,1,24,1,0,0,0,150,50,1,15,15,0,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Dweghom,Hold Warriors,HoldWarriors.PNG,Medium,12,5,1,2,1,1,2,2,0,0,0,0,0,0,0,120,40,1,10,25,1,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Dweghom,Inferno Automata,InfernoAutomata.PNG,Light,3,8,2,3,4,4,3,3,1,0,0,0,0,0,0,200,65,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,Fearsome,0
+Dweghom,Hold Thanes,HoldThanes.PNG,Heavy,12,5,1,3,1,1,3,3,0,0,0,0,1,0,0,180,60,1,20,20,1,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Dweghom,Dragonslayers,DragonSlayers.PNG,Heavy,12,5,1,4,1,1,4,4,2,0,0,0,4,0,0,230,75,1,20,25,0,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Nords,Raiders,Raiders.PNG,Light,12,5,1,2,1,1,2,1,0,1,12,0,0,0,0,135,45,1,10,15,0,0,0,0,0,0,0,0,0,0,0,0,0,,0
+Nords,Stalkers,Stalkers.PNG,Light,12,6,3,2,1,1,3,1,0,1,18,0,0,0,0,180,60,1,10,10,0,0,0,0,0,0,0,0,0,0,0,0,0,Flank; Vanguard,0
+Nords,Mountain Jotnar,MountainJotnar.PNG,Heavy,1,6,1,3,12,12,3,1,0,0,0,0,1,1,0,155,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,,0
+Nords,Ugr,Ugr.PNG,Medium,3,6,1,3,4,4,2,2,0,0,0,0,2,1,0,150,50,1,15,25,0,0,0,0,0,0,0,0,0,0,0,0,0,Fearless,0

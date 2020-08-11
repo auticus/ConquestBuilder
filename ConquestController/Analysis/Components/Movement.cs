@@ -7,7 +7,7 @@ namespace ConquestController.Analysis.Components
 {
     public class Movement : BaseComponent
     {
-        public static double CalculateOutput(UnitInputModel model)
+        public static double CalculateOutput<T>(T model) where T: ConquestInput<T>
         {
             var movementScore = (double)model.Move;
             if (model.IsFluid == 1 && model.IsFly == 0) movementScore *= IsFluidWeight;

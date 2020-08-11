@@ -46,7 +46,7 @@ namespace ConquestController.Data
         /// <param name="filePath">The file path of the options file</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"/>
-        public static void AssignUnitOptionsToModelsFromFile(List<IConquestRegimentInput> models, string filePath)
+        public static void AssignUnitOptionsToModelsFromFile(List<IConquestOptionInput> models, string filePath)
         {
             using var rdr = new StreamReader(filePath);
 

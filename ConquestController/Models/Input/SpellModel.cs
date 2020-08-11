@@ -14,5 +14,10 @@
         public string EffectCausedPer { get; set; }
         public int SelfOnly { get; set; }
         public string Effect { get; set; }
+
+        public override string ToString()
+        {
+            return Spell;
+        }
     }
 }

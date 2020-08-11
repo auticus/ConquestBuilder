@@ -17,8 +17,8 @@ namespace ConquestController.Analysis.Components
         /// <param name="supportOnly"></param>
         /// <param name="applyFullyDeadly">Set to true if you know deadly blades is being applied fully, otherwise it will be halved</param>
         /// <returns></returns>
-        public static double[] CalculateOutput(UnitInputModel model, List<int> defenseValues, List<int> resolveValues, bool supportOnly = false,
-                bool applyFullyDeadly = false)
+        public static double[] CalculateOutput<T>(T model, List<int> defenseValues, List<int> resolveValues, bool supportOnly = false,
+                bool applyFullyDeadly = false) where T: ConquestInput<T>
         {
             return CalculateFullAttacksOutput(model, defenseValues, resolveValues, supportOnly, applyFullyDeadly);
         }
@@ -53,8 +53,8 @@ namespace ConquestController.Analysis.Components
         /// <param name="resolveValues"></param>
         /// <param name="supportOnly"></param>
         /// <returns></returns>
-        private static double[] CalculateFullAttacksOutput(UnitInputModel model, IEnumerable<int> defenseValues, List<int> resolveValues, 
-            bool supportOnly = false, bool applyFullyDeadly = false)
+        private static double[] CalculateFullAttacksOutput<T>(T model, IEnumerable<int> defenseValues, List<int> resolveValues, 
+            bool supportOnly = false, bool applyFullyDeadly = false) where T : ConquestInput<T>
         {
             if (!defenseValues.Any()) return new[] {0.0d, 0.0d};
 
@@ -111,10 +111,10 @@ namespace ConquestController.Analysis.Components
                                         : new[] {totalOutput / totalScores, 0};
         }
 
-        private static double CalculateClashFragment(int defense, UnitInputModel model, double attacks, double hitProbability, 
-            List<int> resolveValues, bool applyFullyDeadly, bool thisIsImpactHits)
+        private static double CalculateClashFragment<T>(int defense, T model, double attacks, double hitProbability, 
+            List<int> resolveValues, bool applyFullyDeadly, bool thisIsImpactHits) where T: ConquestInput<T>
         {
-            var finalD = Math.Clamp(defense - model.Cleave, 0, 6);
+            var finalD = thisIsImpactHits ? Math.Clamp(defense - model.BrutalImpact, 0, 6) : Math.Clamp(defense - model.Cleave, 0, 6);
             var defenseProbability = Probabilities[finalD];
 
             var totalHits = attacks * hitProbability;

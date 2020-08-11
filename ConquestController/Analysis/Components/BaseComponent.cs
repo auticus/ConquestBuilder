@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualBasic;
 
 namespace ConquestController.Analysis.Components
@@ -30,16 +31,8 @@ namespace ConquestController.Analysis.Components
             var total = 0.0d;
             foreach (var resolve in resolveScores)
             {
-                if (isTerrifying)
-                {
-                    var successes = hits * Probabilities[resolve - 1];
-                    total += hits - successes;
-                }
-                else
-                {
-                    var successes = hits * Probabilities[resolve];
-                    total += hits - successes;
-                }
+                var successes = isTerrifying ? hits * Probabilities[Math.Clamp(resolve - 1, 1, 6)] : hits * Probabilities[resolve];
+                total += successes;
             }
 
             return total / resolveScores.Count;
