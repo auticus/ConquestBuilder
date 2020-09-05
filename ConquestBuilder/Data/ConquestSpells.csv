@@ -41,10 +41,10 @@ Nords,Shaman,Mist Weave,25,12,3,1,[],0,[],0,Target regiment +1 Defense against a
 Nords,Shaman,Reshape Destiny,20,8,3,1,[],0,[],0,Target regiment rerolls failed Defense rolls of a 6"
 Dweghom,Fire,Coruscation,15,16,3,0,[],1,Success,0,[]
 Dweghom,Fire,Fireball,25,12,3,0,Cleave1,1,Success,0,[]
-Dweghom,Earth,Roots of Stone,35,12,3,0,D|D,0,[],0,"Target receives +2 Defense but cannot march, reform, or withdraw until after its next activation"
+Dweghom,Earth,Roots of Stone,35,12,3,0,D|D,0,[],0,Target receives +2 Defense but cannot march reform or withdraw until after its next activation
 Dweghom,Earth,Broken Ground,40,10,3,0,[],0,[],0,Target cannot perform impact hits on its next charge
 Dweghom,Earth,Rock Shaping,30,12,3,0,[],0,[],0,Target garrison terrain lowers defense value by 1
-Dweghom,Magma,Eruption,45,18,3,1,Cleave1,1,StandsInRange,0,"If one success is rolled, any stand in range takes 1 hit"
+Dweghom,Magma,Eruption,45,18,3,1,Cleave1,1,StandsInRange,0,If one success is rolled any stand in range takes 1 hit
 Dweghom,Magma,Magmatic Seep,60,12,4,0,[],0,[],0,Terrain in range becomes hindering
 Dweghom,Magma,Pyroclast,50,12,3,0,[],0,[],0,Target regiment suffers Decay 3 draw event in its next activation
 Dweghom,Tempered Steelshaper,Hone Blades,30,12,3,1,C,0,[],0,Regiment has clash increased by 1

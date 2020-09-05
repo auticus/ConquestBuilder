@@ -7,6 +7,8 @@ Faction,Unit,Upgrade,Grouping,Points,Tag,ArmyLimit,Notes
 100k,Militia Bowmen,Errant of the Order of the Shield,1,10,[],0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
 100k,Men-At-Arms,Seasoned Veteran,1,30,IsBastion,0,While the Veteran is alive the Regiment has the Bastion draw event
 100k,Men-At-Arms,Neophyte,1,30,[],0,While the Neophyte is alive the Regiment has the Devout special rule
+100k,Household Guard,Armsmaster,1,45,C,0,While armsmaster and noble are alive in the regiment they receive a +1 to Clash
+100k,Gilded Legion,Seasoned Veteran,1,55,IsBastion,0,Whilte the Veteran is alive the Regiment has the Bastion draw event
 100k,Household Knights,Tourney Champion,1,40,[],0,While the Tourney Champion is alive the Regiment adds 2 to its charge distance
 100k,Steel Legion,Drillmaster,0,35,IsFury,0,While the Drillmaster is alive the regiment has the fury draw event
 Spires,Force Grown Drones,Catabolic Node,0,25,[],0,Bio bomb that inflicts 2D6 hits on an enemy regiment in contact with it during its first clash action.  It inflicts the highest D6 value to its own unit in hits. 
@@ -28,3 +30,5 @@ Dweghom,Hold Thanes,Herald of Stone,1,50,IsBastion,1,Grants the Bastion Draw Eve
 Dweghom,Hold Thanes,Priest,1,20,[],0,Grants the fearless special rule
 Nords,Raiders,Shield Biter,0,35,[],0,Grants +2 to charge rolls.  Additionally character in regiment gains +1 attack while fighting in a duel
 Nords,Raiders,Captain,0,15,[],0,When rolling reinforcements choose to treat captains regiment as one class heavier.  Character in the regiment has +1 clash while fighting a duel
+Nords,Huscarls,Thegn,0,20,IsBastion,0,While the Thegn is alive he grants the regiment the Bastion event
+Nords,Huscarls,Skald,0,20,R,0,The regiment receives +1 Resolve

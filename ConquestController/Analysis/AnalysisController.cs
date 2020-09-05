@@ -264,8 +264,12 @@ namespace ConquestController.Analysis
             //the offense is typically going to be much smaller than the defense score, so we need to pump it up to match the scale
             var averageOffense = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.TotalOutput);
             var averageDefense = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.TotalOutput);
-            var averageSpellOutput = data.Where(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0)
+
+            var averageSpellOutput = 1.0d;
+            if (data.Any(p=>p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0))
+                averageSpellOutput = data.Where(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0)
                                             .Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output);
+
             var normalizationVector = averageDefense / averageOffense;
             var spellNormalizationVector = averageDefense / averageSpellOutput; //get the factor to match up with offense
 
