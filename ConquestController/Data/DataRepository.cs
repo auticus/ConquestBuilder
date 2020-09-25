@@ -17,7 +17,7 @@ namespace ConquestController.Data
         /// <param name="filePath"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"/>
-        public static List<T> GetInputFromFileToList<T>(string filePath) where T: new()
+        public static IList<T> GetInputFromFileToList<T>(string filePath) where T: new()
         {
             var models = new List<T>();
 

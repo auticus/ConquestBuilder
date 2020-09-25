@@ -19,18 +19,18 @@ namespace ConquestController.Analysis
         }
 
         /// <summary>
-        /// Given a list of unit models and options, calculate the output scores and return them back
+        /// Given a list of unit models and options, calculate the output scores and return them back against all other models in the game (broad analysis)
         /// </summary>
         /// <param name="models"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public IList<ConquestUnitOutput> AnalyzeAllUnits<T>(List<T> models, List<SpellModel> spells) where T: ConquestInput<T>
+        public IList<ConquestUnitOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells) where T: ConquestInput<T>
         {
             //regiments we base on 3, characters on 1
             var standCount = typeof(T) == typeof(CharacterInputModel) ? 1 : 3;
             var frontageCount = typeof(T) == typeof(CharacterInputModel) ? 1 : 3;
             
-            var rawOutput = InitializeModels(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
+            var rawOutput = InitializeBroadAnalysis(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
                 applyFullyDeadly: false);
 
             NormalizeAndEfficiencyData(ref rawOutput);
@@ -40,144 +40,130 @@ namespace ConquestController.Analysis
             return rawOutput;
         }
 
-        public void AnalyzeArmyLists()
+        /// <summary>
+        /// Given two army lists, calculate output of those selected models vs the other selected models
+        /// </summary>
+        public void SpecificAnalysis()
         {
             //todo: implement
+            //character options - need to be able to include a unit that they are with like officer's have bastion... there is output you gain here if you know his unit
             throw new NotImplementedException("TODO: add functionality to examine two army lists and see how they match up against each other");
         }
 
-        private static IList<ConquestUnitOutput> InitializeModels<T>(IEnumerable<T> models, List<SpellModel> spells, int analysisStandCount, 
+        /// <summary>
+        /// An analysis of a model vs all other models in the game
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="models"></param>
+        /// <param name="spells"></param>
+        /// <param name="analysisStandCount"></param>
+        /// <param name="frontageCount"></param>
+        /// <param name="applyFullyDeadly"></param>
+        /// <returns></returns>
+        private static IList<ConquestUnitOutput> InitializeBroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells, int analysisStandCount, 
             int frontageCount, bool applyFullyDeadly)
             where T: ConquestInput<T>
         {
             var returnList = new List<ConquestUnitOutput>();
-            var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            var allResolve = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            var allClash = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
             foreach (var primeModel in models)
             {
-                var primaryModelInitialized = false;
-                ProcessModelDefaults(primeModel);
+                //analyze the base model
+                var baselineOutput = AnalyzeModel(primeModel, analysisStandCount, frontageCount, applyFullyDeadly);
+                returnList.Add(baselineOutput);
 
-                var optionQueue = new Queue<IConquestInput>();
-                foreach(var opt in primeModel.Options)
-                    optionQueue.Enqueue(opt);
-
-                while (!primaryModelInitialized || optionQueue.Count > 0)
+                //analyze options and add those to the return
+                if (primeModel.Options.Any())
                 {
-                    var model = primeModel;
-                    ApplyOptionResult optionResult = ApplyOptionResult.NotOption;
-                    bool applySpellPermutations = true;
+                    var optionOutputs =
+                        AnalyzeModelOptions(primeModel, analysisStandCount, frontageCount, applyFullyDeadly);
 
-                    //the first time we go through the list we are just returning the raw model by itself
-                    //afterwards we begin to apply options and permutations to the model
-                    if (!primaryModelInitialized)
-                    {
-                        primaryModelInitialized = true;
-                        applySpellPermutations = false;
-                    }
-                    else
-                    {
-                        var option = optionQueue.Dequeue() as UnitOptionModel;
-                        model = model.Copy();
-                        optionResult = ApplyOptionToUnit(model, option);
-                    }
-
-                    var output = new ConquestUnitOutput
-                    {
-                        Faction = model.Faction,
-                        Unit = model.Unit,
-                        StandCount = analysisStandCount,
-                        FrontageCount = frontageCount,
-                        PointsAdditional = model.AdditionalPoints,
-                        Weight = model.Weight,
-                        Points = model.Points,
-                        IsReleased = model.IsReleased
-                    };
-
-                    switch (optionResult)
-                    {
-                        case ApplyOptionResult.ImpactfulOption:
-                            output.HasOptionAdded = true;
-                            break;
-                        case ApplyOptionResult.NonImpactfulOption:
-                            output.HasNoImpactOptionAdded = true;
-                            break;
-                    }
-
-                    CalculateOffense(output, model, allDefenses, allResolve, applyFullyDeadly);
-
-                    if (typeof(T) == typeof(UnitInputModel)) //characterInputModel we don't calculate defense for
-                    {
-                        CalculateDefense(output, model, allCleave);
-                    }
-
-                    //apply misc modifiers to the scores
-                    var normalizeMove = Movement.CalculateOutput(model);
-                    output.ApplyMovementScoresToAllStands(model.Move, normalizeMove);
-
-                    if (typeof(T) == typeof(CharacterInputModel) && applySpellPermutations)
-                    {
-                        //copy output of non magic output, since that still needs returned
-                        //this will loop all of the magic output that matters into separate output objects of their own
-
-                        //if they have magic, calculate the magical output here
-                        var spellOutputs = CalculateSpellOutput(output, model as CharacterInputModel, allClash, allDefenses,
-                            allResolve, spells);
-
-                        if (spellOutputs != null)
-                            returnList.AddRange(spellOutputs);
-                    }
-
-                    returnList.Add(output);
+                    returnList.AddRange(optionOutputs);
                 }
+
+                //spells
             }
 
             return returnList;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="baseOutput"></param>
-        /// <param name="model">This method currently only works with CharacterInputModel as that is all that has spells</param>
-        /// <param name="allClash"></param>
-        /// <param name="allDefenses"></param>
-        /// <param name="allResolve"></param>
-        /// <param name="spells"></param>
-        /// <returns></returns>
-        private static IList<ConquestUnitOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterInputModel model, List<int> allClash,
-            List<int> allDefenses, List<int> allResolve, IReadOnlyCollection<SpellModel> spells)
+        private static ConquestUnitOutput AnalyzeModel<T>(T model, int analysisStandCount, int frontageCount, bool applyFullyDeadly, UnitOptionModel option = null)
+            where T : ConquestInput<T>
         {
-            //loop through all spells that this model can have applied to it
-            if (!model.Schools.Any()) return null;
+            ProcessModelDefaults(model);
+            var optionResult = ApplyOptionResult.NotOption;
 
-            var output = new List<ConquestUnitOutput>();
-
-            foreach (var school in model.Schools)
+            if (option != null)
             {
-                foreach (var spell in spells.Where(p => p.School == school))
-                {
-                    var spellOutput = Magic.CalculateOutput(model, spell, allClash, allDefenses, allResolve);
-
-                    if (spellOutput > 0)
-                    {
-                        var unitOutput = baseOutput.Copy();
-                        unitOutput.Unit += $" ({spell.Spell})";
-                        unitOutput.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output = spellOutput;
-
-                        output.Add(unitOutput);
-                    }
-                }
+                optionResult = ApplyOptionToUnit(model, option);
             }
+
+            var output = new ConquestUnitOutput
+            {
+                Faction = model.Faction,
+                Unit = model.Unit,
+                StandCount = analysisStandCount,
+                FrontageCount = frontageCount,
+                PointsAdditional = model.AdditionalPoints,
+                Weight = model.Weight,
+                Points = model.Points,
+                IsReleased = model.IsReleased
+            };
+
+            switch (optionResult)
+            {
+                case ApplyOptionResult.ImpactfulOption:
+                    output.HasOptionAdded = true;
+                    break;
+                case ApplyOptionResult.NonImpactfulOption:
+                    output.HasNoImpactOptionAdded = true;
+                    break;
+            }
+
+            CalculateOffense(output, model, applyFullyDeadly);
+
+            if (model.CanCalculateDefense()) //characterInputModel we don't calculate defense for
+            {
+                CalculateDefense(output, model);
+            }
+
+            //apply misc modifiers to the scores
+            var normalizeMove = Movement.CalculateOutput(model);
+            output.ApplyMovementScoresToAllStands(model.Move, normalizeMove);
 
             return output;
         }
 
-        private static void CalculateOffense<T>(ConquestUnitOutput output, T model, List<int> allDefenses, 
-            List<int> allResolve, bool applyFullyDeadly) where T: ConquestInput<T>
+        private static List<ConquestUnitOutput> AnalyzeModelOptions<T>(T model, int analysisStandCount,
+            int frontageCount,
+            bool applyFullyDeadly) where T : ConquestInput<T>
         {
+            var returnList = new List<ConquestUnitOutput>();
+
+            if (!model.Options.Any()) return returnList;
+
+            //options (assumption can only take one)
+            var optionQueue = new Queue<IConquestInput>();
+            foreach (var opt in model.Options)
+                optionQueue.Enqueue(opt);
+
+            while (optionQueue.Count > 0)
+            {
+                var option = optionQueue.Dequeue() as UnitOptionModel;
+                var optionModel = model.Copy();
+                var output = AnalyzeModel<T>(optionModel, analysisStandCount, frontageCount, applyFullyDeadly, option);
+
+                returnList.Add(output);
+            }
+
+            return returnList;
+        }
+
+        private static void CalculateOffense<T>(ConquestUnitOutput output, T model, 
+            bool applyFullyDeadly) where T: ConquestInput<T>
+        {
+            var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            var allResolve = new List<int>() { 1, 2, 3, 4, 5, 6 };
+
             output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput =
                         RangedOffense.CalculateOutput(model, allDefenses, supportOnly: false, applyFullyDeadly);
 
@@ -225,8 +211,10 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static void CalculateDefense<T>(ConquestUnitOutput output, T model, List<int> allCleave) where T: ConquestInput<T>
+        private static void CalculateDefense<T>(ConquestUnitOutput output, T model) where T: ConquestInput<T>
         {
+            var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
+
             //calculate defense scores - this should only be for regiments (and thus hard-coding the stand-counts to 3, etc is what we expect)
             var defenseOutputs = Defense.CalculateOutput(model, allCleave, standCount: 3);
             output.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.RawOutput = defenseOutputs[0];

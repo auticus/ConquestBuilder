@@ -27,6 +27,9 @@ namespace ConquestController.Models.Input
             Schools = new List<string>();
         }
 
+        public override bool CanCalculateDefense() => false;
+        public override bool CanCastSpells() => true;  //characters have the ability to cast spells if they have the rules for it
+
         public override string ToString()
         {
             return Unit;

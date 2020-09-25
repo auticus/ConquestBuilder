@@ -7,6 +7,9 @@
             
         }
 
+        public override bool CanCalculateDefense() => true;
+        public override bool CanCastSpells() => false;
+
         public override string ToString()
         {
             return Unit;

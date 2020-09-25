@@ -20,6 +20,7 @@ namespace ConquestBuilder.ViewModels
         private string _unitInputFile;
         private string _unitOptionsFile;
         private string _characterInputFile;
+        private string _characterOptionFile;
         private string _spellFile;
         private string _analysisFile;
         private string _characterAnalysisFile;
@@ -43,6 +44,7 @@ namespace ConquestBuilder.ViewModels
             _unitInputFile = ConfigurationManager.AppSettings["UnitInputFile"];
             _unitOptionsFile = ConfigurationManager.AppSettings["UnitOptionFile"];
             _characterInputFile = ConfigurationManager.AppSettings["CharacterInputFile"];
+            _characterOptionFile = ConfigurationManager.AppSettings["CharacterOptionFile"];
             _spellFile = ConfigurationManager.AppSettings["SpellFile"];
             _analysisFile = ConfigurationManager.AppSettings["AnalysisFile"];
             _characterAnalysisFile = ConfigurationManager.AppSettings["CharacterAnalysisFile"];
@@ -56,28 +58,18 @@ namespace ConquestBuilder.ViewModels
                 var units = DataRepository.GetInputFromFileToList<UnitInputModel>(_appPath + "\\" + _unitInputFile);
                 DataRepository.AssignUnitOptionsToModelsFromFile(units.Cast<IConquestOptionInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
 
-                //assign characters
-                var characters = DataRepository.GetInputFromFileToList<CharacterInputModel>(_appPath + "\\" + _characterInputFile);
-
-                //assign mainstay and restricted choices
-                foreach (var character in characters)
-                {
-                    DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices, character.Mainstay);
-                    DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices, character.Restricted);
-                    DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
-                }
-
-                //assign character options
-                DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestOptionInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
-
-                //populate spell schools
-                var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile);
+                var characterInputFilePath = _appPath + "\\" + _characterInputFile;
+                var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
+                var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile) as List<SpellModel>;
+                var characters = Character.GetAllCharacters(characterInputFilePath,
+                                                                              characterOptionFilePath,
+                                                                                            spells);
 
                 var analysis = new AnalysisController();
-                var unitOutput = analysis.AnalyzeAllUnits(units, spells);
+                var unitOutput = analysis.BroadAnalysis(units, spells);
                 AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, unitOutput);
 
-                var characterOutput = analysis.AnalyzeAllUnits(characters, spells);
+                var characterOutput = analysis.BroadAnalysis(characters, spells);
                 AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, characterOutput);
             }
             catch(Exception ex)

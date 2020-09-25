@@ -6,6 +6,8 @@ namespace ConquestController.Models.Input
 {
     public interface IConquestOptionInput : IConquestInput
     {
-        public List<IConquestInput> Options { get; }
+        List<IConquestInput> Options { get; }
+        bool CanCalculateDefense();
+        bool CanCastSpells();
     }
 }

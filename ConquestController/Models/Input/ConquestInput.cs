@@ -69,6 +69,8 @@ namespace ConquestController.Models.Input
 
         public List<IConquestInput> Options { get; }
 
+        public abstract bool CanCalculateDefense();
+        public abstract bool CanCastSpells();
         public abstract T Copy();
     }
 }
