@@ -41,7 +41,7 @@ namespace ConquestController.Analysis
                     if (spellOutput > 0)
                     {
                         var unitOutput = baseOutput.Copy();
-                        unitOutput.Unit += $" ({spell.Spell})";
+                        unitOutput.Unit += $" ({spell.Name})";
                         unitOutput.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output = spellOutput;
 
                         output.Add(unitOutput);
@@ -58,25 +58,29 @@ namespace ConquestController.Analysis
             var characters = DataRepository.GetInputFromFileToList<CharacterInputModel>(inputFilePath);
 
             //assign mainstay and restricted choices
-            AssignMainstayRestrictedUnits(characters);
+            AssignCharacterExtras(characters, spells, inputOptionsFilePath);
 
-            //assign character options
-            DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestOptionInput>().ToList(), inputOptionsFilePath);
-
-            //todo: assign spells now to the options as well
-            //spell school was passed, need to pass those spells in and add it to a new collection in the model that holds all of the available spells
-            //spells have the point cost so just add them to the character where the school matches up
-
-            //todo: will need to figure out how to deal with masteries that let you take more than one spell school
             return characters;
         }
-        private static void AssignMainstayRestrictedUnits(IEnumerable<CharacterInputModel> characters)
+        private static void AssignCharacterExtras(IEnumerable<CharacterInputModel> characters, IEnumerable<SpellModel> spells, string inputOptionsFilePath)
         {
+            var spellModels = spells.ToList();
+
             foreach (var character in characters)
             {
+                //assign restricted and mainstay choices
                 DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices, character.Mainstay);
                 DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices, character.Restricted);
+
+                //assign character options
+                DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestOptionInput>().ToList(), inputOptionsFilePath);
+                
+                //assign spell schools and individual spells to the character
                 DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
+                foreach (var school in character.Schools)
+                {
+                    character.Spells.AddRange(spellModels.Where(p => p.School == school));
+                }
             }
         }
     }

@@ -53,3 +53,13 @@ Dweghom,Tempered Steelshaper,Unmake Armor,35,12,3,1,D-,0,[],0,Regiment has Defen
 Nords,Shaman,Blurred Vision,30,14,3,0,[],0,[],0,Target regiment can only select targets to volley or charge within 12 inches
 Nords,Shaman,Mist Weave,25,12,3,1,D_Volley,0,[],0,Target regiment +1 Defense against volley actions until end of turn
 Nords,Shaman,Reshape Destiny,20,8,3,1,Reroll6_Defense,0,[],0,Target regiment rerolls failed Defense rolls of 6
+Nords,Volva,Aspect of Fenrir,25,0,2,1,Terrify,0,[],0,All stands in the caster regiment gain Terrifying special rule until end of turn
+Nords,Volva,Fruit of the Golden Tree,40,0,3,0,Healing2,0,Success,0,For each success the casters regiment heals two wounds
+Nords,Volva,Glory of Valhalla,30,0,3,0,R,0,[],0,"All friendly regiments within 12"" of the caster gain +1 Resolve"
+Nords,Volva,Helas Caress,40,12,3,1,Decay3,0,[],0,Target regiment gains Decay 3 Draw Event until end of turn
+Nords,Volva,Warbringers Light,30,0,3,1,IsBlessed,0,[],0,Stands in caster regiment have the Blessed special rule until end of turn
+Nords,White Waste Shaman,Dominate,30,12,3,0,[],0,[],0,Target monster regiment may only take one action this turn
+Nords,White Waste Shaman,Enrage,40,12,4,0,A|A|A|A|A|A,0,[],0,Target monster regiment gains six extra attacks
+Nords,Ice Jotnar,Ice Armour,20,0,3,0,D,0,[],1,Caster gains +1 Defense until end of turn
+Nords,Ice Jotnar,Rime Storm,10,12,3,0,[],2,Success,0,Inflicts two hits per success
+Nords,Ice Jotnar,Encase,10,12,3,1,[],0,[],0,Target regiment halves its March until end of turn

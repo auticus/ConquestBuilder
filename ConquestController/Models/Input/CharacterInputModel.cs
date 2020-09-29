@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ConquestController.Models.Input
 {
-    public class CharacterInputModel : ConquestInput<CharacterInputModel>
+    public class CharacterInputModel : ConquestInput<CharacterInputModel>, IConquestSpellcaster
     {
         public int IsQuickSilverStrike { get; set; }
         public int ItemCount { get; set; }
@@ -13,12 +14,13 @@ namespace ConquestController.Models.Input
         public int NoWarlord { get; set; }
         public string Supremacy { get; set; }
         public string SupremacyNotes { get; set; }
-        public string SpellSchools { get; set; } //mapped to Schools
+        public string SpellSchools { get; set; } //mapped to Schools, comes from input
         public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1
 
         public List<string> MainstayChoices { get; set; }
         public List<string> RestrictedChoices { get; set; }
         public List<string> Schools { get; set; }
+        public List<SpellModel> Spells { get; set; }
 
         public CharacterInputModel()
         {
@@ -72,12 +74,27 @@ namespace ConquestController.Models.Input
                 IsAuraDeath = IsAuraDeath,
                 IsSupport = IsSupport,
                 IsBastion = IsBastion,
+                IsBlessed = IsBlessed,
                 IsTerrifying = IsTerrifying,
                 IsArcOfFire = IsArcOfFire,
                 IsFearless = IsFearless,
                 ResistDecay = ResistDecay,
                 AlwaysInspire = AlwaysInspire,
-                Image = Image
+                Image = Image,
+                SpellSchools = SpellSchools,
+                Schools = Schools,
+                BuffDefenseOrEvasion = BuffDefenseOrEvasion,
+                Healing = Healing,
+                NoObscure = NoObscure,
+                Reroll6_Defense = Reroll6_Defense,
+                Reroll6_Volley = Reroll6_Volley,
+                MeleeHeal4 = MeleeHeal4,
+                DoubleAttack = DoubleAttack,
+                OneHitPerFile = OneHitPerFile,
+                D_Volley = D_Volley,
+                Decay1 = Decay1,
+                Decay2 = Decay2,
+                Decay3 = Decay3
             };
 
             foreach (var option in Options)

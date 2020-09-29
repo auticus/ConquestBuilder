@@ -52,13 +52,26 @@
                 IsAuraDeath = IsAuraDeath,
                 IsSupport = IsSupport,
                 IsBastion = IsBastion,
+                IsBlessed = IsBlessed,
                 IsTerrifying = IsTerrifying,
                 IsArcOfFire = IsArcOfFire,
                 IsFearless = IsFearless,
                 ResistDecay = ResistDecay,
                 AlwaysInspire = AlwaysInspire,
                 AnalysisOnly = AnalysisOnly,
-                Image = Image
+                Image = Image,
+                BuffDefenseOrEvasion = BuffDefenseOrEvasion,
+                Healing = Healing,
+                NoObscure = NoObscure,
+                Reroll6_Defense = Reroll6_Defense,
+                Reroll6_Volley = Reroll6_Volley,
+                MeleeHeal4 = MeleeHeal4,
+                DoubleAttack = DoubleAttack,
+                OneHitPerFile = OneHitPerFile,
+                D_Volley = D_Volley,
+                Decay1 = Decay1,
+                Decay2 = Decay2,
+                Decay3 = Decay3
             };
 
             foreach (var option in Options)

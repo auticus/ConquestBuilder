@@ -56,17 +56,57 @@ namespace ConquestController.Models.Input
         public int IsTerrifying { get; set; }
         public int IsArcOfFire { get; set; }
         public int IsFearless { get; set; }
+        public int IsBlessed { get; set; } //if true, re-roll half offense misses and re-roll half defense fails. If IsFlurry, the offense part is useless
 
         public int ResistDecay { get; set; }
 
         public int AlwaysInspire { get; set; }
         public string Image { get; set; }
 
+        //**Rules that get boosted by options but not on input file **//
+        public bool BuffDefenseOrEvasion { get; set; } //if true then will boost defense if cleave isn't that big a deal otherwise boosts evasion
+        public bool Decay1 { get; set; } //apply decay damage in the defense calculation to lower defense output
+        public bool Decay2 { get; set; }
+        public bool Decay3 { get; set; }
+        public bool D_Volley { get; set; } //gain +1D vs volley - situational - take the +1 D score and compare it to the normal D score
+        public bool DoubleAttack { get; set; } //target regiment can make two attacks of the same type (so double volley or double clash)
+        public int Healing { get; set; } //if a number exists, can heal fully that number of wounds every turn
+        public bool MeleeHeal4 { get; set; } //every impact or clash wound it does it gains a wound back on a 4+
+        public bool NoObscure { get; set; } //if true do not calculate obscure penalty in ranged offense calculation
+        public bool OneHitPerFile { get; set; } // will do an extra hit per file (so for analysis purposes, +3, for detailed analysis it will need to observe the files)
+        public bool Reroll6_Volley { get; set; } //reroll 6s on volley
+        public bool Reroll6_Defense { get; set; } //reroll 6s on defense
+
+        /*
+ * Added "IsBlessed"
+if true - on offense re-roll misses (in this case make it half)
+---> if on offense with IsFlurry = true - does nothing
+if true - on defense re-roll failed defensense rolls (in this case again make it half)
+
+Added BuffDefenseOnEvasion (+1D or +1E - have to figure out when to use either)
+
+Added "HealingX" - heals X wounds per turn (added to defense score)
+
+++"noobscure" - do not penalize for obscure
+++reroll6_volley
+++reroll6_defense
+++meleeheal4
+++doubleattack
+++onehitperfile
+++d_volley
+++decay1
+++decay2
+++decay3
+*/
+
         /// <summary>
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes
         /// </summary>
         public int AnalysisOnly { get; set; }
 
+        /// <summary>
+        /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
+        /// </summary>
         public List<IConquestInput> Options { get; }
 
         public abstract bool CanCalculateDefense();

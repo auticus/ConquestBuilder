@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using ConquestController.Analysis.Components;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
@@ -11,12 +10,6 @@ namespace ConquestController.Analysis
     public class AnalysisController
     {
         private const double TOLERANCE = 0.0001;
-        private enum ApplyOptionResult
-        {
-            NotOption = 0,
-            ImpactfulOption,
-            NonImpactfulOption
-        }
 
         /// <summary>
         /// Given a list of unit models and options, calculate the output scores and return them back against all other models in the game (broad analysis)
@@ -45,7 +38,7 @@ namespace ConquestController.Analysis
         /// </summary>
         public void SpecificAnalysis()
         {
-            //todo: implement
+            //todo: implement specific army lists with chosen options
             //character options - need to be able to include a unit that they are with like officer's have bastion... there is output you gain here if you know his unit
             throw new NotImplementedException("TODO: add functionality to examine two army lists and see how they match up against each other");
         }
@@ -68,94 +61,227 @@ namespace ConquestController.Analysis
             foreach (var primeModel in models)
             {
                 //analyze the base model
-                var baselineOutput = AnalyzeModel(primeModel, analysisStandCount, frontageCount, applyFullyDeadly);
-                returnList.Add(baselineOutput);
+                var input = new AnalysisInput<T>()
+                {
+                    Model = primeModel,
+                    AnalysisStandCount = analysisStandCount,
+                    ApplyFullyDeadly = applyFullyDeadly,
+                    FrontageCount = frontageCount
+                };
+                var baselineOutput = AnalyzeModel(input);
+                baselineOutput.IsBaselineOutput = true;
 
-                //analyze options and add those to the return
+                returnList.Add(baselineOutput);
+                input.BaselineOutput = baselineOutput;
+
+                //analyze options and add those to the baseline object as comparisons
                 if (primeModel.Options.Any())
                 {
-                    var optionOutputs =
-                        AnalyzeModelOptions(primeModel, analysisStandCount, frontageCount, applyFullyDeadly);
-
-                    returnList.AddRange(optionOutputs);
+                    AnalyzeModelExtras<T, UnitOptionModel>(input);
                 }
 
-                //spells
+                //analyze spells
+                if (primeModel.CanCastSpells())
+                {
+                    AnalyzeModelExtras<T, SpellModel>(input);
+                }
             }
 
             return returnList;
         }
 
-        private static ConquestUnitOutput AnalyzeModel<T>(T model, int analysisStandCount, int frontageCount, bool applyFullyDeadly, UnitOptionModel option = null)
+        private static ConquestUnitOutput AnalyzeModel<T>(AnalysisInput<T> input)
             where T : ConquestInput<T>
         {
-            ProcessModelDefaults(model);
-            var optionResult = ApplyOptionResult.NotOption;
-
-            if (option != null)
-            {
-                optionResult = ApplyOptionToUnit(model, option);
-            }
-
+            ProcessModelDefaults(input.Model);
             var output = new ConquestUnitOutput
             {
-                Faction = model.Faction,
-                Unit = model.Unit,
-                StandCount = analysisStandCount,
-                FrontageCount = frontageCount,
-                PointsAdditional = model.AdditionalPoints,
-                Weight = model.Weight,
-                Points = model.Points,
-                IsReleased = model.IsReleased
+                Faction = input.Model.Faction,
+                Unit = input.Model.Unit,
+                StandCount = input.AnalysisStandCount,
+                FrontageCount = input.FrontageCount,
+                PointsAdditional = input.Model.AdditionalPoints,
+                Weight = input.Model.Weight,
+                Points = input.Model.Points,
+                IsReleased = input.Model.IsReleased
             };
 
-            switch (optionResult)
-            {
-                case ApplyOptionResult.ImpactfulOption:
-                    output.HasOptionAdded = true;
-                    break;
-                case ApplyOptionResult.NonImpactfulOption:
-                    output.HasNoImpactOptionAdded = true;
-                    break;
-            }
+            //the optionals like options, spells, etc methods will all bounce out immediately if the model passed in has none so freely just call the chain
+            //process options
+            Option.ProcessOption(input, output);
+            ProcessSpell(input, output);
 
-            CalculateOffense(output, model, applyFullyDeadly);
+            //begin calculations - this is the meat of this method
+            CalculateOffense(output, input.Model, input.ApplyFullyDeadly);
 
-            if (model.CanCalculateDefense()) //characterInputModel we don't calculate defense for
+            if (input.Model.CanCalculateDefense()) //characterInputModel we don't calculate defense for
             {
-                CalculateDefense(output, model);
+                CalculateDefense(output, input.Model);
             }
 
             //apply misc modifiers to the scores
-            var normalizeMove = Movement.CalculateOutput(model);
-            output.ApplyMovementScoresToAllStands(model.Move, normalizeMove);
-
+            var normalizeMove = Movement.CalculateOutput(input.Model);
+            output.ApplyMovementScoresToAllStands(input.Model.Move, normalizeMove);
+            output.CreateOutputData();
             return output;
         }
 
-        private static List<ConquestUnitOutput> AnalyzeModelOptions<T>(T model, int analysisStandCount,
-            int frontageCount,
-            bool applyFullyDeadly) where T : ConquestInput<T>
+        /// <summary>
+        /// Will take the mainOutput object passed and pack output modifications to it that can be analyzed
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TExtra">The extra we are processing (option, spell, etc)</typeparam>
+        private static void AnalyzeModelExtras<T, TExtra>(AnalysisInput<T> input) where T : ConquestInput<T>
         {
-            var returnList = new List<ConquestUnitOutput>();
-
-            if (!model.Options.Any()) return returnList;
+            if (!ExtraProcessingRequired<T, TExtra>(input)) return;
 
             //options (assumption can only take one)
-            var optionQueue = new Queue<IConquestInput>();
-            foreach (var opt in model.Options)
-                optionQueue.Enqueue(opt);
+            var optionQueue = new Queue<object>(); //IConquestInput or SpellModel
+            ExtraBuildQueue<T, TExtra>(input, optionQueue);
 
             while (optionQueue.Count > 0)
             {
-                var option = optionQueue.Dequeue() as UnitOptionModel;
-                var optionModel = model.Copy();
-                var output = AnalyzeModel<T>(optionModel, analysisStandCount, frontageCount, applyFullyDeadly, option);
+                var option = optionQueue.Dequeue();
+                var aInput = BuildInput(input, option);
+                var output = AnalyzeModel<T>(aInput);
 
-                returnList.Add(output);
+                //compare output with mainOutput.  The output that comes out of this will simply be a value that adds or subtracts from the output value
+                var comparison = CreateComparisonOutput(input.BaselineOutput, output);
+                input.BaselineOutput.UpgradeOutputModifications.Add(comparison);
+            }
+        }
+
+        /// <summary>
+        /// Based on the extra type will determine if the appropriate property or collection is populated or not
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TExtra"></typeparam>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private static bool ExtraProcessingRequired<T, TExtra>(AnalysisInput<T> input) where T : ConquestInput<T>
+        {
+            if (typeof(TExtra) == typeof(UnitOptionModel))
+            {
+                if (input.Model.Options.Any()) return true;
             }
 
-            return returnList;
+            if (typeof(TExtra) == typeof(SpellModel))
+            {
+                if (!(input.Model is IConquestSpellcaster spellcaster)) return false;
+                if (spellcaster.Spells.Any()) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Based on the extra passed in will populate the generic object queue passed in with the appropriate model to cycle through
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TExtra"></typeparam>
+        /// <param name="input"></param>
+        /// <param name="q"></param>
+        private static void ExtraBuildQueue<T, TExtra>(AnalysisInput<T> input, Queue<object> q) where T : ConquestInput<T>
+        {
+            if (typeof(TExtra) == typeof(UnitOptionModel))
+            {
+                //compiler warning:  UnitOptionModel is a type of IConquestInput and if typeof TExtra is this it will always be ok
+                foreach (var opt in input.Model.Options)
+                {
+                    q.Enqueue(opt);
+                }
+
+                return;
+            }
+
+            if (typeof(TExtra) == typeof(SpellModel))
+            {
+                if (!(input.Model is IConquestSpellcaster spellcaster)) return;
+
+                foreach (var spell in spellcaster.Spells)
+                {
+                    q.Enqueue(spell);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Will examine the extra parameter and based off of its type will return the proper AnalysisInput object or throw an InvalidOperationException
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input"></param>
+        /// <param name="extra"></param>
+        /// <returns></returns>
+        private static AnalysisInput<T> BuildInput<T>(AnalysisInput<T> input, object extra) where T: ConquestInput<T>
+        {
+            if (extra.GetType() == typeof(UnitOptionModel))
+                return BuildOptionInput(input, extra);
+            if (extra.GetType() == typeof(SpellModel))
+                return BuildSpellInput(input, extra);
+
+            throw new InvalidOperationException("BuildInput was passed an object that is not recognized");
+        }
+
+        private static AnalysisInput<T> BuildOptionInput<T>(AnalysisInput<T> input, object extra) where T : ConquestInput<T>
+        {
+            var optionModel = input.Model.Copy();
+            if (!(extra is UnitOptionModel option)) throw new InvalidOperationException("Object sent to BuildOptionInput is not an option model");
+
+            var aInput = new AnalysisInput<T>()
+            {
+                Model = optionModel,
+                AnalysisStandCount = input.AnalysisStandCount,
+                ApplyFullyDeadly = input.ApplyFullyDeadly,
+                FrontageCount = input.FrontageCount,
+                Option = option
+            };
+
+            return aInput;
+        }
+
+        private static AnalysisInput<T> BuildSpellInput<T>(AnalysisInput<T> input, object extra)
+            where T : ConquestInput<T>
+        {
+            var optionModel = input.Model.Copy();
+            if (!(extra is SpellModel option))
+                throw new InvalidOperationException("Object sent to BuildSpellInput is not a spell model");
+
+            var aInput = new AnalysisInput<T>()
+            {
+                Model = optionModel,
+                AnalysisStandCount = input.AnalysisStandCount,
+                ApplyFullyDeadly = input.ApplyFullyDeadly,
+                FrontageCount = input.FrontageCount,
+                Spell = option
+            };
+
+            return aInput;
+        }
+
+        private static ConquestUnitOutput CreateComparisonOutput(ConquestUnitOutput baseline, ConquestUnitOutput compare)
+        {
+            var output = baseline.Copy();
+            output.IsBaselineOutput = false;
+            
+            var o = output.Stands[ConquestUnitOutput.FULL_OUTPUT];
+            var b = baseline.Stands[ConquestUnitOutput.FULL_OUTPUT];
+            var c = compare.Stands[ConquestUnitOutput.FULL_OUTPUT];
+
+            var overrideData = new AnalysisFileOutput
+            {
+                ClashOffense = c.Offense.NormalizedClashOutput - b.Offense.NormalizedClashOutput,
+                RangedOffense = c.Offense.NormalizedRangedOutput - b.Offense.NormalizedRangedOutput,
+                NormalizedOffense = c.Offense.NormalizedTotalOutput - b.Offense.NormalizedTotalOutput,
+                TotalDefense = c.Defense.TotalOutput - b.Defense.TotalOutput,
+                OutputScore = c.OutputScore - b.OutputScore,
+                OffenseEfficiency = c.Offense.Efficiency - b.Offense.Efficiency,
+                DefenseEfficiency = c.Defense.Efficiency - b.Defense.Efficiency,
+                Efficiency = c.Efficiency - b.Efficiency
+            };
+
+            output.OverrideOutputScores(overrideData);
+
+            return output;
         }
 
         private static void CalculateOffense<T>(ConquestUnitOutput output, T model, 
@@ -408,70 +534,6 @@ namespace ConquestController.Analysis
                 dataPoint.Summary.MeanDefenseEfficiency = avgDefenseEfficiency;
                 dataPoint.Summary.MeanEfficiency = avgEfficiency;
             }
-        }
-
-        /// <summary>
-        /// Will attempt to apply the given option to the model.  However, if the option does not impact the output score, will return false
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="option"></param>
-        /// <returns>TRUE if option affects output, FALSE otherwise</returns>
-        private static ApplyOptionResult ApplyOptionToUnit<T>(T model, UnitOptionModel option) where T : ConquestInput<T>
-        {
-            model.Unit += $" ({option.Upgrade})";
-            model.Points += option.Points;
-
-            //whether the rule is useful or not depends on the tag
-            var isUseful = false;
-            var tags = new List<string>(option.Tag.Split('|'));
-            foreach (var tag in tags)
-            {
-                switch (tag.ToLower())
-                {
-                    case "m":
-                        model.Move++;
-                        isUseful = true;
-                        break;
-                    case "v":
-                        model.Volley++;
-                        isUseful = true;
-                        break;
-                    case "c":
-                        model.Clash++;
-                        isUseful = true;
-                        break;
-                    case "r":
-                        model.Resolve++;
-                        isUseful = true;
-                        break;
-                    case "d":
-                        model.Defense++;
-                        isUseful = true;
-                        break;
-                    case "e":
-                        model.Evasion++;
-                        isUseful = true;
-                        break;
-                    case "alwaysinspire":
-                        model.AlwaysInspire = 1;
-                        isUseful = true;
-                        break;
-                    case "isbastion":
-                        model.IsBastion = 1;
-                        isUseful = true;
-                        break;
-                    case "isfury":
-                        model.IsFury = 1;
-                        isUseful = true;
-                        break;
-                    case "isauradeath":
-                        model.IsAuraDeath = 1;
-                        isUseful = true;
-                        break;
-                }
-            }
-
-            return isUseful ? ApplyOptionResult.ImpactfulOption : ApplyOptionResult.NonImpactfulOption;
         }
 
         private static void ProcessModelDefaults<T>(T model) where T: ConquestInput<T>

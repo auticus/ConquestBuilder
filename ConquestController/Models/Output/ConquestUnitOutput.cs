@@ -1,4 +1,7 @@
-﻿namespace ConquestController.Models.Output
+﻿using System.Collections.Generic;
+using System.Dynamic;
+
+namespace ConquestController.Models.Output
 {
     public class ConquestUnitOutput
     {
@@ -46,7 +49,19 @@
         /// </summary>
         public bool HasNoImpactOptionAdded { get; set; }
 
+        /// <summary>
+        /// Has the model been released yet or is it still proxy
+        /// </summary>
         public int IsReleased { get; set; }
+
+        /// <summary>
+        /// Baseline output is the model or character without any options or spells etc on it - the baseline
+        /// </summary>
+        public bool IsBaselineOutput { get; set; }
+
+        public List<ConquestUnitOutput> UpgradeOutputModifications { get; set; }
+
+        private AnalysisFileOutput AnalysisOutputData { get; }
 
         public Stand[] Stands { get; private set; }
         public AnalysisOutput Analysis { get; private set; }
@@ -63,6 +78,8 @@
 
             Analysis = new AnalysisOutput();
             Summary = new AnalysisSummary();
+            AnalysisOutputData = new AnalysisFileOutput();
+            UpgradeOutputModifications = new List<ConquestUnitOutput>();
 
             Stands = new[] { standFull, standExtra1, standExtra2, standExtra3, standSupport1, standSupport2, standSupport3 };
         }
@@ -81,15 +98,45 @@
             }
         }
 
-        public string FullStandToCommaFormat()
+        /// <summary>
+        /// Publishes the calculated scores to an internal data cache that is used to publish out to file format later
+        /// </summary>
+        public void CreateOutputData()
+        {
+            var full = Stands[FULL_OUTPUT];
+            AnalysisOutputData.ClashOffense = full.Offense.NormalizedClashOutput;
+            AnalysisOutputData.RangedOffense = full.Offense.NormalizedRangedOutput;
+            AnalysisOutputData.NormalizedOffense = full.Offense.NormalizedTotalOutput;
+            AnalysisOutputData.TotalDefense = full.Defense.TotalOutput;
+            AnalysisOutputData.OutputScore = full.OutputScore;
+            AnalysisOutputData.OffenseEfficiency = full.Offense.Efficiency;
+            AnalysisOutputData.DefenseEfficiency = full.Defense.Efficiency;
+        }
+
+        /// <summary>
+        /// Used when the published data needs to be altered manually as some scores are calculated fields
+        /// </summary>
+        public void OverrideOutputScores(AnalysisFileOutput data)
+        {
+            AnalysisOutputData.ClashOffense = data.ClashOffense;
+            AnalysisOutputData.RangedOffense = data.RangedOffense;
+            AnalysisOutputData.NormalizedOffense = data.NormalizedOffense;
+            AnalysisOutputData.TotalDefense = data.TotalDefense;
+            AnalysisOutputData.OutputScore = data.OutputScore;
+            AnalysisOutputData.OffenseEfficiency = data.OffenseEfficiency;
+            AnalysisOutputData.DefenseEfficiency = data.DefenseEfficiency;
+        }
+
+        public string PublishToCommaFormat()
         {
             var full = Stands[FULL_OUTPUT];
 
             return string.Join(",", Faction, Unit, Weight, Points, PointsAdditional, full.Movement.NormalizedMovement,
-                full.Offense.NormalizedClashOutput, full.Offense.NormalizedRangedOutput,
-                full.Offense.NormalizedTotalOutput,
-                full.Defense.TotalOutput, full.OutputScore, full.Offense.Efficiency, full.Defense.Efficiency,
-                full.Efficiency, HasOptionAdded ? 1 : 0, HasNoImpactOptionAdded ? 1 : 0, IsReleased, full.Offense.NormalizedVector);
+                AnalysisOutputData.ClashOffense, AnalysisOutputData.RangedOffense, AnalysisOutputData.NormalizedOffense,
+                AnalysisOutputData.TotalDefense,
+                AnalysisOutputData.OutputScore, AnalysisOutputData.OffenseEfficiency, AnalysisOutputData.DefenseEfficiency,
+                AnalysisOutputData.Efficiency,
+                HasOptionAdded ? 1 : 0, HasNoImpactOptionAdded ? 1 : 0, IsReleased, IsBaselineOutput ? 1 : 0,  full.Offense.NormalizedVector);
         }
 
         public override string ToString()
@@ -113,6 +160,7 @@
                 Weight = this.Weight,
                 Summary = this.Summary.Copy(),
                 Analysis = this.Analysis.Copy(),
+                IsBaselineOutput = this.IsBaselineOutput,
                 Stands = new[]{
                     Stands[FULL_OUTPUT].Copy(), Stands[FULL_EXTRA_OUTPUT_4_6].Copy(), Stands[FULL_EXTRA_OUTPUT_7_9].Copy(),
                     Stands[FULL_EXTRA_OUTPUT_10].Copy(), Stands[SUPPORT_EXTRA_OUTPUT_4_6].Copy(),
