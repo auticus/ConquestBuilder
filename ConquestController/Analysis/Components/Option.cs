@@ -16,6 +16,13 @@ namespace ConquestController.Analysis.Components
 
     public class Option
     {
+        /// <summary>
+        /// Takes in an option and applys it to the unit passed in.  If the option is null, does nothing and returns
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="option"></param>
         public static void ProcessOption<T>(AnalysisInput<T> input, ConquestUnitOutput output, IOption option) where T : ConquestInput<T>
         {
             //process options
@@ -159,6 +166,10 @@ namespace ConquestController.Analysis.Components
                         model.Healing = 4;
                         result = onlyImpactfulWithUnit;
                         break;
+                    case "healing5":
+                        model.Healing = 5;
+                        result = onlyImpactfulWithUnit;
+                        break;
                     case "noobscure":
                         model.NoObscure = true;
                         result = impactful;
@@ -168,15 +179,41 @@ namespace ConquestController.Analysis.Components
                         result = impactful;
                         break;
                     case "reroll6_volley":
+                        model.Reroll6_Volley = true;
+                        result = impactful;
+                        break;
                     case "reroll6_defense":
+                        model.Reroll6_Defense = true;
+                        result = onlyImpactfulWithUnit;
+                        break;
                     case "meleeheal4":
+                        model.MeleeHeal4 = true;
+                        result = ApplyExtrasResult.NonImpactfulOption;  //intangible for right now
+                        break;
                     case "doubleattack":
+                        model.DoubleAttack = true;
+                        result = impactful;
+                        break;
                     case "onehitperfile":
+                        model.OneHitPerFile = true;
+                        result = impactful;
+                        break;
                     case "d_volley":
+                        model.D_Volley = true;
+                        result = onlyImpactfulWithUnit;
+                        break; 
                     case "decay1":
+                        model.Decay = 1;
+                        result = onlyImpactfulWithUnit;
+                        break;
                     case "decay2":
+                        model.Decay = 2;
+                        result = onlyImpactfulWithUnit;
+                        break;
                     case "decay3":
-
+                        model.Decay = 3;
+                        result = onlyImpactfulWithUnit;
+                        break;
                 }
             }
 

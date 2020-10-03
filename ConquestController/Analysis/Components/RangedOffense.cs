@@ -35,8 +35,34 @@ namespace ConquestController.Analysis.Components
                 var hits = shotsFired * shotsHitProbability;
                 var aimedHits = shotsFired * shotsHitProbabilityAim;
 
-                rangedOutput.ObscureHits = CalculateActualRangedHits((hits / 2.0), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
-                rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits / 2.0), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
+                if (model.Reroll6_Volley)
+                {
+                    var rerollableHits = shotsFired * Probabilities[1]; //1 in 6 of the overall shots fired would be a six and can be rerolled
+
+                    var rerolledHits = rerollableHits * shotsHitProbability;
+                    var rerolledAimedHits = rerollableHits * shotsHitProbabilityAim;
+
+                    hits += rerolledHits;
+                    aimedHits += rerolledAimedHits;
+                }
+
+                if (model.IsBlessed == 1)
+                {
+                    //blessed lets them reroll hits, but also defense, so we halve the output from offense and defense gains to get a mean score overall
+                    var misses = shotsFired - hits;
+                    var aimedMisses = shotsFired - aimedHits;
+
+                    misses /= 2;
+                    aimedMisses /= 2;
+
+                    hits += (misses * shotsHitProbability);
+                    aimedHits += (aimedMisses * shotsHitProbabilityAim);
+                }
+
+                var obscureDivider = model.NoObscure ? 1.0 : 2.0;
+
+                rangedOutput.ObscureHits = CalculateActualRangedHits((hits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
+                rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
 
                 rangedOutput.FullHits = CalculateActualRangedHits(hits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
                 rangedOutput.FullAimedHits = CalculateActualRangedHits(aimedHits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);

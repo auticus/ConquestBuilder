@@ -108,8 +108,9 @@ namespace ConquestController.Analysis
 
             //the optionals like options, spells, etc methods will all bounce out immediately if the model passed in has none so freely just call the chain
             //process options
-            Option.ProcessOption(input, output);
-            ProcessSpell(input, output);
+            Option.ProcessOption(input, output, input.Option);
+            //todo: spells!
+            //ProcessSpell(input, output);
 
             //begin calculations - this is the meat of this method
             CalculateOffense(output, input.Model, input.ApplyFullyDeadly);
@@ -319,6 +320,20 @@ namespace ConquestController.Analysis
                 }
             }
 
+            if (model.DoubleAttack)
+            {
+                //if double attack, the best option would be to double up on whatever is best
+                if (output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput >
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput)
+                {
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput *= 2;
+                }
+                else
+                {
+                    output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.RangedOutput *= 2;
+                }
+            }
+
             //support stand output by stand (typically get one attack per stand, though support rule will give two attacks per stand)
             if (model.AdditionalPoints > 0)
             {
@@ -327,6 +342,18 @@ namespace ConquestController.Analysis
                     applyFullyDeadly);
                 var rangedOutput =
                     RangedOffense.CalculateOutput(model, allDefenses, supportOnly: true, applyFullyDeadly);
+
+                if (model.DoubleAttack)
+                {
+                    if (clashOutputs[0] > rangedOutput)
+                    {
+                        clashOutputs[0] *= 2;
+                    }
+                    else
+                    {
+                        rangedOutput *= 2;
+                    }
+                }
 
                 for (var i = 4; i < 7; i++)
                 {

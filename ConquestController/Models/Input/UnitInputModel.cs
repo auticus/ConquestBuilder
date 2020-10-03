@@ -69,9 +69,7 @@
                 DoubleAttack = DoubleAttack,
                 OneHitPerFile = OneHitPerFile,
                 D_Volley = D_Volley,
-                Decay1 = Decay1,
-                Decay2 = Decay2,
-                Decay3 = Decay3
+                Decay = Decay
             };
 
             foreach (var option in Options)

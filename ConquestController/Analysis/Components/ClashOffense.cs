@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
@@ -118,10 +119,18 @@ namespace ConquestController.Analysis.Components
             var defenseProbability = Probabilities[finalD];
 
             var totalHits = attacks * hitProbability;
-            if (!thisIsImpactHits && model.IsFlurry == 1)
+            if (!thisIsImpactHits && (model.IsFlurry == 1 || model.IsBlessed == 1))
             {
                 var misses = attacks - totalHits;
-                totalHits += (misses * hitProbability);
+
+                if (model.IsFlurry == 1)
+                    totalHits += (misses * hitProbability);
+                else if (model.IsBlessed == 1)
+                {
+                    //blessed lets them also reroll hits like flurry, but also defense, so we halve the output from offense and defense gains to get a mean score overall
+                    misses /= 2;
+                    totalHits += (misses * hitProbability);
+                }
             }
 
             if (model.IsAuraDeath == 1)

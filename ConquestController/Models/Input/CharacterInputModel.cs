@@ -27,6 +27,7 @@ namespace ConquestController.Models.Input
             MainstayChoices = new List<string>();
             RestrictedChoices = new List<string>();
             Schools = new List<string>();
+            Spells = new List<SpellModel>();
         }
 
         public override bool CanCalculateDefense() => false;
@@ -92,9 +93,7 @@ namespace ConquestController.Models.Input
                 DoubleAttack = DoubleAttack,
                 OneHitPerFile = OneHitPerFile,
                 D_Volley = D_Volley,
-                Decay1 = Decay1,
-                Decay2 = Decay2,
-                Decay3 = Decay3
+                Decay = Decay
             };
 
             foreach (var option in Options)

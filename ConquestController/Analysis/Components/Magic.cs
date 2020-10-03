@@ -22,8 +22,6 @@ namespace ConquestController.Analysis.Components
         public static double CalculateOutput<T>(T model, SpellModel spell, List<int> clashValues,
             List<int> defenseValues, List<int> resolveValues) where T : ConquestInput<T>
         {
-            //todo: figure out a good way to incorporate healing
-            //a trash drone being healed is different than a brute drone coming back
             var output = 0.0d;
             var tags = GetTags(spell);
 
@@ -62,9 +60,11 @@ namespace ConquestController.Analysis.Components
             isDeadlyShot = tags.Contains("IsDeadlyShot") ? 1 : 0;
             isDeadlyBlades = tags.Contains("IsDeadlyBlades") ? 1 : 0;
 
+            if (model.OneHitPerFile) //add 3 hits to the attack value (as we're going with vs 3 regiment stands)
 
             //blessed - reroll all failed to hit or all failed defense rolls
             */
+            
             return 0.0;
         }
 

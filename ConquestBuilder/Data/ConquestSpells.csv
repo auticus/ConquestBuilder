@@ -8,7 +8,7 @@ Faction,School,Spell,Points,Range,Difficulty,IsScaling,Tag,HitsCaused,EffectCaus
 100k,Fire,Fire Dart,15,16,3,0,Cleave2,1,Success,0,One hit per success with Cleave 2
 100k,Earth,Earth to Mud,40,16,3,1,[],0,[],0,Impacts targets ability to charge
 100k,Earth,Stone Spikes,20,0,3,1,[],0,[],0,If charged the charging regiment gains Decay 2
-100k,Water,Ninuahs Tears,30,0,3,0,Healing2,0,Success,0,Heals 2 wounds per success
+100k,Water,Ninuahs Tears,30,0,3,0,Healing5,0,Success,0,Heals 2 wounds per success
 100k,Water,Call Fog,20,0,3,1,[],0,[],0,Caster regiment is obscured
 100k,Air,Seeking Winds,20,0,3,1,NoObscure,0,[],0,Casters regiment not impacted by obscuring by range
 100k,Air,Guide,10,0,3,1,Reroll6_Volley,0,[],0,Casters regiment rerolls 6s on volley actions
@@ -54,7 +54,7 @@ Nords,Shaman,Blurred Vision,30,14,3,0,[],0,[],0,Target regiment can only select 
 Nords,Shaman,Mist Weave,25,12,3,1,D_Volley,0,[],0,Target regiment +1 Defense against volley actions until end of turn
 Nords,Shaman,Reshape Destiny,20,8,3,1,Reroll6_Defense,0,[],0,Target regiment rerolls failed Defense rolls of 6
 Nords,Volva,Aspect of Fenrir,25,0,2,1,Terrify,0,[],0,All stands in the caster regiment gain Terrifying special rule until end of turn
-Nords,Volva,Fruit of the Golden Tree,40,0,3,0,Healing2,0,Success,0,For each success the casters regiment heals two wounds
+Nords,Volva,Fruit of the Golden Tree,40,0,3,0,Healing5,0,Success,0,For each success the casters regiment heals two wounds
 Nords,Volva,Glory of Valhalla,30,0,3,0,R,0,[],0,"All friendly regiments within 12"" of the caster gain +1 Resolve"
 Nords,Volva,Helas Caress,40,12,3,1,Decay3,0,[],0,Target regiment gains Decay 3 Draw Event until end of turn
 Nords,Volva,Warbringers Light,30,0,3,1,IsBlessed,0,[],0,Stands in caster regiment have the Blessed special rule until end of turn
