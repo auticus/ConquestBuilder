@@ -62,6 +62,7 @@ namespace ConquestController.Models.Input
 
         public int AlwaysInspire { get; set; }
         public string Image { get; set; }
+        public string Notes { get; set; }
 
         //**Rules that get boosted by options but not on input file **//
         public bool BuffDefenseOrEvasion { get; set; } //if true then will boost defense if cleave isn't that big a deal otherwise boosts evasion
@@ -78,6 +79,7 @@ namespace ConquestController.Models.Input
         public bool OneHitPerFile { get; set; } // will do an extra hit per file (so for analysis purposes, +3, for detailed analysis it will need to observe the files)
         public bool Reroll6_Volley { get; set; } //reroll 6s on volley
         public bool Reroll6_Defense { get; set; } //reroll 6s on defense
+        public bool IsTorrential { get; set; } //gain the Torrential special rule
 
         /// <summary>
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes

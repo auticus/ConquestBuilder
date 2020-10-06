@@ -4,7 +4,7 @@ namespace ConquestController.Models.Input
 {
     public class AnalysisInput<T> where T: ConquestInput<T>
     {
-        public T Model { get; set; }
+        public ConquestInput<T> Model { get; set; }
         public ConquestUnitOutput BaselineOutput { get; set; }
         public UnitOptionModel Option { get; set; }
         public SpellModel Spell { get; set; }

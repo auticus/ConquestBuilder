@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 
 namespace ConquestController.Models.Output
@@ -18,6 +19,7 @@ namespace ConquestController.Models.Output
         public const int SUPPORT_EXTRA_OUTPUT_10 = 6;
         #endregion
 
+        public Guid ID { get; private set; }
         public string Faction { get; set; }
         public string Unit { get; set; }
 
@@ -61,7 +63,7 @@ namespace ConquestController.Models.Output
 
         public List<ConquestUnitOutput> UpgradeOutputModifications { get; set; }
 
-        private AnalysisFileOutput AnalysisOutputData { get; }
+        private AnalysisFileOutput AnalysisOutputData { get; set; }
 
         public Stand[] Stands { get; private set; }
         public AnalysisOutput Analysis { get; private set; }
@@ -78,10 +80,10 @@ namespace ConquestController.Models.Output
 
             Analysis = new AnalysisOutput();
             Summary = new AnalysisSummary();
-            AnalysisOutputData = new AnalysisFileOutput();
             UpgradeOutputModifications = new List<ConquestUnitOutput>();
 
             Stands = new[] { standFull, standExtra1, standExtra2, standExtra3, standSupport1, standSupport2, standSupport3 };
+            ID = Guid.NewGuid();
         }
 
         /// <summary>
@@ -103,6 +105,8 @@ namespace ConquestController.Models.Output
         /// </summary>
         public void CreateOutputData()
         {
+            AnalysisOutputData = new AnalysisFileOutput(); //creating this here intentionally so that if extensions forget to call this method it will fire a null error
+
             var full = Stands[FULL_OUTPUT];
             AnalysisOutputData.ClashOffense = full.Offense.NormalizedClashOutput;
             AnalysisOutputData.RangedOffense = full.Offense.NormalizedRangedOutput;
@@ -111,20 +115,6 @@ namespace ConquestController.Models.Output
             AnalysisOutputData.OutputScore = full.OutputScore;
             AnalysisOutputData.OffenseEfficiency = full.Offense.Efficiency;
             AnalysisOutputData.DefenseEfficiency = full.Defense.Efficiency;
-        }
-
-        /// <summary>
-        /// Used when the published data needs to be altered manually as some scores are calculated fields
-        /// </summary>
-        public void OverrideOutputScores(AnalysisFileOutput data)
-        {
-            AnalysisOutputData.ClashOffense = data.ClashOffense;
-            AnalysisOutputData.RangedOffense = data.RangedOffense;
-            AnalysisOutputData.NormalizedOffense = data.NormalizedOffense;
-            AnalysisOutputData.TotalDefense = data.TotalDefense;
-            AnalysisOutputData.OutputScore = data.OutputScore;
-            AnalysisOutputData.OffenseEfficiency = data.OffenseEfficiency;
-            AnalysisOutputData.DefenseEfficiency = data.DefenseEfficiency;
         }
 
         public string PublishToCommaFormat()
@@ -165,7 +155,8 @@ namespace ConquestController.Models.Output
                     Stands[FULL_OUTPUT].Copy(), Stands[FULL_EXTRA_OUTPUT_4_6].Copy(), Stands[FULL_EXTRA_OUTPUT_7_9].Copy(),
                     Stands[FULL_EXTRA_OUTPUT_10].Copy(), Stands[SUPPORT_EXTRA_OUTPUT_4_6].Copy(),
                     Stands[SUPPORT_EXTRA_OUTPUT_7_9].Copy(), Stands[SUPPORT_EXTRA_OUTPUT_10].Copy()
-                }
+                },
+                ID = this.ID
             };
 
             return output;

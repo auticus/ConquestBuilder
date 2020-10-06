@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ConquestController.Models.Output;
 
 namespace ConquestController.Data
 {
     public class AnalysisFile
     {
-        public static void WriteAnalysis(string filePath, IList<ConquestUnitOutput> data)
+        public static void WriteAnalysis(string filePath, IList<ConquestUnitOutput> data, bool includeUselessOptions)
         {
             using var writer = new StreamWriter(filePath, append: false);
             //header
@@ -18,7 +19,7 @@ namespace ConquestController.Data
             foreach (var dataPoint in data)
             {
                 writer.WriteLine(dataPoint.PublishToCommaFormat());
-                foreach (var subOption in dataPoint.UpgradeOutputModifications)
+                foreach (var subOption in dataPoint.UpgradeOutputModifications.Where(p=>p.HasNoImpactOptionAdded == false))
                 {
                     writer.WriteLine(subOption.PublishToCommaFormat());
                 }

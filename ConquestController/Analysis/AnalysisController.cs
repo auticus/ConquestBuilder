@@ -23,14 +23,16 @@ namespace ConquestController.Analysis
             var standCount = typeof(T) == typeof(CharacterInputModel) ? 1 : 3;
             var frontageCount = typeof(T) == typeof(CharacterInputModel) ? 1 : 3;
             
-            var rawOutput = InitializeBroadAnalysis(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
+            //using keyvalue pair here because we need to be able to see what input model was attached to the baseline output that was generated from it
+            var outputKvp = InitializeBroadAnalysis(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
                 applyFullyDeadly: false);
 
-            NormalizeAndEfficiencyData(ref rawOutput);
-            FinalizeEfficiency(ref rawOutput);
-            FinalizeAnalysis(ref rawOutput);
+            ApplyExtraOptions(outputKvp, analysisStandCount: standCount, frontageCount: frontageCount, applyFullyDeadly: false);
+            NormalizeAndEfficiencyData(outputKvp);
+            FinalizeEfficiency(outputKvp);
+            FinalizeAnalysis(outputKvp);
             
-            return rawOutput;
+            return outputKvp.Keys.ToList();
         }
 
         /// <summary>
@@ -52,12 +54,13 @@ namespace ConquestController.Analysis
         /// <param name="analysisStandCount"></param>
         /// <param name="frontageCount"></param>
         /// <param name="applyFullyDeadly"></param>
-        /// <returns></returns>
-        private static IList<ConquestUnitOutput> InitializeBroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells, int analysisStandCount, 
+        /// <returns>A dictionary containing a key value that is the output matched by the model that it is derived from as the value</returns>
+        private static IDictionary<ConquestUnitOutput, ConquestInput<T>> InitializeBroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells, int analysisStandCount, 
             int frontageCount, bool applyFullyDeadly)
             where T: ConquestInput<T>
         {
-            var returnList = new List<ConquestUnitOutput>();
+            var dictionary = new Dictionary<ConquestUnitOutput, ConquestInput<T>>();
+
             foreach (var primeModel in models)
             {
                 //analyze the base model
@@ -71,23 +74,10 @@ namespace ConquestController.Analysis
                 var baselineOutput = AnalyzeModel(input);
                 baselineOutput.IsBaselineOutput = true;
 
-                returnList.Add(baselineOutput);
-                input.BaselineOutput = baselineOutput;
-
-                //analyze options and add those to the baseline object as comparisons
-                if (primeModel.Options.Any())
-                {
-                    AnalyzeModelExtras<T, UnitOptionModel>(input);
-                }
-
-                //analyze spells
-                if (primeModel.CanCastSpells())
-                {
-                    AnalyzeModelExtras<T, SpellModel>(input);
-                }
+                dictionary.Add(baselineOutput, primeModel);
             }
 
-            return returnList;
+            return dictionary;
         }
 
         private static ConquestUnitOutput AnalyzeModel<T>(AnalysisInput<T> input)
@@ -123,8 +113,39 @@ namespace ConquestController.Analysis
             //apply misc modifiers to the scores
             var normalizeMove = Movement.CalculateOutput(input.Model);
             output.ApplyMovementScoresToAllStands(input.Model.Move, normalizeMove);
-            output.CreateOutputData();
             return output;
+        }
+
+        private static void ApplyExtraOptions<T>(IDictionary<ConquestUnitOutput, ConquestInput<T>> normalizedOutputKvp, int analysisStandCount,
+            int frontageCount, bool applyFullyDeadly) where T: ConquestInput<T>
+        {
+            //T primeModel, AnalysisInput< T > input
+            //input has the BaselineOutput applied to it so make sure you apply that here
+
+            foreach (var output in normalizedOutputKvp)
+            {
+                //analyze the base model
+                var input = new AnalysisInput<T>()
+                {
+                    Model = output.Value,
+                    AnalysisStandCount = analysisStandCount,
+                    ApplyFullyDeadly = applyFullyDeadly,
+                    FrontageCount = frontageCount
+                };
+                input.BaselineOutput = output.Key;
+
+                //analyze options and add those to the baseline object as comparisons
+                if (output.Value.Options.Any())
+                {
+                    AnalyzeModelExtras<T, UnitOptionModel>(input);
+                }
+
+                //analyze spells
+                if (output.Value.CanCastSpells())
+                {
+                    AnalyzeModelExtras<T, SpellModel>(input);
+                }
+            }
         }
 
         /// <summary>
@@ -145,10 +166,7 @@ namespace ConquestController.Analysis
                 var option = optionQueue.Dequeue();
                 var aInput = BuildInput(input, option);
                 var output = AnalyzeModel<T>(aInput);
-
-                //compare output with mainOutput.  The output that comes out of this will simply be a value that adds or subtracts from the output value
-                var comparison = CreateComparisonOutput(input.BaselineOutput, output);
-                input.BaselineOutput.UpgradeOutputModifications.Add(comparison);
+                input.BaselineOutput.UpgradeOutputModifications.Add(output);
             }
         }
 
@@ -223,6 +241,23 @@ namespace ConquestController.Analysis
             throw new InvalidOperationException("BuildInput was passed an object that is not recognized");
         }
 
+        private static string GetOptionName(object option)
+        {
+            if (option.GetType() == typeof(UnitOptionModel))
+            {
+                var opt = option as UnitOptionModel;
+                return opt.Name;
+            }
+
+            if (option.GetType() == typeof(SpellModel))
+            {
+                var opt = option as SpellModel;
+                return opt.Name;
+            }
+
+            throw new InvalidOperationException("GetOptionName was passed an object that is not recognized");
+        }
+
         private static AnalysisInput<T> BuildOptionInput<T>(AnalysisInput<T> input, object extra) where T : ConquestInput<T>
         {
             var optionModel = input.Model.Copy();
@@ -259,34 +294,8 @@ namespace ConquestController.Analysis
             return aInput;
         }
 
-        private static ConquestUnitOutput CreateComparisonOutput(ConquestUnitOutput baseline, ConquestUnitOutput compare)
-        {
-            var output = baseline.Copy();
-            output.IsBaselineOutput = false;
-            
-            var o = output.Stands[ConquestUnitOutput.FULL_OUTPUT];
-            var b = baseline.Stands[ConquestUnitOutput.FULL_OUTPUT];
-            var c = compare.Stands[ConquestUnitOutput.FULL_OUTPUT];
-
-            var overrideData = new AnalysisFileOutput
-            {
-                ClashOffense = c.Offense.NormalizedClashOutput - b.Offense.NormalizedClashOutput,
-                RangedOffense = c.Offense.NormalizedRangedOutput - b.Offense.NormalizedRangedOutput,
-                NormalizedOffense = c.Offense.NormalizedTotalOutput - b.Offense.NormalizedTotalOutput,
-                TotalDefense = c.Defense.TotalOutput - b.Defense.TotalOutput,
-                OutputScore = c.OutputScore - b.OutputScore,
-                OffenseEfficiency = c.Offense.Efficiency - b.Offense.Efficiency,
-                DefenseEfficiency = c.Defense.Efficiency - b.Defense.Efficiency,
-                Efficiency = c.Efficiency - b.Efficiency
-            };
-
-            output.OverrideOutputScores(overrideData);
-
-            return output;
-        }
-
-        private static void CalculateOffense<T>(ConquestUnitOutput output, T model, 
-            bool applyFullyDeadly) where T: ConquestInput<T>
+        private static void CalculateOffense<T>(ConquestUnitOutput output, ConquestInput<T> model, 
+            bool applyFullyDeadly)
         {
             var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
             var allResolve = new List<int>() { 1, 2, 3, 4, 5, 6 };
@@ -301,8 +310,7 @@ namespace ConquestController.Analysis
 
             //*************************calculate its partial stand data*********************************************************//
             //full output by stand (indices 1-3 which represent the full extra output constants
-            if (model.AdditionalPoints > 0
-            ) //if its 0, you can't add models to it so these partial stats don't exist
+            if (model.AdditionalPoints > 0) //if its 0, you can't add models to it so these partial stats don't exist
             {
                 //the output is for the base stand count output (so 3 stands).  so in that case, just divide by that to see what each stand
                 //provides by itself
@@ -364,7 +372,7 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static void CalculateDefense<T>(ConquestUnitOutput output, T model) where T: ConquestInput<T>
+        private static void CalculateDefense<T>(ConquestUnitOutput output, ConquestInput<T> model)
         {
             var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
 
@@ -400,15 +408,17 @@ namespace ConquestController.Analysis
                 defenseOutputs[1];
         }
 
-        private static void NormalizeAndEfficiencyData(ref IList<ConquestUnitOutput> data)
+        private static void NormalizeAndEfficiencyData<T>(IDictionary<ConquestUnitOutput, ConquestInput<T>> data)
         {
+            var aggregateList = GetAllOutputsFromRawOutputs(data);
+
             //the offense is typically going to be much smaller than the defense score, so we need to pump it up to match the scale
-            var averageOffense = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.TotalOutput);
-            var averageDefense = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.TotalOutput);
+            var averageOffense = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.TotalOutput);
+            var averageDefense = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.TotalOutput);
 
             var averageSpellOutput = 1.0d;
-            if (data.Any(p=>p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0))
-                averageSpellOutput = data.Where(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0)
+            if (aggregateList.Any(p=>p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0))
+                averageSpellOutput = aggregateList.Where(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output > 0)
                                             .Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output);
 
             var normalizationVector = averageDefense / averageOffense;
@@ -422,13 +432,44 @@ namespace ConquestController.Analysis
             {
                 for (var i = 0; i < 7; i++)
                 {
-                    dataPoint.Stands[i].Offense.NormalizedVector = normalizationVector;
-                    dataPoint.Stands[i].Magic.NormalizationVector = spellNormalizationVector;
+                    dataPoint.Key.Stands[i].Offense.NormalizedVector = normalizationVector;
+                    dataPoint.Key.Stands[i].Magic.NormalizationVector = spellNormalizationVector;
 
                     if (i == ConquestUnitOutput.FULL_OUTPUT)
-                        CalculateEfficiency(i, dataPoint);
+                    {
+                        CalculateEfficiency(i, dataPoint.Key);
+                    }
+
+                    foreach (var option in dataPoint.Key.UpgradeOutputModifications)
+                    {
+                        option.Stands[i].Offense.NormalizedVector = normalizationVector;
+                        option.Stands[i].Magic.NormalizationVector = spellNormalizationVector;
+
+                        if (i == ConquestUnitOutput.FULL_OUTPUT)
+                        {
+                            CalculateEfficiency(i, option);
+                        }
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Pulls all values and their child outputs into one list for aggregate purposes
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private static IList<ConquestUnitOutput> GetAllOutputsFromRawOutputs<T>(IDictionary<ConquestUnitOutput, ConquestInput<T>> data)
+        {
+            var returnList = new List<ConquestUnitOutput>();
+            foreach (var key in data.Keys)
+            {
+                returnList.Add(key);
+                returnList.AddRange(key.UpgradeOutputModifications);
+            }
+
+            return returnList;
         }
 
         /// <summary>
@@ -455,40 +496,42 @@ namespace ConquestController.Analysis
         /// <summary>
         /// Efficiency is where the lower the score, the better that is.  That is not intuitive and this method will flip those scores
         /// </summary>
-        private static void FinalizeEfficiency(ref IList<ConquestUnitOutput> data)
+        private static void FinalizeEfficiency<T>(IDictionary<ConquestUnitOutput, ConquestInput<T>> data)
         {
+            var aggregateList = GetAllOutputsFromRawOutputs(data);
+
             //intentionally only getting the average output of the full output stand (the primary) and not flipping the sub-stands
-            var averageOutput = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore);
+            var averageOutput = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore);
 
             //adding one to it so that when we flip, the lowest will have a value and not be 0
-            var maxOffenseEfficiency = data.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency) +1;
-            var maxDefenseEfficiency = data.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency) +1;
-            var maxMagicEfficiency = data.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency) + 1;
-            var maxOverallEfficiency = data.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency) + 1;
+            var maxOffenseEfficiency = aggregateList.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency) +1;
+            var maxDefenseEfficiency = aggregateList.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency) +1;
+            var maxMagicEfficiency = aggregateList.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency) + 1;
+            var maxOverallEfficiency = aggregateList.Max(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency) + 1;
 
             //flip scores
             foreach (var dataPoint in data)
             {
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency =
-                    maxOffenseEfficiency - dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency =
+                    maxOffenseEfficiency - dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency;
 
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency =
-                    maxDefenseEfficiency - dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency =
+                    maxDefenseEfficiency - dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency;
 
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency =
-                    maxMagicEfficiency - dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency =
+                    maxMagicEfficiency - dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency;
 
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency =
-                    maxOverallEfficiency - dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency =
+                    maxOverallEfficiency - dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency;
             }
 
             //now normalize the efficiency scores so that the output score and efficiency scores are the same scale.  
             //currently output score should be bigger
 
-            var avgOffenseEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency);
-            var avgDefenseEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency);
-            var avgMagicEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency);
-            var avgEfficiency = data.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency);
+            var avgOffenseEfficiency = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency);
+            var avgDefenseEfficiency = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency);
+            var avgMagicEfficiency = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency);
+            var avgEfficiency = aggregateList.Average(p => p.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency);
 
             var normalizationOffenseVector = averageOutput / avgOffenseEfficiency;
             var normalizationDefenseVector = averageOutput / avgDefenseEfficiency;
@@ -497,10 +540,10 @@ namespace ConquestController.Analysis
 
             foreach (var dataPoint in data)
             {
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency *= normalizationOffenseVector;
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency *= normalizationDefenseVector;
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency *= normalizationMagicVector;
-                dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency *= normalizationVector;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency *= normalizationOffenseVector;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency *= normalizationDefenseVector;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Efficiency *= normalizationMagicVector;
+                dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency *= normalizationVector;
             }
         }
 
@@ -518,11 +561,14 @@ namespace ConquestController.Analysis
             };
         }
 
-        private static void FinalizeAnalysis(ref IList<ConquestUnitOutput> data)
+        private static void FinalizeAnalysis<T>(IDictionary<ConquestUnitOutput, ConquestInput<T>> data)
         {
             //todo: flaw here - using average defense efficiency but character defense score is not calculated
             //todo: magic score not caculated as part of this analysis
-            var avgScores = GetAverageScores(data);
+
+            var aggregateList = GetAllOutputsFromRawOutputs(data);
+
+            var avgScores = GetAverageScores(aggregateList);
             var avgOutput = avgScores[0];
             var avgOffenseEfficiency = avgScores[1];
             var avgDefenseEfficiency = avgScores[2];
@@ -530,40 +576,47 @@ namespace ConquestController.Analysis
 
             foreach (var dataPoint in data)
             {
-                dataPoint.Analysis.DeviationScore =
-                    dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore - avgOutput;
+                dataPoint.Key.Analysis.DeviationScore =
+                    dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore - avgOutput;
 
-                dataPoint.Analysis.DeviationScorePercent =
-                    (dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore - avgOutput) / avgOutput * 100;
+                dataPoint.Key.Analysis.DeviationScorePercent =
+                    (dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore - avgOutput) / avgOutput * 100;
 
-                dataPoint.Analysis.DeviationOffenseEfficiency =
-                    dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency - avgOffenseEfficiency;
+                dataPoint.Key.Analysis.DeviationOffenseEfficiency =
+                    dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency - avgOffenseEfficiency;
 
-                dataPoint.Analysis.DeviationOffenseEfficiencyPercent =
-                    (dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency - avgOffenseEfficiency) /
+                dataPoint.Key.Analysis.DeviationOffenseEfficiencyPercent =
+                    (dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency - avgOffenseEfficiency) /
                     avgOffenseEfficiency * 100;
 
-                dataPoint.Analysis.DeviationDefenseEfficiency =
-                    dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency - avgDefenseEfficiency;
+                dataPoint.Key.Analysis.DeviationDefenseEfficiency =
+                    dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency - avgDefenseEfficiency;
 
-                dataPoint.Analysis.DeviationDefenseEfficiencyPercent =
-                    (dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency - avgDefenseEfficiency) /
+                dataPoint.Key.Analysis.DeviationDefenseEfficiencyPercent =
+                    (dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Defense.Efficiency - avgDefenseEfficiency) /
                     avgDefenseEfficiency * 100;
 
-                dataPoint.Analysis.DeviationEfficiency =
-                    dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency - avgEfficiency;
+                dataPoint.Key.Analysis.DeviationEfficiency =
+                    dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency - avgEfficiency;
 
-                dataPoint.Analysis.DeviationEfficiencyPercent =
-                    (dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency - avgEfficiency) / avgEfficiency * 100;
+                dataPoint.Key.Analysis.DeviationEfficiencyPercent =
+                    (dataPoint.Key.Stands[ConquestUnitOutput.FULL_OUTPUT].Efficiency - avgEfficiency) / avgEfficiency * 100;
 
-                dataPoint.Summary.MeanScore = avgOutput;
-                dataPoint.Summary.MeanOffenseEfficiency = avgOffenseEfficiency;
-                dataPoint.Summary.MeanDefenseEfficiency = avgDefenseEfficiency;
-                dataPoint.Summary.MeanEfficiency = avgEfficiency;
+                dataPoint.Key.Summary.MeanScore = avgOutput;
+                dataPoint.Key.Summary.MeanOffenseEfficiency = avgOffenseEfficiency;
+                dataPoint.Key.Summary.MeanDefenseEfficiency = avgDefenseEfficiency;
+                dataPoint.Key.Summary.MeanEfficiency = avgEfficiency;
+
+                dataPoint.Key.CreateOutputData();
+
+                foreach (var option in dataPoint.Key.UpgradeOutputModifications)
+                {
+                    option.CreateOutputData();
+                }
             }
         }
 
-        private static void ProcessModelDefaults<T>(T model) where T: ConquestInput<T>
+        private static void ProcessModelDefaults<T>(ConquestInput<T> model) 
         {
             if (typeof(T) == typeof(CharacterInputModel))
             {

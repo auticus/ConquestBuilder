@@ -18,8 +18,8 @@ namespace ConquestController.Analysis.Components
         /// <param name="supportOnly"></param>
         /// <param name="applyFullyDeadly">Set to true if you know deadly blades is being applied fully, otherwise it will be halved</param>
         /// <returns></returns>
-        public static double[] CalculateOutput<T>(T model, List<int> defenseValues, List<int> resolveValues, bool supportOnly = false,
-                bool applyFullyDeadly = false) where T: ConquestInput<T>
+        public static double[] CalculateOutput<T>(ConquestInput<T> model, List<int> defenseValues, List<int> resolveValues, bool supportOnly = false,
+                bool applyFullyDeadly = false) 
         {
             return CalculateFullAttacksOutput(model, defenseValues, resolveValues, supportOnly, applyFullyDeadly);
         }
@@ -54,8 +54,8 @@ namespace ConquestController.Analysis.Components
         /// <param name="resolveValues"></param>
         /// <param name="supportOnly"></param>
         /// <returns></returns>
-        private static double[] CalculateFullAttacksOutput<T>(T model, IEnumerable<int> defenseValues, List<int> resolveValues, 
-            bool supportOnly = false, bool applyFullyDeadly = false) where T : ConquestInput<T>
+        private static double[] CalculateFullAttacksOutput<T>(ConquestInput<T> model, IEnumerable<int> defenseValues, List<int> resolveValues, 
+            bool supportOnly = false, bool applyFullyDeadly = false) 
         {
             if (!defenseValues.Any()) return new[] {0.0d, 0.0d};
 
@@ -86,12 +86,16 @@ namespace ConquestController.Analysis.Components
 
                 //calculate standard hits
                 var normalHitProbability = model.AlwaysInspire == 1 ? inspiredHitProbability : hitProbability;
-                finalOutput = CalculateClashFragment(defense, model, attacks, normalHitProbability, 
+                var output = CalculateClashFragment(defense, model, attacks, normalHitProbability, 
                     resolveValues, applyFullyDeadly, thisIsImpactHits: false);
 
+                finalOutput += output;
+
                 //calculate inspired hits
-                finalOutput += CalculateClashFragment(defense, model, attacks, inspiredHitProbability, 
+                output = CalculateClashFragment(defense, model, attacks, inspiredHitProbability, 
                     resolveValues, applyFullyDeadly, thisIsImpactHits: false);
+
+                finalOutput += output;
 
                 totalScores += 2;
 
@@ -112,8 +116,8 @@ namespace ConquestController.Analysis.Components
                                         : new[] {totalOutput / totalScores, 0};
         }
 
-        private static double CalculateClashFragment<T>(int defense, T model, double attacks, double hitProbability, 
-            List<int> resolveValues, bool applyFullyDeadly, bool thisIsImpactHits) where T: ConquestInput<T>
+        private static double CalculateClashFragment<T>(int defense, ConquestInput<T> model, double attacks, double hitProbability, 
+            List<int> resolveValues, bool applyFullyDeadly, bool thisIsImpactHits) 
         {
             var finalD = thisIsImpactHits ? Math.Clamp(defense - model.BrutalImpact, 0, 6) : Math.Clamp(defense - model.Cleave, 0, 6);
             var defenseProbability = Probabilities[finalD];

@@ -24,6 +24,8 @@ namespace ConquestBuilder.ViewModels
         private string _spellFile;
         private string _analysisFile;
         private string _characterAnalysisFile;
+        private string _retinueFile;
+        private string _masteriesFile;
 
         public MainViewModel()
         {
@@ -48,6 +50,8 @@ namespace ConquestBuilder.ViewModels
             _spellFile = ConfigurationManager.AppSettings["SpellFile"];
             _analysisFile = ConfigurationManager.AppSettings["AnalysisFile"];
             _characterAnalysisFile = ConfigurationManager.AppSettings["CharacterAnalysisFile"];
+            _retinueFile = ConfigurationManager.AppSettings["RetinueFile"];
+            _masteriesFile = ConfigurationManager.AppSettings["MasteriesFile"];
         }
 
         private void LoadData(object obj)
@@ -61,16 +65,19 @@ namespace ConquestBuilder.ViewModels
                 var characterInputFilePath = _appPath + "\\" + _characterInputFile;
                 var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
                 var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile) as List<SpellModel>;
+                var retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile) as List<RetinueModel>;
+                var masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile) as List<MasteryModel>;
+                
                 var characters = Character.GetAllCharacters(characterInputFilePath,
                                                                               characterOptionFilePath,
                                                                                             spells);
 
                 var analysis = new AnalysisController();
                 var unitOutput = analysis.BroadAnalysis(units, spells);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, unitOutput);
+                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, unitOutput, includeUselessOptions: false);
 
                 var characterOutput = analysis.BroadAnalysis(characters, spells);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, characterOutput);
+                AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, characterOutput, includeUselessOptions: false);
             }
             catch(Exception ex)
             {

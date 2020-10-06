@@ -12,7 +12,7 @@ namespace ConquestController.Models.Input
         public string Restricted { get; set; } // mapped to RestrictedChoices
 
         public int NoWarlord { get; set; }
-        public string Supremacy { get; set; }
+        public string SupremacyTitle { get; set; }
         public string SupremacyNotes { get; set; }
         public string SpellSchools { get; set; } //mapped to Schools, comes from input
         public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1
@@ -93,7 +93,9 @@ namespace ConquestController.Models.Input
                 DoubleAttack = DoubleAttack,
                 OneHitPerFile = OneHitPerFile,
                 D_Volley = D_Volley,
-                Decay = Decay
+                Decay = Decay,
+                Notes = Notes,
+                IsTorrential = IsTorrential
             };
 
             foreach (var option in Options)

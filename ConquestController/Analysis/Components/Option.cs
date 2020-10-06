@@ -29,15 +29,20 @@ namespace ConquestController.Analysis.Components
             var optionResult = ApplyExtrasResult.NotOption;
             if (option == null) return;
 
-            optionResult = ApplyOptionToUnit(input.Model, option);
+            optionResult = ApplyOptionToUnit(input.Model, output, option);
+
+            var isUnit = typeof(T) == typeof(UnitInputModel);
 
             switch (optionResult)
             {
                 case ApplyExtrasResult.ImpactfulOption:
                     output.HasOptionAdded = true;
                     break;
+                case ApplyExtrasResult.ImpactfulWithUnit:
+                    output.HasNoImpactOptionAdded = !isUnit;
+                    break;
                 case ApplyExtrasResult.NonImpactfulOption:
-                case ApplyExtrasResult.ImpactfulWithUnit: //no reason to include this in broad analysis it needs the unit he's with to matter and we dont know that in broad analysis
+                case ApplyExtrasResult.NotOption:
                     output.HasNoImpactOptionAdded = true;
                     break;
             }
@@ -49,7 +54,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="model"></param>
         /// <param name="option"></param>
         /// <returns>TRUE if option affects output, FALSE otherwise</returns>
-        private static ApplyExtrasResult ApplyOptionToUnit<T>(T model, IOption option) where T : ConquestInput<T>
+        private static ApplyExtrasResult ApplyOptionToUnit<T>(ConquestInput<T> model, ConquestUnitOutput output, IOption option)
         {
             //NonImpactfulOption - an intangible that cannot be analyzed with math
             //ImpactfulWithUnit - is impactful but only after the character is joined with the unit 
@@ -57,8 +62,8 @@ namespace ConquestController.Analysis.Components
 
             //option.SelfOnly applies only to character inputs, and means only applying to the character themself
 
-            model.Unit += $" ({option.Name})";
-            model.Points += option.Points;
+            output.Unit += $" ({option.Name})";
+            output.Points += option.Points;
 
             var impactful =
                 option.SelfOnly == 1 ? ApplyExtrasResult.ImpactfulWithUnit : ApplyExtrasResult.ImpactfulOption;
@@ -69,6 +74,7 @@ namespace ConquestController.Analysis.Components
 
             //whether the rule is useful or not depends on the tag
             ApplyExtrasResult result = ApplyExtrasResult.NotOption;
+
             var tags = new List<string>(option.Tag.Split('|'));
             foreach (var tag in tags)
             {
@@ -213,6 +219,10 @@ namespace ConquestController.Analysis.Components
                     case "decay3":
                         model.Decay = 3;
                         result = onlyImpactfulWithUnit;
+                        break;
+                    case "istorrential":
+                        model.IsTorrential = true;
+                        result = impactful;
                         break;
                 }
             }

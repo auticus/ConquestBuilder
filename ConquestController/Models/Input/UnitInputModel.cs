@@ -69,7 +69,9 @@
                 DoubleAttack = DoubleAttack,
                 OneHitPerFile = OneHitPerFile,
                 D_Volley = D_Volley,
-                Decay = Decay
+                Decay = Decay,
+                Notes = Notes,
+                IsTorrential = IsTorrential
             };
 
             foreach (var option in Options)
