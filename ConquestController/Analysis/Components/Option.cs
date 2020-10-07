@@ -220,7 +220,7 @@ namespace ConquestController.Analysis.Components
                         model.Decay = 3;
                         result = onlyImpactfulWithUnit;
                         break;
-                    case "istorrential":
+                    case "istorrential": 
                         model.IsTorrential = true;
                         result = impactful;
                         break;

@@ -58,6 +58,21 @@ namespace ConquestController.Analysis.Components
                     aimedHits += (aimedMisses * shotsHitProbabilityAim);
                 }
 
+                if (model.IsTorrential)
+                {
+                    //Torrential means for every hit, the unit gets an additional dice to try and hit (which does not generate another hit regardless)
+                    //it stands to reason that if you have 50% hits that 50% of those would be hits with torrential
+                    //ie i have 10 shots, 5 hit.  Then 5 dice roll again and 2.5 of those would hit for a total of 7.5 hits
+                    var hitPercent = hits / shotsFired;
+                    var aimedHitPercent = aimedHits / shotsFired;
+
+                    var torrentialHits = hits * hitPercent;
+                    var aimedTorrentialHits = aimedHits * aimedHitPercent;
+
+                    hits += torrentialHits;
+                    aimedHits += aimedTorrentialHits;
+                }
+
                 var obscureDivider = model.NoObscure ? 1.0 : 2.0;
 
                 rangedOutput.ObscureHits = CalculateActualRangedHits((hits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
