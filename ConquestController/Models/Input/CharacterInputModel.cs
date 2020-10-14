@@ -95,7 +95,8 @@ namespace ConquestController.Models.Input
                 D_Volley = D_Volley,
                 Decay = Decay,
                 Notes = Notes,
-                IsTorrential = IsTorrential
+                IsTorrential = IsTorrential,
+                ModelType = ModelType
             };
 
             foreach (var option in Options)

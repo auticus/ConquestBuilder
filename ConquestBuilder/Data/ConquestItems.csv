@@ -1,1 +1,83 @@
-Faction,Restrictions,Mastery,Category,Points,Tag,Notes
+Faction,Restrictions,Name,Category,Points,Tag,SelfOnly,Notes
+100k,[],Standard of Steel,Banner,65,[],0,Attacks directed at the regiment bearing this banner never count as inspired
+100k,[],Regalia of the Empire,Banner,25,C|Regiment::Household Guard,0,Household Guard stands in this regiment have +1 Clash
+100k,[],Gilded Rampart,Banner,20,[],0,Character gains Perform a Reform Action with Regiment then take character action
+100k,[],Shroud of St. Lazarus,Banner,20,R|IsFearsome,0,Character and all Stands in the Regiment have +1 Resolve to a max of 5 and gain Fearsome
+100k,[],Armor of Dominion,Armor,40,[],0,Enemy stands in contact with the character lose the Cleave and Smite rules
+100k,[],Indomitable Plate,Armor,25,W|D,1,Character Stand gains +1 Wound and +1 Defense
+100k,[],Bakkian Token,Armor,15,E,1,Character Stand gains +1 Evasion
+100k,[],Mask of Eaklides,Armor,15,reroll6_defense,1,Character re-rolls Defense rolls of 6
+100k,[],The Kiss Farewell,Weapon,30,kiss,1,Character gains Barrage 3 (24 inch Deadly Shot).  If the character already has Barrage it gains +3 to its Barrage Value and the Deadly shot special rule.
+100k,[],Caledburn,Weapon,15,IsFlurry,1,Character re-rolls failed To Hit rolls - and opponents must re-roll successful Injury rolls in a Duel
+100k,[],Laurean Lance,Weapon,10,BrutalImpact2|RerollImpact,1,Character re-rolls failed To Hit rolls when making Impact Hits and gains Brutal Impact (2)
+100k,[],The Flesh Cleaver,Weapon,10,[],1,Character re-rolls failed To Hit rolls when performing a Clash against Monster Stands
+100k,[],The Unwrought,Weapon,10,[],1,Character re-rolls failed To Hit rolls when performing a Clash against Brutes
+100k,[],Eye of Akelus,Talisman,30,[],0,The character gains the following Supremacy Ability: until the end of the turn all friendly regiments within 6 inches have +1 Volley
+100k,[],Finite-State Apparatus,Talisman,30,[],0,Once per game the character stand counts as a spellcaster for purposes of Enemy Interference and enemies within 8 inches cast spells with three less dice rather than the usual one
+100k,[],Heraldry of Lions Mane,Talisman,10,[],0,Character has the fearless special rule
+100k,[],Ladys Favor,Talisman,10,[],0,The first time the characters stand suffers a wound - roll a D6.  On a 2+ the wound is healed
+100k,Theist Priest,Hopes and Prayers,Arcane,30,[],0,Once per game when the character stand would be reduced to 0 wounds or less it is returned to the battlefield with 1 wound remaining at the end of that activation.
+100k,[],Elysian Fragment,Arcane,25,[],1,The character has the following Supremacy Ability: Until the end of turn the stand has the Smite special rule
+100k,[],Olefants Roar,Arcane,20,[],0,The character has the Seize the Day draw event
+100k,Chapter Mage,Chapter Scroll,Arcane,15,[],0,Select 1 spell from a different school to be cast once per game as an Action
+Spires,Lineage Highborn,Pheromantic Override,Mutation,60,[],0,Once per game the character stand gains the following Draw Event: choose a friendly regiment within 6 inches.  That Regiment may inmediately perform a free clash - volley - or march action
+Spires,Pheromancer|Biomancer,Biotic Wellspring,Mutation,50,[],0,Character has the Biotic Renewal Draw Event
+Spires,High Clone Executor|Mimetic Assassin,Hightened Reflexes,Mutation,35,E|E,1,Character has +2 Evasion
+Spires,[],Cascading Degeneration,Mutation,25,[],0,Whenever the characters regiment processes a Decay Event of any kind - all enemy Regiments in base contact also possess the Decay (4) Draw Event (Decay 3 if a Brute - Decay 2 on a monster)
+Spires,Biomancer|Pheromancer,Architects Touch,Mutation,20,[],0,The character stand and any regiment it has joined reduce all Decay Draw Events inflicted upon them by -1 (Decay 3 becomes Decay 2)
+Spires,!Lineage Highborne,Cloned Redundancy,Mutation,20,[],0,Once per game when the character is slain on the score of a 4+ you may remove another friendly character stand from the Battlefield and return this character stand to the battlefield in its place.
+Spires,[],Enhanced Reactions,Mutation,20,[],1,Character may reroll 1 die every time they are required to make an injury roll
+Spires,[],Redundant Biomantic Structure,Mutation,20,W|W,1,Character gains 2 wounds
+Spires,[],Adaptive Evolution,Mutation,15,[],0,Whenever this characters command card is drawn roll a D6.  On a score of 4+ or more you may increase its clash - volley - resolve - or defense by +1 to a max of 5
+Spires,[],Adaptive Senses,Mutation,15,[],1,Evasion rolls cannot be taken against hits caused by this character
+Spires,Biomancer|Pheromancer,Biomantic Plague Node,Mutation,15,[],1,Whenever a wound is allocated to the character roll a D6.  On a score of 3 or less an enemy regiment or character stand of your choice within 6 inches also has a wound allocated to it.  On a 1 all enemy regiments and character stands within 6 inches suffer this effect
+Spires,!Lineage Highborne,Biotic Hive,Mutation,15,Barrage4_20|IsDeadlyShot,1,"Character gains Barrage 4 20"" Deadly shot"
+Spires,[],Burrowing Parasites,Mutation,15,Barrage2_30|ArmorPiercing,1,Character gains Barrage 2 30 Armor Piercing 1.  If character already has Barrage then its Barrage is increased by +2 and its Armor Piercing is increased +1
+Spires,Lineage Highborn|High Clone Executor,Command Pheromones,Mutation,15,R,1,Character gains +1 Resolve
+Spires,Mimetic Assassin|Lineage Highborn,Venom,Mutation,15,IsDeadlyBlades|IsDeadlyShot,1,Character gains Deadly Blades and Deadly Shots special rule
+Spires,!Lineage Highborne,Adrenal Surge,Mutation,10,[],1,When character takes an action you may gain +2 Clash and +4 attacks - if you do remove the character stand as a casualty once the action is complete.
+Spires,Pheromancer|Biomancer,Avatar Projection,Mutation,10,IsBrute,1,A character with this mutation changes the troop type to Brute and may no longer purchase a retinue.  The character can thus legally join a Brute unit
+Spires,[],Sensory Augmentation,Mutation,10,[],0,When the characters command card is drawn you may both look at the top command card of your opponents command stack and draw and act with your next command card instead of this characters command card.
+Spires,[],Degenerative Aura,Mutation,10,[],0,Enemy regiments in contact with the characters regiment have the Decay(3) draw event (decay 2 if a brute - Decay 1 if a monster)
+Spires,[],Ablative Flesh,Mutation,5,[],1,The character ignores the first wound allocated to it in a duel each turn
+Dweghom,[],Mnemancers Eye,Banner,50,R|IsFearless,0,The character stand and its regiment gain +1 resolve and Fearless
+Dweghom,[],Until We Have To,Banner,15,[],0,The characters regiment gains +2 Defense while at least half of its stands are within zonal terrain
+Dweghom,[],The Crown of Ushkelodh,Armor,50,[],0,The character and regiment gain the Burnout draw event
+Dweghom,[],Champions Horns,Armor,15,A|A,1,The character has +2 attacks if his regiment contains at least 4 stands
+Dweghom,[],Arena Champion,Armor,10,[],0,During a duel action the character re-rolls fail to hit rolls
+Dweghom,[],Memory of Stone,Armor,10,W,1,The character gains +1 wound
+Dweghom,[],Steel Enhancements,Armor,10,D,1,The character gains +1 Defense
+Dweghom,[],Draegbhrud,Weapon,25,Cleave3,1,The characters clash attacks gain Cleave(3)
+Dweghom,[],Perfectly Balanced,Weapon,20,IsFlurry,1,The character has the Flurry rule
+Dweghom,[],Flaming Weapon,Weapon,15,C|Cleave1,1,Character gains +1 clash and Cleave 1
+Dweghom,[],Obsidian Grafts,Weapon,15,[],1,Character re-rolls failed injury rolls
+Dweghom,[],Gifted in Fire,Talisman,20,IsAuraDeath|E,1,Character has Aura of Death rule and +1 Evasion
+Dweghom,[],Slayers Brand,Talisman,20,[],1,Character has Fiend Hunter special rule
+Dweghom,[],The Flame Flickers,Talisman,20,[],1,Once per game the character may activate this item during a duel.  Gains +2 evasion for the duration of the duel.
+Dweghom,[],Remembered,Talisman,15,IsFearsome,1,Character gains the Fearsome special rule
+Dweghom,[],Remembrance of the Core,Talisman,15,[],0,Once a game - The character and any friendly regiments within six inches reduce the cleave of enemy regiments in contact by 1 point until end of turn.
+Dweghom,Ardent Kerawegh|Warlord,Invocation of the Shattering,Arcane,45,[],1,Supremacy Ability gained - until end of turn the character and friendly regiment within six inches ignore enemy Defense values when rolling an unmodified 1
+Dweghom,[],Heart of the Mountain,Arcane,25,[],1,Once per game the character may spend an action to active this item.  You may perform an additional spellcasting action with this character.  The casting difficulty of all spellcasting attempts is increased by 1 but ignores enemy interference
+Dweghom,[],Graft of Fire,Arcane,15,BonusCastDice,1,The character stand rolls one extra die when performing a spellcasting action.  Each time the character stand performs a spellcasting action it must pass an unmodified Resolve test or suffer a wound.
+Dweghom,[],Tempered Goad,Arcane,15,[],0,The character may spend an action to active this item.  If it does - a Brute or Monster within 12 inches gains the Aura of Death special rule until end of next Supremacy Phase.  If the regiment already has Aura of Death it deals double the number of Hits.
+Dweghom,[],Memory of Breath,Arcane,10,IsAuraDeath,1,The character has the Aura of Death special rule.
+Nords,[],Raven Messengers,Banner,40,[],0,Friendly regiments within 12 inches may use the characters resolve instead of their own
+Nords,[],Fearsome Reputation,Banner,10,IsFearsome,0,The character stand and joined Regiment has the Fearsome special rule
+Nords,[],Coils of the Serpent,Banner,25,E,0,The character gains the following Draw Event - character and Regiment gains +1 Evasion
+Nords,[],Figurehead of the Nagifar,Banner,15,[],0,The character stand and any friendly Regiment within 6 inches of it count as being Obscured on the turn the character stand arrives on the battlefield from Reinforcements
+Nords,[],Jarngreipr,Armor,25,[],1,During a duel action the characters to hit rolls of 1 count as 2 Hits
+Nords,[],Ty Jokull the Rimeheart,Armor,15,[],1,The character has +2 Defense while they have no wound markers
+Nords,[],Massive Frame,Armor,10,[],1,The character ignores the first Wound allocated to it in a duel
+Nords,[],Vinda the Dancer,Weapon,40,IsTorrential_Clash,1,For each hit scored from the characters clash or duel attacks - roll an additional dice and add any successful hits to the total from the attack.  These do not generate further rolls
+Nords,[],Reyngeir the God Spear,Weapon,30,BrutalImpact2,1,The character inflicts impact hits and has Brutal Impact 2 special rule
+Nords,[],Rjoda the Red Bringer,Weapon,15,A|A|A,1,The character has the Bloodlust special rule and +3 attacks
+Nords,[],The Broken Blade,Weapon,10,Cleave1,1,The character has the Cleave 1 special rule
+Nords,[],Vanquisher of Monsters,Weapon,10,[],1,The character has the Fiend Hunter special rule
+Nords,Jarl|Warlord,The Horn of Hjoldgar,Talisman,35,[],1,The character gains the supremacy ability: the character and any friendly regiment within 6 inches gain Rapid Volley special rule until end of turn
+Nords,[],Mistcallers Raiment,Talisman,25,[],0,Enemy stands performing a volley against the character stands regiment must re-roll successful rolls of a 1
+Nords,[],Golden Torc,Talisman,20,[],0,The character stand and the joined regiment has the Flank special rule
+Nords,[],Heriolfs Folly,Talisman,10,E,1,The character gains +1 Evasion
+Nords,[],Prize Silver,Weapon,5,Reroll6_Impact,0,The character and his regiment may reroll 6s when performing impact hits as a result of the Thrown Weapon special rule
+Nords,[],Heralds of the Storm,Arcane,30,[],1,Once per game - reduce the casting difficulty value of all spells by 3 until the end of turn.  Spells with a difficulty of 0 and lower automatically fail to cast.  This affects all attempts to cast.
+Nords,[],Runes of Wisdom,Arcane,30,[],1,Once per game the character may roll 2 extra dice when performing a spellcasting action.
+Nords,[],Runes of Fate,Arcane,20,[],1,The first time each turn this character gains a wound roll a dice.  On a score of 4+ remove that wounded marker

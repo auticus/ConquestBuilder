@@ -13,6 +13,7 @@ namespace ConquestController.Models.Input
         public string Faction { get; set; }
         public string Unit { get; set; }
         public string Weight { get; set; }
+        public string ModelType { get; set; }
 
         /// <summary>
         /// Total model count of the regiment
@@ -57,6 +58,7 @@ namespace ConquestController.Models.Input
         public int IsArcOfFire { get; set; }
         public int IsFearless { get; set; }
         public int IsBlessed { get; set; } //if true, re-roll half offense misses and re-roll half defense fails. If IsFlurry, the offense part is useless
+        public int IsFearsome { get; set; } //this is an intangible and currently not on the spreadsheet
 
         public int ResistDecay { get; set; }
 
@@ -79,7 +81,10 @@ namespace ConquestController.Models.Input
         public bool OneHitPerFile { get; set; } // will do an extra hit per file (so for analysis purposes, +3, for detailed analysis it will need to observe the files)
         public bool Reroll6_Volley { get; set; } //reroll 6s on volley
         public bool Reroll6_Defense { get; set; } //reroll 6s on defense
+        public bool Reroll_ImpactHits { get; set; }
         public bool IsTorrential { get; set; } //gain the Torrential special rule
+        public bool IsTorrential_Clash { get; set; } //gains torrential only with clash
+        public bool KissFarewell { get; set; } //the item. Gives Barrage 3 24" Deadly Shot.  If already have Barrage, adds +3 Barrage value and Deadly Shot
 
         /// <summary>
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes

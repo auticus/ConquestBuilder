@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
 
@@ -224,10 +225,88 @@ namespace ConquestController.Analysis.Components
                         model.IsTorrential = true;
                         result = impactful;
                         break;
+                    case "istorrential_clash":
+                        //todo: implement functionality
+                        model.IsTorrential_Clash = true;
+                        result = impactful;
+                        break;
+                    case "isfearsome":
+                        model.IsFearsome = 1;
+                        result = ApplyExtrasResult.NonImpactfulOption;
+                        break;
+                    //todo: implement functionality
+                    case "isfearless":
+                        model.IsFearless = 1;
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    //todo: implement functionality
+                    case "kiss":
+                        model.KissFarewell = true;
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    //todo implement - if they dont have impact, they do now
+                    case "brutalimpact1":
+                        model.BrutalImpact = 1;
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    //todo implement - if they dont have impact they do now
+                    case "brutalimpact2":
+                        model.BrutalImpact = 2;
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    //todo: implement
+                    case "rerollimpact":
+                        model.Reroll_ImpactHits = true;
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    case "armorpiercing":
+                        model.ArmorPiercing++;
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    case "isbrute":
+                        model.ModelType = "Brute";
+                        result = ApplyExtrasResult.NonImpactfulOption;
+                        break;
+                    case "warlord":
+                        //todo: implement - when this is in place on an option it can only be chosen by the warlord
+                        result = ApplyExtrasResult.NonImpactfulOption;
+                        break;
+                    case "bonuscastdice":
+                        //todo: implement by adding an extra casting dice
+                        result = ApplyExtrasResult.ImpactfulOption;
+                        break;
+                    case var val when val.StartsWith("regiment::"):
+                        //todo: implement the restriction - whatever comes after regiment:: is who can use this
+                        result = ApplyExtrasResult.NonImpactfulOption;
+                        break;
+                    case var val when val.StartsWith("barrage"):
+                        ApplyBarrageRegex(model, val);
+                        break;
+
                 }
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Will take the barrage regex and apply it to the model
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="regex"></param>
+        /// <exception cref="InvalidCastException">Thrown if the value passed is not numeric</exception>
+        private static void ApplyBarrageRegex<T>(ConquestInput<T> model, string regex)
+        {
+            //string will come in like "barrage4_20" or something similar.  The first number is what to apply the barrage score to, the second is the range
+            var score = regex.Replace("barrage", "");
+            var scores = score.Split('_', StringSplitOptions.RemoveEmptyEntries);
+
+            model.Barrage += int.Parse(scores[0]);
+            if (int.Parse(scores[1]) > model.Range)
+            {
+                model.Range = int.Parse(scores[1]);
+            }
         }
     }
 }

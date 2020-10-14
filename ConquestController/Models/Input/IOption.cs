@@ -6,5 +6,6 @@
         string Tag { get; set; }
         int Points { get; set; }
         int SelfOnly { get; set; }
+        int WarlordOnly { get; set; }
     }
 }
