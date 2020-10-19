@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ConquestBuilder"
         xmlns:localView="clr-namespace:ConquestBuilder.ViewModels"
+        xmlns:converters="clr-namespace:ConquestBuilder.Converters"
         mc:Ignorable="d"
         Title="Conquest Builder" Height="400" Width="400"
             Background="#12000000"
@@ -15,10 +16,14 @@
             WindowStartupLocation="CenterScreen"
             Loaded="Window_Loaded"
             MouseLeftButtonDown="MainWindow_OnMouseLeftButtonDown"
+            Visibility="{Binding Visible,Mode=TwoWay, Converter={StaticResource VisibilityConverter}}"
         >
     <Window.DataContext>
         <localView:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <converters:VisibilityConverter x:Key="VisibilityConverter"/>
+    </Window.Resources>
     <Grid Margin="0,0,0,0">
         <Button Content="New Army" HorizontalAlignment="Center" Margin="0,36,0,0" VerticalAlignment="Top" Height="60" Width="100" Style="{StaticResource DefaultButton}"
                 Command="{Binding NewFaction}"/>

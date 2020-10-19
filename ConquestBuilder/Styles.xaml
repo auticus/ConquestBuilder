@@ -1,6 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ConquestBuilder.Converters"
                     xmlns:local="clr-namespace:ConquestBuilder">
+    
+    <converters:VisibilityConverter x:Key="VisibilityConverter"/>
 
     <Style x:Key="DefaultButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent"/>

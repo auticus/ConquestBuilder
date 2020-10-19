@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
 
@@ -10,7 +11,18 @@ namespace ConquestBuilder.ViewModels
         public ICommand LoadFaction { get; set; }
         public ApplicationData Data { get; set; }
 
+        private bool _visible;
+        public bool Visible
+        {
+            get { return _visible;}
+            set
+            {
+                _visible = value;
+                NotifyPropertyChanged("Visible");
+            }}
+
         private FactionPickerViewModel _factionPickerVM;
+        private ArmyBuilderViewModel _armyBuilderVM;
 
         public MainViewModel()
         {
@@ -24,6 +36,11 @@ namespace ConquestBuilder.ViewModels
         {
             _factionPickerVM = new FactionPickerViewModel(Data);
             _factionPickerVM.OnSelectedFaction += OnSelectedFaction;
+
+            _armyBuilderVM = new ArmyBuilderViewModel(Data);
+            _armyBuilderVM.OnWindowClosed += ArmyBuilderVM_OnWindowClosed;
+
+            Visible = true;
         }
 
         private void InitializeCommands()
@@ -51,7 +68,16 @@ namespace ConquestBuilder.ViewModels
         /// <param name="card"></param>
         private void OnSelectedFaction(object? sender, FactionCarouselCard card)
         {
+            Visible = false;
+            var view = new ArmyBuilderWindow(_armyBuilderVM);
 
+            //todo: need to reset the view model in case its carrying state from a previous session
+            view.Show();
+        }
+
+        private void ArmyBuilderVM_OnWindowClosed(object? sender, EventArgs e)
+        {
+            Visible = true;
         }
     }
 }

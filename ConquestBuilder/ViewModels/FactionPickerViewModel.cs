@@ -99,9 +99,7 @@ namespace ConquestBuilder.ViewModels
 
         private static void CloseView(object parameter)
         {
-            var view = parameter as IView;
-
-            if (view == null) throw new ArgumentException("Parameter passed to FinalizeSelection was not an IView");
+            if (!(parameter is IView view)) throw new ArgumentException("Parameter passed to FactionPickerViewModel::CloseView was not an IView");
             view.Close();
         }
     }

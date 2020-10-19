@@ -14,7 +14,7 @@ namespace ConquestBuilder.Views
     {
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
-        private FactionPickerViewModel _vm;
+        private readonly FactionPickerViewModel _vm;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
