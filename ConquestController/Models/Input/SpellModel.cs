@@ -14,6 +14,7 @@
         public int HitsCaused { get; set; }
         public string EffectCausedPer { get; set; }
         public string Effect { get; set; }
+        public int WarlordOnly { get; set; }
 
         public override string ToString()
         {

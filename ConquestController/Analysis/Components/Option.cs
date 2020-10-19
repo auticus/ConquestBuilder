@@ -27,10 +27,9 @@ namespace ConquestController.Analysis.Components
         public static void ProcessOption<T>(AnalysisInput<T> input, ConquestUnitOutput output, IOption option) where T : ConquestInput<T>
         {
             //process options
-            var optionResult = ApplyExtrasResult.NotOption;
             if (option == null) return;
 
-            optionResult = ApplyOptionToUnit(input.Model, output, option);
+            var optionResult = ApplyOptionToUnit(input.Model, output, option);
 
             var isUnit = typeof(T) == typeof(UnitInputModel);
 

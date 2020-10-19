@@ -1,0 +1,59 @@
+﻿<Window x:Class="ConquestBuilder.Views.FactionPickerWindow"
+        x:Name="FactionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConquestBuilder.Views"
+        xmlns:wpfCarouselControl="clr-namespace:ConquestBuilder.WPFCarouselControl"
+        xmlns:viewModels="clr-namespace:ConquestBuilder.ViewModels"
+        mc:Ignorable="d"
+        Title="Choose your Faction" Height="500" Width="800" 
+            Background="Black" 
+            WindowStartupLocation="CenterOwner" 
+            ResizeMode="NoResize"
+            Loaded="FactionPickerWindow_OnLoaded">
+    <Grid>
+        <wpfCarouselControl:CarouselControl Grid.Row="5" Grid.Column="1" 
+            Grid.ColumnSpan="5" x:Name="_carouselDABRadioStations" 
+            ItemsSource="{Binding FactionsCollection}" 
+            SelectedItem="{Binding SelectedFaction,Mode=TwoWay}" 
+            SelectionClicked="Carousel_OnSelectionClicked"
+            
+            ShowRotation="True"  TiltInDegrees="10" 
+            AutoSizeToParent="True" RotationSpeed="200" 
+            VerticalOrientation="False" HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch">
+            <wpfCarouselControl:CarouselControl.Style>
+                <Style TargetType="wpfCarouselControl:CarouselControl">
+                    <Setter Property="CarouselItemTemplate" >
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border BorderThickness="1" BorderBrush="Gainsboro" Background="SteelBlue" Width="200" Height="300">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="30"/>
+                                        </Grid.RowDefinitions>
+                                        <Border Grid.Row="0" BorderThickness="0" Background="White">
+                                            <Image Grid.Row="0" Source="{Binding ImageSource}" VerticalAlignment="Center" 
+                                                HorizontalAlignment="Center" Height="300"/>
+                                        </Border>
+                                        <Label Grid.Row="1" Content="{Binding ShortName}" Foreground="White" Background="Transparent" 
+                                               FontSize="20" FontFamily="Arial" Style="{StaticResource labelStyleCentred}" 
+                                                DockPanel.Dock="Bottom" Height="20"/>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </wpfCarouselControl:CarouselControl.Style>
+            <Button Content="Cancel" Width="100" Height="25" 
+                Style="{StaticResource DefaultButton}"
+                Command="{Binding CancelFaction}" 
+                CommandParameter="{Binding ElementName=FactionWindow}"
+                Canvas.Left="635" Canvas.Top="422"/>
+        </wpfCarouselControl:CarouselControl>
+    </Grid>
+</Window>

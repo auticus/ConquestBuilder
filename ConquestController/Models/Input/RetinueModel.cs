@@ -12,6 +12,7 @@
         public int Tier { get; set; }
         public string Category { get; set; }
         public string Notes { get; set; }
+        public int WarlordOnly { get; set; }
 
         public override string ToString()
         {

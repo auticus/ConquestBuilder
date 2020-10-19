@@ -11,6 +11,7 @@
         public string Category { get; set; }
         public string Notes { get; set; }
         public string Restrictions { get; set; }
+        public int WarlordOnly { get; set; }
 
         public override string ToString()
         {

@@ -1,88 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Input;
-using ConquestController;
-using ConquestController.Data;
-using System.Configuration;
-using ConquestController.Models;
-using System.Linq;
-using ConquestController.Analysis;
-using ConquestController.Models.Input;
+﻿using System.Windows.Input;
+using ConquestBuilder.Models;
+using ConquestBuilder.Views;
 
 namespace ConquestBuilder.ViewModels
 {
-    public class MainViewModel
+    public class MainViewModel : BaseViewModel
     {
-        public ICommand LoadDataCommand { get; set; }
-        private string _appPath;
-        private string _unitInputFile;
-        private string _unitOptionsFile;
-        private string _characterInputFile;
-        private string _characterOptionFile;
-        private string _spellFile;
-        private string _analysisFile;
-        private string _characterAnalysisFile;
-        private string _retinueFile;
-        private string _masteriesFile;
+        public ICommand NewFaction { get; set; }
+        public ICommand LoadFaction { get; set; }
+        public ApplicationData Data { get; set; }
+
+        private FactionPickerViewModel _factionPickerVM;
 
         public MainViewModel()
         {
             InitializeCommands();
-            LoadConfigurations();
+            Data = new ApplicationData();
+
+            InitializeViewModels();
         }
 
-        public bool CanExecute { get; set; } = true;
+        private void InitializeViewModels()
+        {
+            _factionPickerVM = new FactionPickerViewModel(Data);
+            _factionPickerVM.OnSelectedFaction += OnSelectedFaction;
+        }
 
         private void InitializeCommands()
         {
-            LoadDataCommand = new RelayCommand(LoadData, param => this.CanExecute);
+            NewFaction = new RelayCommand(OnNewFaction, param => this.CanExecute);
+            LoadFaction = new RelayCommand(OnLoadFaction, param => this.CanExecute);
         }
 
-        private void LoadConfigurations()
+        private void OnNewFaction(object parameter)
         {
-            _appPath = System.AppDomain.CurrentDomain.BaseDirectory + "Data";
-            _unitInputFile = ConfigurationManager.AppSettings["UnitInputFile"];
-            _unitOptionsFile = ConfigurationManager.AppSettings["UnitOptionFile"];
-            _characterInputFile = ConfigurationManager.AppSettings["CharacterInputFile"];
-            _characterOptionFile = ConfigurationManager.AppSettings["CharacterOptionFile"];
-            _spellFile = ConfigurationManager.AppSettings["SpellFile"];
-            _analysisFile = ConfigurationManager.AppSettings["AnalysisFile"];
-            _characterAnalysisFile = ConfigurationManager.AppSettings["CharacterAnalysisFile"];
-            _retinueFile = ConfigurationManager.AppSettings["RetinueFile"];
-            _masteriesFile = ConfigurationManager.AppSettings["MasteriesFile"];
+            var view = new FactionPickerWindow(_factionPickerVM);
+            view.ShowDialog();
         }
 
-        private void LoadData(object obj)
+        private void OnLoadFaction(object parameter)
         {
-            try
-            {
-                //assign units and their options
-                var units = DataRepository.GetInputFromFileToList<UnitInputModel>(_appPath + "\\" + _unitInputFile);
-                DataRepository.AssignUnitOptionsToModelsFromFile(units.Cast<IConquestOptionInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
+            //load previously saved army
+            //todo: implement a previously loaded roster
+        }
 
-                var characterInputFilePath = _appPath + "\\" + _characterInputFile;
-                var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
-                var spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile) as List<SpellModel>;
-                var retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile) as List<RetinueModel>;
-                var masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile) as List<MasteryModel>;
-                
-                var characters = Character.GetAllCharacters(characterInputFilePath,
-                                                                              characterOptionFilePath,
-                                                                                            spells);
+        /// <summary>
+        /// Handles the select item on the faction picker for a new army roster
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="card"></param>
+        private void OnSelectedFaction(object? sender, FactionCarouselCard card)
+        {
 
-                var analysis = new AnalysisController();
-                var unitOutput = analysis.BroadAnalysis(units, spells);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, unitOutput, includeUselessOptions: false);
-
-                var characterOutput = analysis.BroadAnalysis(characters, spells);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, characterOutput, includeUselessOptions: false);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"An error has occurred processing the data:  {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
     }
 }

@@ -1,0 +1,31 @@
+﻿<Window x:Class="ConquestBuilder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConquestBuilder"
+        xmlns:localView="clr-namespace:ConquestBuilder.ViewModels"
+        mc:Ignorable="d"
+        Title="Conquest Builder" Height="400" Width="400"
+            Background="#12000000"
+            AllowsTransparency="True"
+            WindowStyle ="None"
+            BorderThickness ="3"
+            BorderBrush ="Gray"
+            WindowStartupLocation="CenterScreen"
+            Loaded="Window_Loaded"
+            MouseLeftButtonDown="MainWindow_OnMouseLeftButtonDown"
+        >
+    <Window.DataContext>
+        <localView:MainViewModel/>
+    </Window.DataContext>
+    <Grid Margin="0,0,0,0">
+        <Button Content="New Army" HorizontalAlignment="Center" Margin="0,36,0,0" VerticalAlignment="Top" Height="60" Width="100" Style="{StaticResource DefaultButton}"
+                Command="{Binding NewFaction}"/>
+            
+        <Button Content="Load Army" HorizontalAlignment="Center" Margin="0,121,0,0" VerticalAlignment="Top" Height="60" Width="100"  Style="{StaticResource DefaultButton}"
+                Command="{Binding LoadFaction}"/>
+        <Button Content="Exit" HorizontalAlignment="Center" Margin="0,299,0,0" VerticalAlignment="Top" Height="60" Width="100"  Style="{StaticResource DefaultButton}"
+                Click="btnExit_Click"/>
+    </Grid>
+</Window>
