@@ -1,14 +1,129 @@
-﻿<Window x:Class="ConquestBuilder.Views.ArmyBuilderWindow"
+﻿<Window x:Name="WindowArmyBuilder"
+        x:Class="ConquestBuilder.Views.ArmyBuilderWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ConquestBuilder.Views"
         mc:Ignorable="d"
-        Title="Conquest Army Builder" Height="900" Width="800"
+        Title="Conquest Army Builder" Height="900" Width="1400"
         WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        Background="Black"
+        SourceInitialized="Window_SourceInitialized"
         Closed="ArmyBuilderWindow_OnClosed">
-    <Grid>
-        
+    <Grid Style="{StaticResource Grids}">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left panel selection items -->
+        <Grid Grid.Column="0" Style="{StaticResource Grids}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.6*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label Content="Characters" Margin="0,4,0,0" VerticalAlignment="Top" Style="{StaticResource defaultLabel}"/>
+            <Border BorderBrush="LightBlue" BorderThickness="2" Width="650" Height="250">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" 
+                          VerticalScrollBarVisibility="Hidden" 
+                          Height="250">
+                    <ItemsControl ItemsSource="{Binding CharacterButtons}" >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Width="200" Height="240" Margin="5,5,0,5" 
+                                        Style="{StaticResource DefaultButton}"
+                                        Command="{Binding Path=DataContext.CharacterSelected, ElementName=WindowArmyBuilder}"
+                                        CommandParameter="{Binding}">
+                                    <StackPanel>
+                                        <Image Source="{Binding UnitThumb}" Height="180" Width="200"/>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding UnitName}"/>
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+
+            <!--Mainstay & Restricted Grid -->
+            <Grid x:Name="GridRestrictedMainstay" Style="{StaticResource Grids}" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Mainstay" Margin="0,-7,0,0" VerticalAlignment="Top" Style="{StaticResource defaultLabel}"/>
+                <Label Content="Restricted" VerticalAlignment="Top" Style="{StaticResource defaultLabel}" Grid.Column="1" RenderTransformOrigin="0.548,0.63" Margin="0,-7,0,0"/>
+
+                <!--Mainstay List -->
+                <Border x:Name="MainstayBorder" BorderBrush="LightBlue" BorderThickness="2" Width="250" Height="500" Grid.Column="0">
+                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" 
+                                  VerticalScrollBarVisibility="Auto" 
+                                  Height="500"
+                                  Width="250"
+                                  Grid.Column="0">
+                        <ItemsControl ItemsSource="{Binding MainstayButtons}" >
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" CanVerticallyScroll="True"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Width="200" Height="240" Margin="5,5,0,5" 
+                                            Style="{StaticResource DefaultButton}"
+                                            Command="{Binding MainstaySelected}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel>
+                                            <Image Source="{Binding UnitThumb}" Height="180" Width="200"/>
+                                            <TextBlock HorizontalAlignment="Center" Text="{Binding UnitName}"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
+                <!--Restricted List -->
+                <Border x:Name="RestrictedBorder" BorderBrush="LightBlue" BorderThickness="2" Width="250" Height="500" Grid.Column="1">
+                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" 
+                                  VerticalScrollBarVisibility="Auto" 
+                                  Height="500"
+                                  Width="250"
+                                  Grid.Column="0">
+                        <ItemsControl ItemsSource="{Binding RestrictedButtons}" >
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Width="200" Height="240" Margin="5,5,0,5" 
+                                            Style="{StaticResource DefaultButton}"
+                                            Command="{Binding RestrictedSelected}"
+                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel>
+                                            <Image Source="{Binding UnitThumb}" Height="180" Width="200"/>
+                                            <TextBlock HorizontalAlignment="Center" Text="{Binding UnitName}"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

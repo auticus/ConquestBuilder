@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         Title="Choose your Faction" Height="500" Width="800" 
             Background="Black" 
-            WindowStartupLocation="CenterOwner" 
+            WindowStartupLocation="CenterScreen" 
             ResizeMode="NoResize"
             Loaded="FactionPickerWindow_OnLoaded">
     <Grid>

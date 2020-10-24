@@ -66,16 +66,16 @@ namespace ConquestBuilder.ViewModels
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="card"></param>
-        private void OnSelectedFaction(object? sender, FactionCarouselCard card)
+        private void OnSelectedFaction(object sender, FactionCarouselCard card)
         {
             Visible = false;
             var view = new ArmyBuilderWindow(_armyBuilderVM);
 
-            //todo: need to reset the view model in case its carrying state from a previous session
+            _armyBuilderVM.SetArmy(card.Name);
             view.Show();
         }
 
-        private void ArmyBuilderVM_OnWindowClosed(object? sender, EventArgs e)
+        private void ArmyBuilderVM_OnWindowClosed(object sender, EventArgs e)
         {
             Visible = true;
         }

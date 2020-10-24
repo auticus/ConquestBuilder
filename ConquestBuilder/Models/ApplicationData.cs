@@ -6,6 +6,7 @@ using System.Windows;
 using ConquestController.Analysis;
 using ConquestController.Data;
 using ConquestController.Models.Input;
+using ConquestController.Models.Output;
 
 namespace ConquestBuilder.Models
 {
@@ -30,11 +31,15 @@ namespace ConquestBuilder.Models
         public IList<MasteryModel> Masteries { get; private set; }
         public IList<ItemModel> Items { get; private set; }
         
+        public IList<ConquestUnitOutput> UnitOutput { get; private set; }
+        public IList<ConquestUnitOutput> CharacterOutput { get; private set; }
+        
 
         public ApplicationData()
         {
             LoadConfigurations();
             LoadData();
+            LoadAnalysis();
         }
         
         private void LoadConfigurations()
@@ -68,21 +73,25 @@ namespace ConquestBuilder.Models
                 Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile) as List<MasteryModel>;
                 Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile) as List<ItemModel>;
 
-                Characters = Character.GetAllCharacters(characterInputFilePath,characterOptionFilePath, Spells).ToList();
-
-                /* The below is for processing analysis which this class wont do
-                var analysis = new AnalysisController();
-                var unitOutput = analysis.BroadAnalysis(units, spells);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, unitOutput, includeUselessOptions: false);
-
-                var characterOutput = analysis.BroadAnalysis(characters, spells);
-                AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, characterOutput, includeUselessOptions: false);
-                */
+                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells).ToList();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error has occurred processing the data:  {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void LoadAnalysis()
+        {
+            var analysis = new AnalysisController();
+            UnitOutput = analysis.BroadAnalysis(Units, Spells);
+            CharacterOutput = analysis.BroadAnalysis(Characters, Spells);
+        }
+
+        private void WriteAnalysisDataToFile()
+        {
+            AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, UnitOutput, includeUselessOptions: false);
+            AnalysisFile.WriteAnalysis(_appPath + "\\" + _characterAnalysisFile, CharacterOutput, includeUselessOptions: false);
         }
     }
 }
