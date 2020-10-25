@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.AccessControl;
 using System.Text;
 using System.Windows.Input;
@@ -81,9 +82,9 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private CharacterInputModel _selectedCharacter;
+        private IConquestInput _selectedCharacter;
 
-        public CharacterInputModel SelectedCharacter
+        public IConquestInput SelectedCharacter
         {
             get => _selectedCharacter;
             set
@@ -93,9 +94,9 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private UnitInputModel _selectedUnit;
+        private IConquestInput _selectedUnit;
 
-        public UnitInputModel SelectedUnit
+        public IConquestInput SelectedUnit
         {
             get => _selectedUnit;
             set
@@ -104,6 +105,172 @@ namespace ConquestBuilder.ViewModels
                 NotifyPropertyChanged("SelectedUnit");
             }
         }
+
+        private bool _dataPanelVisible;
+
+        /// <summary>
+        /// Dictates whether the data panel with the unit information is displayed or not
+        /// </summary>
+        public bool DataPanelVisible
+        {
+            get => _dataPanelVisible;
+            set
+            {
+                _dataPanelVisible = value;
+                NotifyPropertyChanged("DataPanelVisible");
+            }
+        }
+
+        private string _selectedUnitName;
+
+        public string SelectedUnitName
+        {
+            get => _selectedUnitName;
+            set
+            {
+                _selectedUnitName = value;
+                NotifyPropertyChanged("SelectedUnitName");
+            }
+        }
+
+        private string _selectedUnitPoints;
+
+        public string SelectedUnitPoints
+        {
+            get => _selectedUnitPoints;
+            set
+            {
+                _selectedUnitPoints = value;
+                NotifyPropertyChanged("SelectedUnitPoints");
+            }
+        }
+
+        private string _selectedUnitType;
+        public string SelectedUnitType
+        {
+            get => _selectedUnitType;
+            set
+            {
+                _selectedUnitType = value;
+                NotifyPropertyChanged("SelectedUnitType");
+            }
+        }
+
+        private string _selectedUnitClass;
+        public string SelectedUnitClass
+        {
+            get => _selectedUnitClass;
+            set
+            {
+                _selectedUnitClass = value;
+                NotifyPropertyChanged("SelectedUnitClass");
+            }
+        }
+
+        private string _selectedUnitM;
+        public string SelectedUnitM
+        {
+            get => _selectedUnitM;
+            set
+            {
+                _selectedUnitM = value;
+                NotifyPropertyChanged("SelectedUnitM");
+            }
+        }
+
+        private string _selectedUnitV;
+        public string SelectedUnitV
+        {
+            get => _selectedUnitV;
+            set
+            {
+                _selectedUnitV = value;
+                NotifyPropertyChanged("SelectedUnitV");
+            }
+        }
+
+        private string _selectedUnitC;
+        public string SelectedUnitC
+        {
+            get => _selectedUnitC;
+            set
+            {
+                _selectedUnitC = value;
+                NotifyPropertyChanged("SelectedUnitC");
+            }
+        }
+
+        private string _selectedUnitW;
+        public string SelectedUnitW
+        {
+            get => _selectedUnitW;
+            set
+            {
+                _selectedUnitW = value;
+                NotifyPropertyChanged("SelectedUnitW");
+            }
+        }
+
+        private string _selectedUnitA;
+        public string SelectedUnitA
+        {
+            get => _selectedUnitA;
+            set
+            {
+                _selectedUnitA = value;
+                NotifyPropertyChanged("SelectedUnitA");
+            }
+        }
+
+        private string _selectedUnitR;
+        public string SelectedUnitR
+        {
+            get => _selectedUnitR;
+            set
+            {
+                _selectedUnitR = value;
+                NotifyPropertyChanged("SelectedUnitR");
+            }
+        }
+
+        private string _selectedUnitD;
+        public string SelectedUnitD
+        {
+            get => _selectedUnitD;
+            set
+            {
+                _selectedUnitD = value;
+                NotifyPropertyChanged("SelectedUnitD");
+            }
+        }
+
+        private string _selectedUnitE;
+        public string SelectedUnitE
+        {
+            get => _selectedUnitE;
+            set
+            {
+                _selectedUnitE = value;
+                NotifyPropertyChanged("SelectedUnitE");
+            }
+        }
+
+        private string _selectedUnitSpecialRules;
+
+        public string SelectedUnitSpecialRules
+        {
+            get
+            {
+                if (_selectedUnitSpecialRules == null) return String.Empty;
+                return "Special Rules - " + _selectedUnitSpecialRules.Replace("|", ", ");
+            }
+            set
+            {
+                _selectedUnitSpecialRules = value;
+                NotifyPropertyChanged("SelectedUnitSpecialRules");
+            }
+        }
+
         #endregion Public Properties
 
         #region Constructors
@@ -128,6 +295,7 @@ namespace ConquestBuilder.ViewModels
             };
 
             InitializeControls();
+            DataPanelVisible = false;
         }
 
         #endregion Public Methods
@@ -164,11 +332,13 @@ namespace ConquestBuilder.ViewModels
         private void OnCharacterSelected(object tag)
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
-            
+
             var character = unit.Tag as CharacterInputModel;
             SelectedCharacter = character ?? throw new InvalidOperationException("Item tag was not correct type");
-            LoadUnits(MainstayButtons, SelectedCharacter.MainstayChoices, "MainstayButtons");
-            LoadUnits(RestrictedButtons, SelectedCharacter.RestrictedChoices, "RestrictedButtons");
+            LoadUnits(MainstayButtons, character.MainstayChoices, "MainstayButtons");
+            LoadUnits(RestrictedButtons, character.RestrictedChoices, "RestrictedButtons");
+
+            LoadStatGrid(SelectedCharacter);
         }
 
         private void OnMainstaySelected(object tag)
@@ -181,12 +351,34 @@ namespace ConquestBuilder.ViewModels
             SelectUnit(tag);
         }
 
+        private void LoadStatGrid(IConquestInput data)
+        {
+            SelectedUnitName = data.Unit;
+            SelectedUnitPoints = data.Points + " pts";
+            SelectedUnitType = data.ModelType;
+            SelectedUnitClass = data.Weight;
+
+            SelectedUnitM = data.Move.ToString();
+            SelectedUnitV = data.Volley.ToString();
+            SelectedUnitC = data.Clash.ToString();
+            SelectedUnitW = data.Wounds.ToString();
+            SelectedUnitA = data.Attacks.ToString();
+            SelectedUnitR = data.Resolve.ToString();
+            SelectedUnitD = data.Defense.ToString();
+            SelectedUnitE = data.Evasion.ToString();
+            SelectedUnitSpecialRules = data.SpecialRules;
+
+            DataPanelVisible = true;
+        }
+
         private void SelectUnit(object tag)
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
             var regiment = unit.Tag as UnitInputModel;
             SelectedUnit = regiment ?? throw new InvalidOperationException("Item tag was not correct type");
+
+            LoadStatGrid(SelectedUnit);
         }
 
         private void LoadUnits(ObservableCollection<UnitButton> collection, IEnumerable<string> units, string collectionName)

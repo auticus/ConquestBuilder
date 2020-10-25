@@ -4,11 +4,11 @@ using System.Text;
 
 namespace ConquestController.Models.Input
 {
-    public abstract class ConquestInput<T> : IConquestOptionInput
+    public abstract class ConquestInput<T> : IConquestInput, IConquestOptionInput
     {
         protected ConquestInput()
         {
-            Options = new List<IConquestInput>();
+            Options = new List<IConquestBaseInput>();
         }
         public string Faction { get; set; }
         public string Unit { get; set; }
@@ -66,6 +66,8 @@ namespace ConquestController.Models.Input
         public string Image { get; set; }
         public string Notes { get; set; }
 
+        public string SpecialRules { get; set; } //used for display special rules in the builder
+
         //**Rules that get boosted by options but not on input file **//
         public bool BuffDefenseOrEvasion { get; set; } //if true then will boost defense if cleave isn't that big a deal otherwise boosts evasion
         public int Decay { get; set; } //apply decay damage in the defense calculation to lower defense output
@@ -94,7 +96,7 @@ namespace ConquestController.Models.Input
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
         /// </summary>
-        public List<IConquestInput> Options { get; }
+        public List<IConquestBaseInput> Options { get; }
 
         public abstract bool CanCalculateDefense();
         public abstract bool CanCastSpells();

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ConquestController.Models.Input
 {
-    public interface IConquestOptionInput : IConquestInput
+    public interface IConquestOptionInput : IConquestBaseInput
     {
-        List<IConquestInput> Options { get; }
+        List<IConquestBaseInput> Options { get; }
         bool CanCalculateDefense();
         bool CanCastSpells();
     }

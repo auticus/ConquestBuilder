@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class UnitOptionModel : IConquestInput, IOption
+    public class UnitOptionModel : IConquestBaseInput, IOption
     { 
         public string Faction { get; set; }
         public string Unit { get; set; }

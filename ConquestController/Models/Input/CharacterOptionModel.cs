@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class CharacterOptionModel : IConquestInput
+    public class CharacterOptionModel : IConquestBaseInput
     {
         public string Faction { get; set; }
         public string Unit { get; set; }

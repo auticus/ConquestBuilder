@@ -81,8 +81,8 @@
                                 <DataTemplate>
                                     <Button Width="200" Height="240" Margin="5,5,0,5" 
                                             Style="{StaticResource DefaultButton}"
-                                            Command="{Binding MainstaySelected}"
-                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}">
+                                            Command="{Binding Path=DataContext.MainstaySelected, ElementName=WindowArmyBuilder}"
+                                            CommandParameter="{Binding}">
                                         <StackPanel>
                                             <Image Source="{Binding UnitThumb}" Height="180" Width="200"/>
                                             <TextBlock HorizontalAlignment="Center" Text="{Binding UnitName}"/>
@@ -111,8 +111,8 @@
                                 <DataTemplate>
                                     <Button Width="200" Height="240" Margin="5,5,0,5" 
                                             Style="{StaticResource DefaultButton}"
-                                            Command="{Binding RestrictedSelected}"
-                                            CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}">
+                                            Command="{Binding Path = DataContext.RestrictedSelected, ElementName=WindowArmyBuilder}"
+                                            CommandParameter="{Binding}">
                                         <StackPanel>
                                             <Image Source="{Binding UnitThumb}" Height="180" Width="200"/>
                                             <TextBlock HorizontalAlignment="Center" Text="{Binding UnitName}"/>
@@ -124,6 +124,126 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
+        </Grid>
+        <!-- Right panel List and Detail Column -->
+        <Grid Grid.Column="1" Style="{StaticResource Grids}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="1" Grid.Row="0" 
+                    CornerRadius="20,20,0,0" 
+                    BorderBrush="White" 
+                    Background="BlanchedAlmond"
+                    Height="160"
+                    Width="650"
+                    Margin="0,-25,0,0"
+                    Visibility="{Binding DataPanelVisible,Mode=TwoWay, Converter={StaticResource VisibilityConverter}}">
+                
+                <Grid Margin="0,35,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Border BorderThickness="1"
+                        BorderBrush="Black"
+                        Background="BurlyWood"
+                        Height="90"
+                        Width="600"
+                        Margin="0,-20,0,0"
+                        Grid.Row="0">
+                        <Grid Margin="0,-20,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding SelectedUnitName}" FontWeight="Bold" FontSize="18" Margin="10,25,0,0" Grid.Column="0"/>
+                                <TextBlock Text="{Binding SelectedUnitPoints}" FontWeight="Bold" FontSize="18" Grid.Column="1" TextAlignment="Right" Margin="0,25,5,0"/>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Type" FontWeight="Bold" FontSize="18" Grid.Column="0" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="Class" FontWeight="Bold" FontSize="18" Grid.Column="1" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="M" FontWeight="Bold" FontSize="18" Grid.Column="2" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="V" FontWeight="Bold" FontSize="18" Grid.Column="3" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="C" FontWeight="Bold" FontSize="18" Grid.Column="4" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="A" FontWeight="Bold" FontSize="18" Grid.Column="5" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="W" FontWeight="Bold" FontSize="18" Grid.Column="6" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="R" FontWeight="Bold" FontSize="18" Grid.Column="7" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="D" FontWeight="Bold" FontSize="18" Grid.Column="8" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="E" FontWeight="Bold" FontSize="18" Grid.Column="9" Grid.Row="0" TextAlignment="Center"/>
+                            </Grid>
+
+                        </Grid>
+                    </Border> <!-- end of brown inner box -->
+                    <!-- begin statistic grid and border -->
+                    <Border BorderThickness="1"
+                        BorderBrush="Black"
+                        Background="AntiqueWhite"
+                        Height="60"
+                        Width="600"
+                        Margin="0,-40,0,0"
+                        Grid.Row="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding SelectedUnitType}" FontSize="18" Grid.Column="0" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitClass}" FontSize="18" Grid.Column="1" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitM}" FontSize="18" Grid.Column="2" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitV}" FontSize="18" Grid.Column="3" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitC}" FontSize="18" Grid.Column="4" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitA}" FontSize="18" Grid.Column="5" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitW}" FontSize="18" Grid.Column="6" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitR}" FontSize="18" Grid.Column="7" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitD}" FontSize="18" Grid.Column="8" Grid.Row="0" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding SelectedUnitE}" FontSize="18" Grid.Column="9" Grid.Row="0" TextAlignment="Center"/>
+
+                                <TextBlock Grid.ColumnSpan="10" Text="{Binding SelectedUnitSpecialRules}" Grid.Row="1" FontSize="16" Margin="5,0,0,0"/>
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+                    <!-- end of brown inner box -->
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </Window>
