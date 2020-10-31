@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.AccessControl;
-using System.Text;
 using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
 using ConquestController.Models.Input;
+using ConquestController.Models.Output;
 
 namespace ConquestBuilder.ViewModels
 {
@@ -271,6 +267,42 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        private string _selectedOffense;
+
+        public string SelectedOffense
+        {
+            get => _selectedOffense;
+            set
+            {
+                _selectedOffense = value;
+                NotifyPropertyChanged("SelectedOffense");
+            }
+        }
+
+        private string _selectedDefense;
+
+        public string SelectedDefense
+        {
+            get => _selectedDefense;
+            set
+            {
+                _selectedDefense = value;
+                NotifyPropertyChanged("SelectedDefense");
+            }
+        }
+
+        private string _selectedOverall;
+
+        public string SelectedOverall
+        {
+            get => _selectedOverall;
+            set
+            {
+                _selectedOverall = value;
+                NotifyPropertyChanged("SelectedOverall");
+            }
+        }
+
         #endregion Public Properties
 
         #region Constructors
@@ -368,9 +400,44 @@ namespace ConquestBuilder.ViewModels
             SelectedUnitE = data.Evasion.ToString();
             SelectedUnitSpecialRules = data.SpecialRules;
 
+            var dataOutput = GetSelectedOutput(data);
+            var output = dataOutput.Item1;
+            var averageOutput = dataOutput.Item2;
+
+            SelectedOffense = $"Off: {Math.Round(output.OffenseOutput, 2)}  Avg({Math.Round(averageOutput[0])})";
+            SelectedDefense = $"Def: {Math.Round(output.DefenseOutput, 2)}  Avg({Math.Round(averageOutput[1])})"; 
+            SelectedOverall = $"Score: {Math.Round(output.TotalOutput, 2)}  Avg({Math.Round(averageOutput[2])})";
+
             DataPanelVisible = true;
         }
 
+        private Tuple<IConquestAnalysisOutput, double[]> GetSelectedOutput(IConquestInput data)
+        {
+            //try to find it in the unit collection first
+            IConquestAnalysisOutput output = null;
+            var averages = new double[3];
+
+            output = _data.UnitOutput.FirstOrDefault(output => output.Unit == data.Unit);
+            if (output != null)
+            {
+                averages[0] = _data.AverageUnitOffense;
+                averages[1] = _data.AverageUnitDefense;
+                averages[2] = _data.AverageUnitOverall;
+                return new Tuple<IConquestAnalysisOutput, double[]>(output, averages);
+            }
+
+            output = _data.CharacterOutput.FirstOrDefault(output => output.Unit == data.Unit);
+            if (output != null)
+            {
+                averages[0] = _data.AverageCharacterOffense;
+                averages[1] = _data.AverageCharacterDefense;
+                averages[2] = _data.AverageCharacterOverall;
+                return new Tuple<IConquestAnalysisOutput, double[]>(output, averages);
+            }
+
+            throw new InvalidOperationException($"Output data could not be found for input {data.Unit}");
+        }
+        
         private void SelectUnit(object tag)
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");

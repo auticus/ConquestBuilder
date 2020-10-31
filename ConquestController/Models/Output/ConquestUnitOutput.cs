@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace ConquestController.Models.Output
 {
-    public class ConquestUnitOutput
+    public class ConquestUnitOutput : IConquestAnalysisOutput
     {
         #region Constant Values
         public const int BASE_STAND_COUNT = 3;
@@ -68,6 +69,14 @@ namespace ConquestController.Models.Output
         public Stand[] Stands { get; private set; }
         public AnalysisOutput Analysis { get; private set; }
         public AnalysisSummary Summary { get; private set; }
+
+        #region Interface Implementation
+        public double OffenseOutput => AnalysisOutputData.NormalizedOffense;
+        public double DefenseOutput => AnalysisOutputData.TotalDefense;
+        public double TotalOutput => AnalysisOutputData.OutputScore;
+        #endregion
+
+        #region Constructor
         public ConquestUnitOutput()
         {
             var standFull = new Stand();
@@ -85,6 +94,7 @@ namespace ConquestController.Models.Output
             Stands = new[] { standFull, standExtra1, standExtra2, standExtra3, standSupport1, standSupport2, standSupport3 };
             ID = Guid.NewGuid();
         }
+        #endregion Constructor
 
         /// <summary>
         /// Apply all of the score given to every stand within the output model

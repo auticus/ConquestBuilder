@@ -33,7 +33,54 @@ namespace ConquestBuilder.Models
         
         public IList<ConquestUnitOutput> UnitOutput { get; private set; }
         public IList<ConquestUnitOutput> CharacterOutput { get; private set; }
-        
+
+        public double AverageUnitOffense
+        {
+            get
+            {
+                return UnitOutput.Average(p => p.OffenseOutput);
+            }
+        }
+
+        public double AverageUnitDefense
+        {
+            get
+            {
+                return UnitOutput.Average(p => p.DefenseOutput);
+            }
+        }
+
+        public double AverageUnitOverall
+        {
+            get
+            {
+                return UnitOutput.Average(p => p.TotalOutput);
+            }
+        }
+
+        public double AverageCharacterOffense
+        {
+            get
+            {
+                return CharacterOutput.Average(p => p.OffenseOutput);
+            }
+        }
+
+        public double AverageCharacterDefense
+        {
+            get
+            {
+                return CharacterOutput.Average(p => p.DefenseOutput);
+            }
+        }
+
+        public double AverageCharacterOverall
+        {
+            get
+            {
+                return CharacterOutput.Average(p => p.TotalOutput);
+            }
+        }
 
         public ApplicationData()
         {
