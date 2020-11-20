@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ConquestBuilder.ViewModels;
+using ConquestController.Models;
+using ConquestController.Models.Input;
 
 namespace ConquestBuilder.Views
 {
@@ -36,6 +38,7 @@ namespace ConquestBuilder.Views
             InitializeComponent();
             this.DataContext = vm;
             _vm = vm;
+            _vm.RefreshRosterTreeView += RefreshRosterTreeView;
         }
 
         private void ArmyBuilderWindow_OnClosed(object sender, EventArgs e)
@@ -48,6 +51,109 @@ namespace ConquestBuilder.Views
             var hwnd = new WindowInteropHelper((Window)sender).Handle;
             var value = GetWindowLong(hwnd, GWL_STYLE);
             SetWindowLong(hwnd, GWL_STYLE, (int) (value & ~WS_MAXIMIZEBOX));
+        }
+
+        private void RefreshRosterTreeView(object sender, RosterChangedEventArgs e)
+        {
+            //for right now we will go ahead and clear the tree out, repopulate it, and then select the item in the RosterChangedEventArgs
+            //additionally make sure that they are always expanded
+            tvRoster.Items.Clear();
+
+            foreach (var character in _vm.Roster.RosterCharacters)
+            {
+                var tvItem = new TreeViewItem()
+                {
+                    Header = character.Character.Unit,
+                    IsSelected = (character.Character.ID == e.SelectedElementID),
+                    IsExpanded = true,
+                    Tag = new TreeViewRoster(){Category = RosterCategory.Character, Model = character}
+                };
+                
+                var optionsNode = new TreeViewItem()
+                {
+                    Header = "Options",
+                    IsSelected = false,
+                    IsExpanded = true,
+                    Tag = new TreeViewRoster() {Category = RosterCategory.OptionLabel}
+                };
+
+                var mainstayNode = new TreeViewItem()
+                {
+                    Header = "Mainstay Regiments",
+                    IsSelected = false,
+                    IsExpanded = true,
+                    Tag = new TreeViewRoster() { Category = RosterCategory.MainstayLabel }
+                };
+
+                var restrictedNode = new TreeViewItem()
+                {
+                    Header = "Restricted Regiments",
+                    IsSelected = false,
+                    IsExpanded = true,
+                    Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedLabel }
+                };
+
+                foreach (var regiment in character.MainstayRegiments)
+                {
+                    var mainstayRegiment = new TreeViewItem()
+                    {
+                        Header = regiment.Unit,
+                        IsSelected = (regiment.ID == e.SelectedElementID),
+                        IsExpanded = true,
+                        Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment }
+                    };
+
+                    mainstayNode.Items.Add(mainstayRegiment);
+                }
+
+                foreach (var regiment in character.RestrictedRegiments)
+                {
+                    var restrictedRegiment = new TreeViewItem()
+                    {
+                        Header = regiment.Unit,
+                        IsSelected = (regiment.ID == e.SelectedElementID),
+                        IsExpanded = true,
+                        Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment }
+                    };
+
+                    restrictedNode.Items.Add(restrictedRegiment);
+                }
+
+                tvItem.Items.Add(optionsNode);
+                tvItem.Items.Add(mainstayNode);
+                tvItem.Items.Add(restrictedNode);
+                tvRoster.Items.Add(tvItem);
+            }
+
+            //todo: make sure the selected item is set to keep the mainstay and restricted portraits loaded when you select from the treeview
+        }
+
+        private void TreeView_RosterSelectedChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            //case: treeview is cleared which will fire this event and will be null coming in
+            if (!(tvRoster.SelectedItem is TreeViewItem selectedItem))
+            {
+                _vm.SelectedRosterCharacter = null;
+                _vm.SelectedRosterUnit = null;
+                return;
+            }
+
+            var rosterElement = selectedItem.Tag as TreeViewRoster;
+
+            switch (rosterElement.Category) //potential null warning but yes if its null i want this to throw up because thats bad
+            {
+                case RosterCategory.Character:
+                    _vm.SelectedRosterCharacter = (IRosterCharacter)rosterElement.Model;
+                    _vm.SelectedRosterUnit = null;
+                    break;
+                case RosterCategory.MainstayRegiment:
+                case RosterCategory.RestrictedRegiment:
+                    _vm.SelectedRosterCharacter = null;
+                    _vm.SelectedRosterUnit = (IConquestInput)rosterElement.Model;
+                    break;
+                default:
+                    throw new InvalidOperationException($"Roster Element category {rosterElement.Category} is not recognized");
+            }
         }
     }
 }

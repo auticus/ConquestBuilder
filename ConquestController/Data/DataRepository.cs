@@ -72,7 +72,7 @@ namespace ConquestController.Data
             }
         }
 
-        public static void AssignDelimitedPropertyToList(List<string> list, string data, char delimiter = '|')
+        public static void AssignDelimitedPropertyToList(IList<string> list, string data, char delimiter = '|')
         {
             var splitData = data.Split(delimiter);
 

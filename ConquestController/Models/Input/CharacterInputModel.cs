@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConquestController.Models.Input
 {
-    public class CharacterInputModel : ConquestInput<CharacterInputModel>, IConquestSpellcaster
+    public class CharacterInputModel : ConquestInput<CharacterInputModel>, IConquestSpellcaster, IConquestCharacter
     {
         public int IsQuickSilverStrike { get; set; }
         public int ItemCount { get; set; }
@@ -16,9 +16,9 @@ namespace ConquestController.Models.Input
         public string SupremacyNotes { get; set; }
         public string SpellSchools { get; set; } //mapped to Schools, comes from input
         public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1
-
-        public List<string> MainstayChoices { get; set; }
-        public List<string> RestrictedChoices { get; set; }
+        
+        public IEnumerable<string> MainstayChoices { get; set; }
+        public IEnumerable<string> RestrictedChoices { get; set; }
         public List<string> Schools { get; set; }
         public List<SpellModel> Spells { get; set; }
 
@@ -38,7 +38,7 @@ namespace ConquestController.Models.Input
             return Unit;
         }
 
-        public override CharacterInputModel Copy()
+        public override IConquestInput Copy()
         {
             var model = new CharacterInputModel()
             {

@@ -260,7 +260,7 @@ namespace ConquestController.Analysis
 
         private static AnalysisInput<T> BuildOptionInput<T>(AnalysisInput<T> input, object extra) where T : ConquestInput<T>
         {
-            var optionModel = input.Model.Copy();
+            var optionModel = (ConquestInput<T>)input.Model.Copy();
             if (!(extra is UnitOptionModel option)) throw new InvalidOperationException("Object sent to BuildOptionInput is not an option model");
 
             var aInput = new AnalysisInput<T>()
@@ -278,7 +278,7 @@ namespace ConquestController.Analysis
         private static AnalysisInput<T> BuildSpellInput<T>(AnalysisInput<T> input, object extra)
             where T : ConquestInput<T>
         {
-            var optionModel = input.Model.Copy();
+            var optionModel = (ConquestInput<T>)input.Model.Copy();
             if (!(extra is SpellModel option))
                 throw new InvalidOperationException("Object sent to BuildSpellInput is not a spell model");
 

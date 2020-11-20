@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
+using ConquestController.Models;
 
 namespace ConquestBuilder.ViewModels
 {

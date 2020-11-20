@@ -69,8 +69,8 @@ namespace ConquestController.Analysis
             foreach (var character in characters)
             {
                 //assign restricted and mainstay choices
-                DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices, character.Mainstay);
-                DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices, character.Restricted);
+                DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices as IList<string>, character.Mainstay);
+                DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices as IList<string>, character.Restricted);
 
                 //assign character options
                 DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestOptionInput>().ToList(), inputOptionsFilePath);

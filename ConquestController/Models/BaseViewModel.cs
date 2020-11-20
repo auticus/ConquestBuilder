@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ConquestBuilder.ViewModels
+namespace ConquestController.Models
 {
     public abstract class BaseViewModel : INotifyPropertyChanged
     {

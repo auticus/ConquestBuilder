@@ -9,7 +9,9 @@ namespace ConquestController.Models.Input
         protected ConquestInput()
         {
             Options = new List<IConquestBaseInput>();
+            ID = Guid.NewGuid();
         }
+        public Guid ID { get; set; }
         public string Faction { get; set; }
         public string Unit { get; set; }
         public string Weight { get; set; }
@@ -100,6 +102,6 @@ namespace ConquestController.Models.Input
 
         public abstract bool CanCalculateDefense();
         public abstract bool CanCastSpells();
-        public abstract T Copy();
+        public abstract IConquestInput Copy();
     }
 }

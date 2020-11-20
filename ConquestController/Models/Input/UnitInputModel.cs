@@ -1,4 +1,6 @@
-﻿namespace ConquestController.Models.Input
+﻿using System;
+
+namespace ConquestController.Models.Input
 {
     public class UnitInputModel : ConquestInput<UnitInputModel>
     {
@@ -15,7 +17,7 @@
             return Unit;
         }
 
-        public override UnitInputModel Copy()
+        public override IConquestInput Copy()
         {
             var model = new UnitInputModel
             {

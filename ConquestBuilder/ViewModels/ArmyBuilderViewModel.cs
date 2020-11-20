@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
+using ConquestController.Models;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
 
@@ -12,11 +13,19 @@ namespace ConquestBuilder.ViewModels
 {
     public class ArmyBuilderViewModel : BaseViewModel
     {
+        private enum LastItemSelected
+        {
+            Character,
+            Regiment
+        }
+
         #region Private Fields
         private readonly ApplicationData _data;
         private Armies _currentArmy;
         private const string THUMB_PATH = "..\\Images\\Thumbs\\";
-
+        private LastItemSelected _lastItemSelected = LastItemSelected.Character; //for logic where we need to act on the last selected item 
+        private const int MAX_NUMBER_REGIMENTS_ALLOWED = 4;
+        
         private string Filter
         {
             get
@@ -37,6 +46,8 @@ namespace ConquestBuilder.ViewModels
         public ICommand CharacterSelected { get; set; }
         public ICommand MainstaySelected { get; set; }
         public ICommand RestrictedSelected { get; set; }
+        public ICommand AddSelectedToRoster { get; set; }
+        public ICommand DeleteRosterElement { get; set; }
         #endregion Commands
 
         #region Public Properties
@@ -78,29 +89,67 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestInput _selectedCharacter;
+        private IConquestInput _selectedPortraitCharacter;
 
-        public IConquestInput SelectedCharacter
+        /// <summary>
+        /// Represents the character portrait that is selected in the UI (not the selected character on the roster)
+        /// </summary>
+        public IConquestInput SelectedPortraitCharacter
         {
-            get => _selectedCharacter;
+            get => _selectedPortraitCharacter;
             set
             {
-                _selectedCharacter = value;
-                NotifyPropertyChanged("SelectedCharacter");
+                _selectedPortraitCharacter = value;
+                NotifyPropertyChanged("SelectedPortraitCharacter");
             }
         }
 
-        private IConquestInput _selectedUnit;
+        private IConquestInput _selectedPortraitUnit;
 
-        public IConquestInput SelectedUnit
+        public IConquestInput SelectedPortraitUnit
         {
-            get => _selectedUnit;
+            get => _selectedPortraitUnit;
             set
             {
-                _selectedUnit = value;
-                NotifyPropertyChanged("SelectedUnit");
+                _selectedPortraitUnit = value;
+                NotifyPropertyChanged("SelectedPortraitUnit");
             }
         }
+
+        private IRosterCharacter _selectedRosterCharacter;
+
+        /// <summary>
+        /// The selected character from the roster (not the portrait)
+        /// </summary>
+        public IRosterCharacter SelectedRosterCharacter
+        {
+            get => _selectedRosterCharacter;
+            set
+            {
+                _selectedRosterCharacter = value;
+                NotifyPropertyChanged("SelectedRosterCharacter");
+
+                DeleteElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+            }
+        }
+
+        private IConquestInput _selectedRosterUnit;
+
+        /// <summary>
+        /// The selected unit from the roster
+        /// </summary>
+        public IConquestInput SelectedRosterUnit
+        {
+            get => _selectedRosterUnit;
+            set
+            {
+                _selectedRosterUnit = value;
+                NotifyPropertyChanged("SelectedRosterUnit");
+
+                DeleteElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+            }
+        }
+
 
         private bool _dataPanelVisible;
 
@@ -303,12 +352,39 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        private Roster _roster;
+
+        public Roster Roster
+        {
+            get => _roster;
+            set
+            {
+                _roster = value;
+                NotifyPropertyChanged("Roster");
+            }
+        }
+
+        private bool _deleteElementEnabled;
+
+        public bool DeleteElementEnabled
+        {
+            get => _deleteElementEnabled;
+            set
+            {
+                _deleteElementEnabled = value;
+                NotifyPropertyChanged("DeleteElementEnabled");
+            }
+        }
+
+        //The following area deals with the treeview, which I admit my WPF-fu is not powerful enough to hook up via xaml properly so am using code behind to make things work
+        public EventHandler<RosterChangedEventArgs> RefreshRosterTreeView { get; set; }
         #endregion Public Properties
 
         #region Constructors
         public ArmyBuilderViewModel(ApplicationData data)
         {
             _data = data;
+            _roster = new Roster();
             InitializeCommands();
         }
 
@@ -327,6 +403,7 @@ namespace ConquestBuilder.ViewModels
             };
 
             InitializeControls();
+            InitializeRoster();
             DataPanelVisible = false;
         }
 
@@ -334,6 +411,7 @@ namespace ConquestBuilder.ViewModels
 
         private void CloseView(object parameter)
         {
+            //todo: implement
             if (!(parameter is IView view)) throw new ArgumentException("Parameter passed to ArmyBuilderViewModel::CloseView was not an IView");
             view.Close();
 
@@ -345,6 +423,8 @@ namespace ConquestBuilder.ViewModels
             CharacterSelected = new RelayCommand(OnCharacterSelected, param => this.CanExecute);
             MainstaySelected = new RelayCommand(OnMainstaySelected, param => this.CanExecute);
             RestrictedSelected = new RelayCommand(OnRestrictedSelected, param=> this.CanExecute);
+            AddSelectedToRoster = new RelayCommand(OnSelectionAdded, param=>CanExecute);
+            DeleteRosterElement = new RelayCommand(OnRosterElementDeleted, param => this.CanExecute);
         }
 
         private void InitializeControls()
@@ -361,16 +441,30 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        private void InitializeRoster()
+        {
+            //todo: need to have a way to hook in the roster limit here
+            Roster = new Roster
+            {
+                RosterName = "New Roster", 
+                RosterLimit = 0, 
+                ID = Guid.NewGuid()
+            };
+
+            RefreshRosterTreeView(this, new RosterChangedEventArgs());
+        }
+
         private void OnCharacterSelected(object tag)
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
             var character = unit.Tag as CharacterInputModel;
-            SelectedCharacter = character ?? throw new InvalidOperationException("Item tag was not correct type");
+            SelectedPortraitCharacter = character ?? throw new InvalidOperationException("Item tag was not correct type");
             LoadUnits(MainstayButtons, character.MainstayChoices, "MainstayButtons");
             LoadUnits(RestrictedButtons, character.RestrictedChoices, "RestrictedButtons");
 
-            LoadStatGrid(SelectedCharacter);
+            LoadStatGrid(SelectedPortraitCharacter);
+            _lastItemSelected = LastItemSelected.Character;
         }
 
         private void OnMainstaySelected(object tag)
@@ -381,6 +475,145 @@ namespace ConquestBuilder.ViewModels
         private void OnRestrictedSelected(object tag)
         {
             SelectUnit(tag);
+        }
+
+        private void OnSelectionAdded(object tag)
+        {
+            if (_lastItemSelected == LastItemSelected.Character)
+            {
+                AddSelectedCharacterToRoster();
+            }
+            else AddSelectedRegimentToSelectedCharacter();
+        }
+
+        private void OnRosterElementDeleted(object tag)
+        {
+            //the selected roster unit or character should have a value.  delete the id of that item in the Roster element
+            if (SelectedRosterCharacter != null)
+            {
+                DeleteSelectedRosterCharacter();
+            }
+            else DeleteSelectedRegimentFromRoster();
+
+            RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs());
+        }
+
+        private void DeleteSelectedRosterCharacter()
+        {
+            //this assumes SelectedRosterCharacter has a value.  if it doesn't, it will break, and that is good we want it to break because that should not happen
+            for (var i = 0; i < Roster.RosterCharacters.Count; i++)
+            {
+                var element = Roster.RosterCharacters[i];
+                if (element.Character.ID == SelectedRosterCharacter.Character.ID)
+                {
+                    Roster.RosterCharacters.Remove(element);
+                    return;
+                }
+            }
+
+            throw new InvalidOperationException("The selected character was not found to be deleted!");
+        }
+
+        private void DeleteSelectedRegimentFromRoster()
+        {
+            //ah yes but where do they reside?  we must explore the depths of the roster to find the selected regiment
+            foreach (var element in Roster.RosterCharacters)
+            {
+                var dataStructures = new []{element.MainstayRegiments, element.RestrictedRegiments};
+
+                foreach (var list in dataStructures)
+                {
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        var regiment = list[i];
+                        if (regiment.ID == SelectedRosterUnit.ID)
+                        {
+                            list.Remove(regiment);
+                            return;
+                        }
+                    }
+                }
+
+                throw new InvalidOperationException("The selected regiment was not found to be deleted!");
+            }
+        }
+
+        private void AddSelectedCharacterToRoster()
+        {
+            if (SelectedPortraitCharacter == null) throw new InvalidOperationException("AddSelectedCharacterToRoster called but SelectedPortraitCharacter is null");
+            var newCharacter = new RosterCharacter(SelectedPortraitCharacter);
+            Roster.RosterCharacters.Add(newCharacter);
+            SelectedRosterCharacter = newCharacter;
+
+            var e = new RosterChangedEventArgs
+            {
+                RosterElement = newCharacter, SelectedElementID = newCharacter.Character.ID
+            };
+
+            RefreshRosterTreeView?.Invoke(this, e);
+        }
+
+        private void AddSelectedRegimentToSelectedCharacter()
+        {
+            if (SelectedPortraitUnit == null)
+                throw new InvalidOperationException("AddSelectedRegimentToSelectedCharacter called but SelectedPortraitUnit is null");
+
+            if (SelectedRosterCharacter == null)
+                throw new InvalidOperationException("AddSelectedRegimentToSelectedCharacter called but SelectedRosterCharacter is null");
+
+            //it is important that when you add new units that you COPY them to ensure that a specific ID for them is brought in
+            var character = Roster.RosterCharacters.First(p => p.Character.ID == SelectedRosterCharacter.Character.ID);
+
+            //determine if the selected regiment is mainstay or restricted
+            if (!(character.Character is IConquestCharacter conquestCharacterWarbands)) 
+                throw new InvalidOperationException("The character passed in the roster was not of type IConquestCharacter");
+
+            var unit = conquestCharacterWarbands.MainstayChoices.FirstOrDefault(p => p == SelectedPortraitUnit.Unit);
+            if (unit != null)
+            {
+                if (CanMainstayBeAdded(character))
+                {
+                    var regiment = SelectedPortraitUnit.Copy();
+                    character.MainstayRegiments.Add(regiment);
+
+                    var e = new RosterChangedEventArgs
+                    {
+                        RosterElement = character,
+                        SelectedElementID = regiment.ID
+                    };
+                    RefreshRosterTreeView?.Invoke(this, e);
+                }
+
+                return;
+            }
+
+            unit = conquestCharacterWarbands.RestrictedChoices.First(p => p == SelectedPortraitUnit.Unit); //called to trap for another value not existing, we want that to fail
+            if (CanRestrictedBeAdded(character))
+            {
+                var regiment = SelectedPortraitUnit.Copy();
+                character.RestrictedRegiments.Add(regiment);
+
+                var e = new RosterChangedEventArgs
+                {
+                    RosterElement = character,
+                    SelectedElementID = regiment.ID
+                };
+                RefreshRosterTreeView?.Invoke(this, e);
+            }
+        }
+
+        private bool CanMainstayBeAdded(IRosterCharacter character)
+        {
+            var score = character.MainstayRegiments.Count;
+            score += (character.RestrictedRegiments.Count * 2);
+
+            return score < MAX_NUMBER_REGIMENTS_ALLOWED;
+        }
+
+        private bool CanRestrictedBeAdded(IRosterCharacter character)
+        {
+            return (character.RestrictedRegiments.Count < 2 &&
+                    character.RestrictedRegiments.Count < character.MainstayRegiments.Count);
         }
 
         private void LoadStatGrid(IConquestInput data)
@@ -404,9 +637,9 @@ namespace ConquestBuilder.ViewModels
             var output = dataOutput.Item1;
             var averageOutput = dataOutput.Item2;
 
-            SelectedOffense = $"Off: {Math.Round(output.OffenseOutput, 2)}  Avg({Math.Round(averageOutput[0])})";
-            SelectedDefense = $"Def: {Math.Round(output.DefenseOutput, 2)}  Avg({Math.Round(averageOutput[1])})"; 
-            SelectedOverall = $"Score: {Math.Round(output.TotalOutput, 2)}  Avg({Math.Round(averageOutput[2])})";
+            SelectedOffense = $"Off: {Math.Round(output.OffenseOutput, 2)}  Avg({Math.Round(averageOutput[0], 2)})";
+            SelectedDefense = $"Def: {Math.Round(output.DefenseOutput, 2)}  Avg({Math.Round(averageOutput[1], 2)})"; 
+            SelectedOverall = $"Score: {Math.Round(output.TotalOutput, 2)}  Avg({Math.Round(averageOutput[2], 2)})";
 
             DataPanelVisible = true;
         }
@@ -443,9 +676,10 @@ namespace ConquestBuilder.ViewModels
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
             var regiment = unit.Tag as UnitInputModel;
-            SelectedUnit = regiment ?? throw new InvalidOperationException("Item tag was not correct type");
+            SelectedPortraitUnit = regiment ?? throw new InvalidOperationException("Item tag was not correct type");
 
-            LoadStatGrid(SelectedUnit);
+            LoadStatGrid(SelectedPortraitUnit);
+            _lastItemSelected = LastItemSelected.Regiment;
         }
 
         private void LoadUnits(ObservableCollection<UnitButton> collection, IEnumerable<string> units, string collectionName)
