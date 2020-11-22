@@ -21,6 +21,8 @@ namespace ConquestController.Models.Input
         int Defense { get; set; }
         int Evasion { get; set; }
 
+        int TotalPoints { get; }
+
         string SpecialRules { get; set; }
 
         IConquestInput Copy();

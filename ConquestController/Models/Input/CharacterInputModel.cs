@@ -17,7 +17,14 @@ namespace ConquestController.Models.Input
         public string SpellSchools { get; set; } //mapped to Schools, comes from input
         public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1
         
+        /// <summary>
+        /// The list of units that can be chosen by this character as a mainstay
+        /// </summary>
         public IEnumerable<string> MainstayChoices { get; set; }
+
+        /// <summary>
+        /// The list of units that can be chosen by this character as restricted
+        /// </summary>
         public IEnumerable<string> RestrictedChoices { get; set; }
         public List<string> Schools { get; set; }
         public List<SpellModel> Spells { get; set; }
@@ -103,6 +110,9 @@ namespace ConquestController.Models.Input
             {
                 model.Options.Add(option);
             }
+
+            model.MainstayChoices = new List<string>(this.MainstayChoices);
+            model.RestrictedChoices = new List<string>(this.RestrictedChoices);
 
             return model;
         }

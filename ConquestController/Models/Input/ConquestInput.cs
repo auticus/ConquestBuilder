@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 
 namespace ConquestController.Models.Input
@@ -94,6 +95,12 @@ namespace ConquestController.Models.Input
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes
         /// </summary>
         public int AnalysisOnly { get; set; }
+
+        public int TotalPoints
+        {
+            //take all of the total
+            get => Points;
+        }
 
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.

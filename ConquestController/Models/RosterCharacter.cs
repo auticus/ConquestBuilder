@@ -18,6 +18,11 @@ namespace ConquestController.Models
         public List<IConquestInput> MainstayRegiments { get; }
         public List<IConquestInput> RestrictedRegiments { get; }
 
+        public string CharacterHeader
+        {
+            get => $"{Character.Unit} - {Character.TotalPoints} pts";
+        }
+
         public RosterCharacter(IConquestInput character)
         {
             //we want to copy so that we get new IDs for these guys, we don't want to share IDs with the portrait versions

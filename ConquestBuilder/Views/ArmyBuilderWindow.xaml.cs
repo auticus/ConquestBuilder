@@ -39,6 +39,12 @@ namespace ConquestBuilder.Views
             this.DataContext = vm;
             _vm = vm;
             _vm.RefreshRosterTreeView += RefreshRosterTreeView;
+            _vm.SendMessageToView += PostMessageToUser;
+        }
+
+        private void PostMessageToUser(object sender, string e)
+        {
+            MessageBox.Show(e, "Conquest Builder", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void ArmyBuilderWindow_OnClosed(object sender, EventArgs e)
@@ -59,11 +65,17 @@ namespace ConquestBuilder.Views
             //additionally make sure that they are always expanded
             tvRoster.Items.Clear();
 
+            //clearing the roster cleared the selected character, if that has a value we need to put that back
+            if (e.RosterElement != null)
+            {
+                _vm.SelectedRosterCharacter = e.RosterElement;
+            }
+
             foreach (var character in _vm.Roster.RosterCharacters)
             {
                 var tvItem = new TreeViewItem()
                 {
-                    Header = character.Character.Unit,
+                    Header = character.CharacterHeader,
                     IsSelected = (character.Character.ID == e.SelectedElementID),
                     IsExpanded = true,
                     Tag = new TreeViewRoster(){Category = RosterCategory.Character, Model = character}
@@ -97,7 +109,7 @@ namespace ConquestBuilder.Views
                 {
                     var mainstayRegiment = new TreeViewItem()
                     {
-                        Header = regiment.Unit,
+                        Header = $"{regiment.Unit} - {regiment.TotalPoints} pts",
                         IsSelected = (regiment.ID == e.SelectedElementID),
                         IsExpanded = true,
                         Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment }
@@ -110,7 +122,7 @@ namespace ConquestBuilder.Views
                 {
                     var restrictedRegiment = new TreeViewItem()
                     {
-                        Header = regiment.Unit,
+                        Header = $"{regiment.Unit} - {regiment.TotalPoints} pts",
                         IsSelected = (regiment.ID == e.SelectedElementID),
                         IsExpanded = true,
                         Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment }
@@ -148,7 +160,6 @@ namespace ConquestBuilder.Views
                     break;
                 case RosterCategory.MainstayRegiment:
                 case RosterCategory.RestrictedRegiment:
-                    _vm.SelectedRosterCharacter = null;
                     _vm.SelectedRosterUnit = (IConquestInput)rosterElement.Model;
                     break;
                 default:

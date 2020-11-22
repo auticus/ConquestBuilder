@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
@@ -53,6 +54,7 @@ namespace ConquestBuilder.ViewModels
         #region Public Properties
 
         public EventHandler OnWindowClosed { get; set; }
+        public EventHandler<string> SendMessageToView { get; set; }
 
         private ObservableCollection<UnitButton> _characterButtons;
 
@@ -489,7 +491,7 @@ namespace ConquestBuilder.ViewModels
         private void OnRosterElementDeleted(object tag)
         {
             //the selected roster unit or character should have a value.  delete the id of that item in the Roster element
-            if (SelectedRosterCharacter != null)
+            if (SelectedRosterCharacter != null && SelectedRosterUnit == null)
             {
                 DeleteSelectedRosterCharacter();
             }
@@ -521,6 +523,7 @@ namespace ConquestBuilder.ViewModels
             {
                 var dataStructures = new []{element.MainstayRegiments, element.RestrictedRegiments};
 
+                var checkingMainstay = true; //first element is the mainstay, afterward set to false
                 foreach (var list in dataStructures)
                 {
                     for (var i = 0; i < list.Count; i++)
@@ -528,14 +531,28 @@ namespace ConquestBuilder.ViewModels
                         var regiment = list[i];
                         if (regiment.ID == SelectedRosterUnit.ID)
                         {
+                            //we have a valid item to remove but doing so may break the roster if there are too many restricted regiments after!
+                            if (checkingMainstay && !CanRemoveMainstay(element))
+                            {
+                                SendMessageToView?.Invoke(this, "Removing this regiment is not allowed as this would create an invalid roster.");
+                                return;
+                            }
                             list.Remove(regiment);
                             return;
                         }
                     }
+
+                    checkingMainstay = false;
                 }
 
                 throw new InvalidOperationException("The selected regiment was not found to be deleted!");
             }
+        }
+
+        private bool CanRemoveMainstay(IRosterCharacter element)
+        {
+            //can never have more restricted regiments than you do mainstay so you cannot delete a mainstay if that would create an illegal roster
+            return element.MainstayRegiments.Count > element.RestrictedRegiments.Count;
         }
 
         private void AddSelectedCharacterToRoster()
@@ -553,22 +570,29 @@ namespace ConquestBuilder.ViewModels
             RefreshRosterTreeView?.Invoke(this, e);
         }
 
+        
+
         private void AddSelectedRegimentToSelectedCharacter()
         {
             if (SelectedPortraitUnit == null)
                 throw new InvalidOperationException("AddSelectedRegimentToSelectedCharacter called but SelectedPortraitUnit is null");
 
+            //note this is the SELECTED ROSTER (Not the Portrait!!)
             if (SelectedRosterCharacter == null)
-                throw new InvalidOperationException("AddSelectedRegimentToSelectedCharacter called but SelectedRosterCharacter is null");
+            {
+                SendMessageToView?.Invoke(this, "Selected regiment cannot be added as no character is selected to add the regiment to");
+                return;
+            }
 
             //it is important that when you add new units that you COPY them to ensure that a specific ID for them is brought in
             var character = Roster.RosterCharacters.First(p => p.Character.ID == SelectedRosterCharacter.Character.ID);
 
-            //determine if the selected regiment is mainstay or restricted
-            if (!(character.Character is IConquestCharacter conquestCharacterWarbands)) 
+            //determine if the selected regiment is mainstay or restricted.  If its not in either, you will get an error when trying to pull from restricted
+            //as we are intentionally using the First directive assuming there is one there (as this should never happen that you find nothing in either)
+            if (!(character.Character is IConquestCharacter selectedCharacterWarbands)) 
                 throw new InvalidOperationException("The character passed in the roster was not of type IConquestCharacter");
 
-            var unit = conquestCharacterWarbands.MainstayChoices.FirstOrDefault(p => p == SelectedPortraitUnit.Unit);
+            var unit = selectedCharacterWarbands.MainstayChoices.FirstOrDefault(p => p == SelectedPortraitUnit.Unit);
             if (unit != null)
             {
                 if (CanMainstayBeAdded(character))
@@ -583,11 +607,15 @@ namespace ConquestBuilder.ViewModels
                     };
                     RefreshRosterTreeView?.Invoke(this, e);
                 }
+                else
+                {
+                    SendMessageToView?.Invoke(this, "Character has maximum allowed regiments");
+                }
 
                 return;
             }
 
-            unit = conquestCharacterWarbands.RestrictedChoices.First(p => p == SelectedPortraitUnit.Unit); //called to trap for another value not existing, we want that to fail
+            unit = selectedCharacterWarbands.RestrictedChoices.First(p => p == SelectedPortraitUnit.Unit); //called to trap for another value not existing, we want that to fail
             if (CanRestrictedBeAdded(character))
             {
                 var regiment = SelectedPortraitUnit.Copy();
@@ -599,6 +627,10 @@ namespace ConquestBuilder.ViewModels
                     SelectedElementID = regiment.ID
                 };
                 RefreshRosterTreeView?.Invoke(this, e);
+            }
+            else
+            {
+                SendMessageToView?.Invoke(this, "Restricted regiment cannot be added to this character currently");
             }
         }
 
@@ -612,7 +644,7 @@ namespace ConquestBuilder.ViewModels
 
         private bool CanRestrictedBeAdded(IRosterCharacter character)
         {
-            return (character.RestrictedRegiments.Count < 2 &&
+            return ((character.MainstayRegiments.Count + character.RestrictedRegiments.Count < MAX_NUMBER_REGIMENTS_ALLOWED) &&
                     character.RestrictedRegiments.Count < character.MainstayRegiments.Count);
         }
 
