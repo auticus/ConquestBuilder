@@ -138,8 +138,8 @@
                     Height="180"
                     Width="650"
                     Margin="0,-5,0,0"
-                    Visibility="{Binding DataPanelVisible,Mode=TwoWay, Converter={StaticResource VisibilityConverter}}">
-                
+                    >
+
                 <Grid Margin="0,35,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.7*"/>
@@ -253,17 +253,31 @@
                         <TextBlock Text="{Binding SelectedOffense}" FontSize="14" Grid.Column="0"/>
                         <TextBlock Text="{Binding SelectedDefense}" FontSize="14" Grid.Column="1"/>
                         <TextBlock Text="{Binding SelectedOverall}" FontSize="14" Grid.Column="2"/>
-                        <Button Content="Add" Command="{Binding AddSelectedToRoster}" Margin = "20,0,20,0" Grid.Column="3"/>
+                        <Button Content="Add" 
+                                Command="{Binding AddSelectedToRoster}" 
+                                IsEnabled="{Binding DataPanelEnabled}"
+                                Margin = "20,0,20,0" Grid.Column="3"/>
                     </Grid>
                 </Grid> <!--end of grid in the white box-->
             </Border> <!--end of white box -->
             <Grid Row="1"> <!--List view and roster add/options etc panel-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.1*"/>
+                    <RowDefinition Height="0.9*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.8*"/>
                     <ColumnDefinition Width="0.2*"/>
                 </Grid.ColumnDefinitions>
-                <TreeView Name="tvRoster" Grid.Column="0" Margin="10,10,10,10"
-                          Visibility="{Binding DataPanelVisible,Mode=TwoWay, Converter={StaticResource VisibilityConverter}}"
+                <!--Row 1 - roster info panel -->
+                <WrapPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
+                    <Label Content="Roster Name" Style="{StaticResource defaultLabel}"/>
+                    <TextBox Text="{Binding Roster.RosterName}" Margin="5,0,0,0" Width="200" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Content="{Binding Roster.TotalPoints}" Margin="10,0,0,0" Style="{StaticResource defaultLabel}"/>
+                </WrapPanel>
+                
+                <!--Row 2-->
+                <TreeView Name="tvRoster" Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"
                           SelectedItemChanged="TreeView_RosterSelectedChanged"
                           >
                     <TreeView.Resources>
@@ -281,9 +295,8 @@
                 </TreeView>
 
                 <!--Side Panel off of the roster -->
-                <Button Grid.Column="1" Height="32" Width="64" VerticalAlignment="Top" Margin="0,10,0,0" Content="X" FontSize="18" FontWeight="Bold"
+                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="64" VerticalAlignment="Top" Margin="0,10,0,0" Content="X" FontSize="18" FontWeight="Bold"
                         IsEnabled = "{Binding DeleteElementEnabled}"
-                        Visibility="{Binding DataPanelVisible,Mode=TwoWay, Converter={StaticResource VisibilityConverter}}"
                         Command="{Binding DeleteRosterElement}"/>
             </Grid>
         </Grid>

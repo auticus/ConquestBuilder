@@ -12,6 +12,8 @@ namespace ConquestController.Models.Input
             Options = new List<IConquestBaseInput>();
             ID = Guid.NewGuid();
         }
+        public EventHandler PointsChanged { get; set; }
+
         public Guid ID { get; set; }
         public string Faction { get; set; }
         public string Unit { get; set; }
