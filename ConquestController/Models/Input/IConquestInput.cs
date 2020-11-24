@@ -4,6 +4,7 @@ namespace ConquestController.Models.Input
 {
     public interface IConquestInput : IConquestBaseInput
     {
+        EventHandler PointsChanged { get; set; }
         Guid ID { get; set; }
         string Weight { get; set; }
         string ModelType { get; set; }

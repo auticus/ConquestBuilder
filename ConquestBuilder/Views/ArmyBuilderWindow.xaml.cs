@@ -78,7 +78,7 @@ namespace ConquestBuilder.Views
                     Header = character.CharacterHeader,
                     IsSelected = (character.Character.ID == e.SelectedElementID),
                     IsExpanded = true,
-                    Tag = new TreeViewRoster(){Category = RosterCategory.Character, Model = character}
+                    Tag = new TreeViewRoster(){Category = RosterCategory.Character, Model = character, RosterCharacter = character}
                 };
                 
                 var optionsNode = new TreeViewItem()
@@ -86,7 +86,7 @@ namespace ConquestBuilder.Views
                     Header = "Options",
                     IsSelected = false,
                     IsExpanded = true,
-                    Tag = new TreeViewRoster() {Category = RosterCategory.OptionLabel}
+                    Tag = new TreeViewRoster() {Category = RosterCategory.OptionLabel, RosterCharacter = character}
                 };
 
                 var mainstayNode = new TreeViewItem()
@@ -94,7 +94,7 @@ namespace ConquestBuilder.Views
                     Header = "Mainstay Regiments",
                     IsSelected = false,
                     IsExpanded = true,
-                    Tag = new TreeViewRoster() { Category = RosterCategory.MainstayLabel }
+                    Tag = new TreeViewRoster() { Category = RosterCategory.MainstayLabel, RosterCharacter = character}
                 };
 
                 var restrictedNode = new TreeViewItem()
@@ -102,7 +102,7 @@ namespace ConquestBuilder.Views
                     Header = "Restricted Regiments",
                     IsSelected = false,
                     IsExpanded = true,
-                    Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedLabel }
+                    Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedLabel, RosterCharacter = character}
                 };
 
                 foreach (var regiment in character.MainstayRegiments)
@@ -112,7 +112,7 @@ namespace ConquestBuilder.Views
                         Header = $"{regiment.Unit} - {regiment.TotalPoints} pts",
                         IsSelected = (regiment.ID == e.SelectedElementID),
                         IsExpanded = true,
-                        Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment }
+                        Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment, RosterCharacter = character}
                     };
 
                     mainstayNode.Items.Add(mainstayRegiment);
@@ -125,7 +125,7 @@ namespace ConquestBuilder.Views
                         Header = $"{regiment.Unit} - {regiment.TotalPoints} pts",
                         IsSelected = (regiment.ID == e.SelectedElementID),
                         IsExpanded = true,
-                        Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment }
+                        Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment, RosterCharacter = character}
                     };
 
                     restrictedNode.Items.Add(restrictedRegiment);
@@ -151,16 +151,21 @@ namespace ConquestBuilder.Views
             }
 
             var rosterElement = selectedItem.Tag as TreeViewRoster;
+            _vm.SelectedRosterCharacter = rosterElement.RosterCharacter;
 
             switch (rosterElement.Category) //potential null warning but yes if its null i want this to throw up because thats bad
             {
                 case RosterCategory.Character:
-                    _vm.SelectedRosterCharacter = (IRosterCharacter)rosterElement.Model;
                     _vm.SelectedRosterUnit = null;
                     break;
                 case RosterCategory.MainstayRegiment:
                 case RosterCategory.RestrictedRegiment:
                     _vm.SelectedRosterUnit = (IConquestInput)rosterElement.Model;
+                    break;
+                case RosterCategory.MainstayLabel:
+                case RosterCategory.OptionLabel:
+                case RosterCategory.RestrictedLabel:
+                    //currently do nothing when these tree view branches are selected
                     break;
                 default:
                     throw new InvalidOperationException($"Roster Element category {rosterElement.Category} is not recognized");

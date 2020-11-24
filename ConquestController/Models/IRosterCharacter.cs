@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using ConquestController.Models.Input;
 
 namespace ConquestController.Models
@@ -6,7 +7,7 @@ namespace ConquestController.Models
     public interface IRosterCharacter
     {
         IConquestInput Character { get; }
-        List<IConquestInput> MainstayRegiments { get; }
-        List<IConquestInput> RestrictedRegiments { get; }
+        ObservableCollection<IConquestInput> MainstayRegiments { get; }
+        ObservableCollection<IConquestInput> RestrictedRegiments { get; }
     }
 }

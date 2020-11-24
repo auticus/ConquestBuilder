@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ConquestController.Models;
 
 namespace ConquestBuilder.ViewModels
 {
@@ -17,6 +15,7 @@ namespace ConquestBuilder.ViewModels
     public class TreeViewRoster
     {
         public RosterCategory Category { get; set; }
+        public IRosterCharacter RosterCharacter { get; set; }
         public object Model { get; set; }
     }
 }

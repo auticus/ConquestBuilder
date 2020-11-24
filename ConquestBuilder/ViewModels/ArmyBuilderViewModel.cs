@@ -153,18 +153,18 @@ namespace ConquestBuilder.ViewModels
         }
 
 
-        private bool _dataPanelVisible;
+        private bool _dataPanelEnabled;
 
         /// <summary>
         /// Dictates whether the data panel with the unit information is displayed or not
         /// </summary>
-        public bool DataPanelVisible
+        public bool DataPanelEnabled
         {
-            get => _dataPanelVisible;
+            get => _dataPanelEnabled;
             set
             {
-                _dataPanelVisible = value;
-                NotifyPropertyChanged("DataPanelVisible");
+                _dataPanelEnabled = value;
+                NotifyPropertyChanged("DataPanelEnabled");
             }
         }
 
@@ -406,7 +406,7 @@ namespace ConquestBuilder.ViewModels
 
             InitializeControls();
             InitializeRoster();
-            DataPanelVisible = false;
+            DataPanelEnabled = false;
         }
 
         #endregion Public Methods
@@ -673,7 +673,7 @@ namespace ConquestBuilder.ViewModels
             SelectedDefense = $"Def: {Math.Round(output.DefenseOutput, 2)}  Avg({Math.Round(averageOutput[1], 2)})"; 
             SelectedOverall = $"Score: {Math.Round(output.TotalOutput, 2)}  Avg({Math.Round(averageOutput[2], 2)})";
 
-            DataPanelVisible = true;
+            DataPanelEnabled = true;
         }
 
         private Tuple<IConquestAnalysisOutput, double[]> GetSelectedOutput(IConquestInput data)
