@@ -1,4 +1,4 @@
-Faction,School,Spell,Points,Range,Difficulty,IsScaling,Tag,HitsCaused,EffectCausedPer,SelfOnly,Effect
+Faction,Category,Spell,Points,Range,Difficulty,IsScaling,Tag,HitsCaused,EffectCausedPer,SelfOnly,Notes
 100k,Priest,Divine Sanction,15,0,3,0,Cleave2|IsDeadlyBlades,0,[],1,May immediately perform a duel action
 100k,Priest,Fervour,15,12,3,1,[],0,[],0,Remove broken status from target
 100k,Priest,Heavenly Blessing,40,0,3,1,IsBlessed,0,[],0,All stands in the casters regiment gain Blessed until end of turn
@@ -38,7 +38,7 @@ Dweghom,Tempered Steelshaper,Hone Blades,30,12,3,1,C,0,[],0,Target Regiment +1 C
 Dweghom,Tempered Steelshaper,Temper Plate,20,12,3,1,E,0,[],0,Target regiment +1 Evasion
 Nords,Shaman,Blurred Vision,30,14,3,0,[],0,[],0,Target regiment can only target regiments with volley or charge within 12
 Nords,Shaman,Mist Weave,25,12,3,1,[],0,[],0,Target regiment +1 Defense against all Volley actions
-Nords,Shaman,Reshape Destiny,20,8,3,1,[],0,[],0,Target regiment rerolls failed Defense rolls of a 6"
+Nords,Shaman,Reshape Destiny,20,8,3,1,[],0,[],0,"Target regiment rerolls failed Defense rolls of a 6"""
 Nords,Volva,Aspect of Fenrir,25,0,2,1,Terrify,0,[],0,All stands in the caster regiment gain Terrifying special rule until end of turn
 Nords,Volva,Fruit of the Golden Tree,40,0,3,0,Healing5,0,Success,0,For each success the casters regiment heals two wounds
 Nords,Volva,Glory of Valhalla,30,0,3,0,R,0,[],0,"All friendly regiments within 12"" of the caster gain +1 Resolve"

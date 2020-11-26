@@ -1,4 +1,4 @@
-Faction,Unit,Name,Grouping,Points,Tag,ArmyLimit,Notes
+Faction,Unit,Name,Category,Points,Tag,ArmyLimit,Notes
 100k,Militia,Servite,1,30,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
 100k,Militia,Neophyte,1,25,[],0,Whilte the Neophyte is alive the Regiment has the Devout special rule
 100k,Militia,Errant of the Order of the Shield,1,20,AlwaysInspire,0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel

@@ -295,9 +295,12 @@
                 </TreeView>
 
                 <!--Side Panel off of the roster -->
-                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="64" VerticalAlignment="Top" Margin="0,10,0,0" Content="X" FontSize="18" FontWeight="Bold"
-                        IsEnabled = "{Binding DeleteElementEnabled}"
+                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,10,0,0" Content="X" FontSize="18" FontWeight="Bold"
+                        IsEnabled = "{Binding SelectedRosterElementEnabled}"
                         Command="{Binding DeleteRosterElement}"/>
+                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,60,0,0" Content="Options" FontSize="18" FontWeight="Bold"
+                        IsEnabled = "{Binding SelectedRosterElementEnabled}"
+                        Command="{Binding OptionElement}"/>
             </Grid>
         </Grid>
     </Grid>

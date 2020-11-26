@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
@@ -26,6 +26,8 @@ namespace ConquestBuilder.ViewModels
         private const string THUMB_PATH = "..\\Images\\Thumbs\\";
         private LastItemSelected _lastItemSelected = LastItemSelected.Character; //for logic where we need to act on the last selected item 
         private const int MAX_NUMBER_REGIMENTS_ALLOWED = 4;
+
+        private Window _view; //the window
         
         private string Filter
         {
@@ -49,6 +51,7 @@ namespace ConquestBuilder.ViewModels
         public ICommand RestrictedSelected { get; set; }
         public ICommand AddSelectedToRoster { get; set; }
         public ICommand DeleteRosterElement { get; set; }
+        public ICommand OptionElement { get; set; }
         #endregion Commands
 
         #region Public Properties
@@ -131,7 +134,7 @@ namespace ConquestBuilder.ViewModels
                 _selectedRosterCharacter = value;
                 NotifyPropertyChanged("SelectedRosterCharacter");
 
-                DeleteElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+                SelectedRosterElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
             }
         }
 
@@ -148,7 +151,7 @@ namespace ConquestBuilder.ViewModels
                 _selectedRosterUnit = value;
                 NotifyPropertyChanged("SelectedRosterUnit");
 
-                DeleteElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+                SelectedRosterElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
             }
         }
 
@@ -366,15 +369,15 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private bool _deleteElementEnabled;
+        private bool _selectedRosterElementEnabled;
 
-        public bool DeleteElementEnabled
+        public bool SelectedRosterElementEnabled
         {
-            get => _deleteElementEnabled;
+            get => _selectedRosterElementEnabled;
             set
             {
-                _deleteElementEnabled = value;
-                NotifyPropertyChanged("DeleteElementEnabled");
+                _selectedRosterElementEnabled = value;
+                NotifyPropertyChanged("SelectedRosterElementEnabled");
             }
         }
 
@@ -393,7 +396,7 @@ namespace ConquestBuilder.ViewModels
         #endregion Constructors
 
         #region Public Methods
-        public void SetArmy(string army)
+        public void SetView(Window view, string army)
         {
             _currentArmy = army.ToLower() switch
             {
@@ -407,18 +410,10 @@ namespace ConquestBuilder.ViewModels
             InitializeControls();
             InitializeRoster();
             DataPanelEnabled = false;
+            _view = view;
         }
 
         #endregion Public Methods
-
-        private void CloseView(object parameter)
-        {
-            //todo: implement
-            if (!(parameter is IView view)) throw new ArgumentException("Parameter passed to ArmyBuilderViewModel::CloseView was not an IView");
-            view.Close();
-
-            OnWindowClosed?.Invoke(this, EventArgs.Empty);
-        }
 
         private void InitializeCommands()
         {
@@ -427,6 +422,7 @@ namespace ConquestBuilder.ViewModels
             RestrictedSelected = new RelayCommand(OnRestrictedSelected, param=> this.CanExecute);
             AddSelectedToRoster = new RelayCommand(OnSelectionAdded, param=>CanExecute);
             DeleteRosterElement = new RelayCommand(OnRosterElementDeleted, param => this.CanExecute);
+            OptionElement = new RelayCommand(OnRosterElementOption, param => this.CanExecute);
         }
 
         private void InitializeControls()
@@ -445,7 +441,6 @@ namespace ConquestBuilder.ViewModels
 
         private void InitializeRoster()
         {
-            //todo: need to have a way to hook in the roster limit here
             Roster = new Roster
             {
                 RosterName = "New Roster", 
@@ -498,6 +493,31 @@ namespace ConquestBuilder.ViewModels
             else DeleteSelectedRegimentFromRoster();
 
             RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs());
+        }
+
+        private void OnRosterElementOption(object element)
+        {
+            IConquestOptionInput selectedElement;
+            if (SelectedRosterUnit != null)
+            {
+                selectedElement = (IConquestOptionInput)SelectedRosterUnit;
+            }
+            else if (SelectedRosterCharacter != null)
+            {
+                selectedElement = (IConquestOptionInput)SelectedRosterCharacter.Character;
+            }
+            else
+            {
+                throw new InvalidOperationException("Option was selected but no roster elements are selected");
+            }
+
+            var optionVM = new OptionViewModel(selectedElement);
+            var window = new OptionsWindow(_view, optionVM);
+
+            if (window.ShowDialog() == true)
+            {
+                //todo: add the option
+            }
         }
 
         private void DeleteSelectedRosterCharacter()

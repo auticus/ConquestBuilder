@@ -7,14 +7,14 @@
         public int Points { get; set; }
         public int SelfOnly { get; set; }
         public string Faction { get; set; }
-        public string School { get; set; }
+        public string Category { get; set; }
         public int Range { get; set; }
         public int Difficulty { get; set; }
         public int IsScaling { get; set; }
         public int HitsCaused { get; set; }
         public string EffectCausedPer { get; set; }
-        public string Effect { get; set; }
         public int WarlordOnly { get; set; }
+        public string Notes { get; set; }
 
         public override string ToString()
         {

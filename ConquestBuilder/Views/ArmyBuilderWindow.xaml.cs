@@ -28,10 +28,10 @@ namespace ConquestBuilder.Views
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        private static extern int SetWindowLongPtr(IntPtr hWnd, int nIndex, int dwNewLong);
 
         private const int GWL_STYLE = -16;
-        private const int WS_MAXIMIZEBOX = 0x10000;
+        private const int WS_MAXBUTTON = 0x10000;
 
         public ArmyBuilderWindow(ArmyBuilderViewModel vm)
         {
@@ -56,7 +56,7 @@ namespace ConquestBuilder.Views
         {
             var hwnd = new WindowInteropHelper((Window)sender).Handle;
             var value = GetWindowLong(hwnd, GWL_STYLE);
-            SetWindowLong(hwnd, GWL_STYLE, (int) (value & ~WS_MAXIMIZEBOX));
+            SetWindowLongPtr(hwnd, GWL_STYLE, (int) (value & ~WS_MAXBUTTON));
         }
 
         private void RefreshRosterTreeView(object sender, RosterChangedEventArgs e)
