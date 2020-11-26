@@ -72,7 +72,7 @@ namespace ConquestBuilder.ViewModels
             Visible = false;
             var view = new ArmyBuilderWindow(_armyBuilderVM);
 
-            _armyBuilderVM.SetArmy(card.Name);
+            _armyBuilderVM.SetView(view, card.Name);
             view.Show();
         }
 

@@ -10,7 +10,7 @@
         public int SelfOnly { get; set; }
         public int ArmyLimit { get; set; }
         public string Notes { get; set; }
-        public int Grouping { get; set; }
+        public string Category { get; set; }
         public int WarlordOnly { get; set; }
 
         public override string ToString()

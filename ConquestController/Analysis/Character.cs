@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ConquestController.Analysis.Components;
 using ConquestController.Data;
 using ConquestController.Models.Input;
@@ -34,7 +32,7 @@ namespace ConquestController.Analysis
 
             foreach (var school in model.Schools)
             {
-                foreach (var spell in spells.Where(p => p.School == school))
+                foreach (var spell in spells.Where(p => p.Category == school))
                 {
                     var spellOutput = Magic.CalculateOutput(model, spell, allClash, allDefenses, allResolve);
 
@@ -71,15 +69,13 @@ namespace ConquestController.Analysis
                 //assign restricted and mainstay choices
                 DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices as IList<string>, character.Mainstay);
                 DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices as IList<string>, character.Restricted);
-
-                //assign character options
-                DataRepository.AssignUnitOptionsToModelsFromFile(characters.Cast<IConquestOptionInput>().ToList(), inputOptionsFilePath);
+                DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestOptionInput>(){character}, inputOptionsFilePath);
                 
                 //assign spell schools and individual spells to the character
                 DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
                 foreach (var school in character.Schools)
                 {
-                    character.Spells.AddRange(spellModels.Where(p => p.School == school));
+                    character.Spells.AddRange(spellModels.Where(p => p.Category == school));
                 }
             }
         }
