@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ConquestController.Models.Input
 {
-    public abstract class ConquestInput<T> : IConquestInput, IConquestOptionInput
+    public abstract class ConquestGameElementGameElement<T> : IConquestGameElement, IConquestGameElementOption
     {
-        protected ConquestInput()
+        protected ConquestGameElementGameElement()
         {
             Options = new List<IConquestBaseInput>();
+            ActiveOptions = new ObservableCollection<IOption>();
             ID = Guid.NewGuid();
+
+            ActiveOptions.CollectionChanged += (sender, args) =>
+            {
+                PointsChanged?.Invoke(this, EventArgs.Empty);
+            };
         }
         public EventHandler PointsChanged { get; set; }
 
@@ -101,7 +107,7 @@ namespace ConquestController.Models.Input
         public int TotalPoints
         {
             //take all of the total
-            get => Points;
+            get => Points + ActiveOptions.Sum(p => p.Points);
         }
 
         /// <summary>
@@ -109,8 +115,13 @@ namespace ConquestController.Models.Input
         /// </summary>
         public List<IConquestBaseInput> Options { get; }
 
+        /// <summary>
+        /// For a roster element, the actively selected options
+        /// </summary>
+        public ObservableCollection<IOption> ActiveOptions { get; set; }
+
         public abstract bool CanCalculateDefense();
         public abstract bool CanCastSpells();
-        public abstract IConquestInput Copy();
+        public abstract IConquestGameElement Copy();
     }
 }

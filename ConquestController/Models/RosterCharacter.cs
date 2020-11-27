@@ -9,8 +9,8 @@ namespace ConquestController.Models
     {
         public EventHandler PointsChanged { get; set; }
 
-        private IConquestInput _character;
-        public IConquestInput Character
+        private IConquestGameElement _character;
+        public IConquestGameElement Character
         {
             get => _character;
             set
@@ -20,17 +20,17 @@ namespace ConquestController.Models
                 PointsChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public ObservableCollection<IConquestInput> MainstayRegiments { get; }
-        public ObservableCollection<IConquestInput> RestrictedRegiments { get; }
+        public ObservableCollection<IConquestGameElement> MainstayRegiments { get; }
+        public ObservableCollection<IConquestGameElement> RestrictedRegiments { get; }
 
         public string CharacterHeader => $"{Character.Unit} - {Character.TotalPoints} pts";
 
-        public RosterCharacter(IConquestInput character)
+        public RosterCharacter(IConquestGameElement character)
         {
             //we want to copy so that we get new IDs for these guys, we don't want to share IDs with the portrait versions
             Character = character.Copy(); 
-            MainstayRegiments = new ObservableCollection<IConquestInput>();
-            RestrictedRegiments = new ObservableCollection<IConquestInput>();
+            MainstayRegiments = new ObservableCollection<IConquestGameElement>();
+            RestrictedRegiments = new ObservableCollection<IConquestGameElement>();
 
             Character.PointsChanged += Element_PointsChanged;
             MainstayRegiments.CollectionChanged += SubscribeCollectionEvents;
@@ -41,14 +41,14 @@ namespace ConquestController.Models
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (IConquestInput element in e.NewItems)
+                foreach (IConquestGameElement element in e.NewItems)
                 {
                     element.PointsChanged += Element_PointsChanged;
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (IConquestInput element in e.OldItems)
+                foreach (IConquestGameElement element in e.OldItems)
                 {
                     element.PointsChanged -= Element_PointsChanged;
                 }

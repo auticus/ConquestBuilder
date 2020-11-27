@@ -5,7 +5,7 @@ namespace ConquestBuilder.ViewModels
 {
     public class RosterChangedEventArgs : EventArgs
     {
-        public RosterCharacter RosterElement { get; set; }
+        public IRosterCharacter RosterElement { get; set; }
         public Guid SelectedElementID { get; set; }
     }
 }

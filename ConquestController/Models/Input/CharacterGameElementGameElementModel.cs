@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConquestController.Models.Input
 {
-    public class CharacterInputModel : ConquestInput<CharacterInputModel>, IConquestSpellcaster, IConquestCharacter
+    public class CharacterGameElementGameElementModel : ConquestGameElementGameElement<CharacterGameElementGameElementModel>, IConquestSpellcaster, IConquestCharacter
     {
         public int IsQuickSilverStrike { get; set; }
         public int ItemCount { get; set; }
@@ -29,7 +29,7 @@ namespace ConquestController.Models.Input
         public List<string> Schools { get; set; }
         public List<SpellModel> Spells { get; set; }
 
-        public CharacterInputModel()
+        public CharacterGameElementGameElementModel()
         {
             MainstayChoices = new List<string>();
             RestrictedChoices = new List<string>();
@@ -45,9 +45,9 @@ namespace ConquestController.Models.Input
             return Unit;
         }
 
-        public override IConquestInput Copy()
+        public override IConquestGameElement Copy()
         {
-            var model = new CharacterInputModel()
+            var model = new CharacterGameElementGameElementModel()
             {
                 Faction = Faction,
                 Unit = Unit,

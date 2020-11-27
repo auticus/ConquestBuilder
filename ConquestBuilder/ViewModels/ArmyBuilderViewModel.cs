@@ -94,12 +94,12 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestInput _selectedPortraitCharacter;
+        private IConquestGameElement _selectedPortraitCharacter;
 
         /// <summary>
         /// Represents the character portrait that is selected in the UI (not the selected character on the roster)
         /// </summary>
-        public IConquestInput SelectedPortraitCharacter
+        public IConquestGameElement SelectedPortraitCharacter
         {
             get => _selectedPortraitCharacter;
             set
@@ -109,9 +109,9 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestInput _selectedPortraitUnit;
+        private IConquestGameElement _selectedPortraitUnit;
 
-        public IConquestInput SelectedPortraitUnit
+        public IConquestGameElement SelectedPortraitUnit
         {
             get => _selectedPortraitUnit;
             set
@@ -138,12 +138,12 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestInput _selectedRosterUnit;
+        private IConquestGameElement _selectedRosterUnit;
 
         /// <summary>
         /// The selected unit from the roster
         /// </summary>
-        public IConquestInput SelectedRosterUnit
+        public IConquestGameElement SelectedRosterUnit
         {
             get => _selectedRosterUnit;
             set
@@ -455,7 +455,7 @@ namespace ConquestBuilder.ViewModels
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
-            var character = unit.Tag as CharacterInputModel;
+            var character = unit.Tag as CharacterGameElementGameElementModel;
             SelectedPortraitCharacter = character ?? throw new InvalidOperationException("Item tag was not correct type");
             LoadUnits(MainstayButtons, character.MainstayChoices, "MainstayButtons");
             LoadUnits(RestrictedButtons, character.RestrictedChoices, "RestrictedButtons");
@@ -493,31 +493,6 @@ namespace ConquestBuilder.ViewModels
             else DeleteSelectedRegimentFromRoster();
 
             RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs());
-        }
-
-        private void OnRosterElementOption(object element)
-        {
-            IConquestOptionInput selectedElement;
-            if (SelectedRosterUnit != null)
-            {
-                selectedElement = (IConquestOptionInput)SelectedRosterUnit;
-            }
-            else if (SelectedRosterCharacter != null)
-            {
-                selectedElement = (IConquestOptionInput)SelectedRosterCharacter.Character;
-            }
-            else
-            {
-                throw new InvalidOperationException("Option was selected but no roster elements are selected");
-            }
-
-            var optionVM = new OptionViewModel(selectedElement);
-            var window = new OptionsWindow(_view, optionVM);
-
-            if (window.ShowDialog() == true)
-            {
-                //todo: add the option
-            }
         }
 
         private void DeleteSelectedRosterCharacter()
@@ -668,7 +643,7 @@ namespace ConquestBuilder.ViewModels
                     character.RestrictedRegiments.Count < character.MainstayRegiments.Count);
         }
 
-        private void LoadStatGrid(IConquestInput data)
+        private void LoadStatGrid(IConquestGameElement data)
         {
             SelectedUnitName = data.Unit;
             SelectedUnitPoints = data.Points + " pts";
@@ -696,7 +671,7 @@ namespace ConquestBuilder.ViewModels
             DataPanelEnabled = true;
         }
 
-        private Tuple<IConquestAnalysisOutput, double[]> GetSelectedOutput(IConquestInput data)
+        private Tuple<IConquestAnalysisOutput, double[]> GetSelectedOutput(IConquestGameElement data)
         {
             //try to find it in the unit collection first
             IConquestAnalysisOutput output = null;
@@ -727,7 +702,7 @@ namespace ConquestBuilder.ViewModels
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
-            var regiment = unit.Tag as UnitInputModel;
+            var regiment = unit.Tag as UnitGameElementGameElementModel;
             SelectedPortraitUnit = regiment ?? throw new InvalidOperationException("Item tag was not correct type");
 
             LoadStatGrid(SelectedPortraitUnit);
@@ -753,6 +728,45 @@ namespace ConquestBuilder.ViewModels
                 {
                     Console.WriteLine($"{unit} is not found in the unit dictionary");
                 }
+            }
+        }
+
+        private void OnRosterElementOption(object element)
+        {
+            IConquestGameElementOption selectedElement;
+            Guid selectedGuid;
+
+            if (SelectedRosterUnit != null)
+            {
+                selectedElement = (IConquestGameElementOption)SelectedRosterUnit;
+                selectedGuid = SelectedRosterUnit.ID;
+            }
+            else if (SelectedRosterCharacter != null)
+            {
+                selectedElement = (IConquestGameElementOption)SelectedRosterCharacter.Character;
+                selectedGuid = SelectedRosterCharacter.Character.ID;
+            }
+            else
+            {
+                throw new InvalidOperationException("Option was selected but no roster elements are selected");
+            }
+
+            var optionVM = new OptionViewModel(selectedElement);
+            var window = new OptionsWindow(_view, optionVM);
+
+            if (window.ShowDialog() == true)
+            {
+                SynchronizeElement(optionVM, selectedElement);
+                RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs(){RosterElement = SelectedRosterCharacter, SelectedElementID = selectedGuid});
+            }
+        }
+
+        private void SynchronizeElement(OptionViewModel vm, IConquestGameElementOption element)
+        {
+            element.ActiveOptions.Clear();
+            foreach (var option in vm.Options.Where(p=>p.IsChecked))
+            {
+                element.ActiveOptions.Add((IOption)option.Model);
             }
         }
     }

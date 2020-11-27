@@ -30,7 +30,6 @@ namespace ConquestBuilder.Views
         private static extern int SetWindowLongPtr(IntPtr hWnd, int nIndex, int dwNewLong);
 
         private const int GWL_STYLE = -16;
-        private const int WS_MAXIMIZEBOX = 0x10000;
         private const int WS_SYSMENU = 0x80000;
 
         public OptionsWindow(Window owner, OptionViewModel vm)

@@ -6,8 +6,8 @@ namespace ConquestController.Models
 {
     public interface IRosterCharacter
     {
-        IConquestInput Character { get; }
-        ObservableCollection<IConquestInput> MainstayRegiments { get; }
-        ObservableCollection<IConquestInput> RestrictedRegiments { get; }
+        IConquestGameElement Character { get; }
+        ObservableCollection<IConquestGameElement> MainstayRegiments { get; }
+        ObservableCollection<IConquestGameElement> RestrictedRegiments { get; }
     }
 }
