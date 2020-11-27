@@ -20,7 +20,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="resolveValues">For buffs and damage</param>
         /// <returns>An array where the 0 element is raw output and the 1 element is resolve output</returns>
         public static double CalculateOutput<T>(T model, SpellModel spell, List<int> clashValues,
-            List<int> defenseValues, List<int> resolveValues) where T : ConquestGameElementGameElement<T>
+            List<int> defenseValues, List<int> resolveValues) where T : ConquestGameElement<T>
         {
             var output = 0.0d;
             var tags = GetTags(spell);
@@ -46,7 +46,7 @@ namespace ConquestController.Analysis.Components
         }
 
         private static double HandleOffensiveSpell<T>(T model, SpellModel spell, List<int> clashValues,
-            List<int> defenseValues, List<int> resolveValues, List<string> tags) where T : ConquestGameElementGameElement<T>
+            List<int> defenseValues, List<int> resolveValues, List<string> tags) where T : ConquestGameElement<T>
         {
             /*
             int cleave = 0;

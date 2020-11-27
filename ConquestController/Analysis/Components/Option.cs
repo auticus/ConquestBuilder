@@ -24,14 +24,14 @@ namespace ConquestController.Analysis.Components
         /// <param name="input"></param>
         /// <param name="output"></param>
         /// <param name="option"></param>
-        public static void ProcessOption<T>(AnalysisInput<T> input, ConquestUnitOutput output, IOption option) where T : ConquestGameElementGameElement<T>
+        public static void ProcessOption<T>(AnalysisInput<T> input, ConquestUnitOutput output, IOption option) where T : ConquestGameElement<T>
         {
             //process options
             if (option == null) return;
 
             var optionResult = ApplyOptionToUnit(input.Model, output, option);
 
-            var isUnit = typeof(T) == typeof(UnitGameElementGameElementModel);
+            var isUnit = typeof(T) == typeof(UnitGameElementModel);
 
             switch (optionResult)
             {
@@ -54,7 +54,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="model"></param>
         /// <param name="option"></param>
         /// <returns>TRUE if option affects output, FALSE otherwise</returns>
-        private static ApplyExtrasResult ApplyOptionToUnit<T>(ConquestGameElementGameElement<T> model, ConquestUnitOutput output, IOption option)
+        private static ApplyExtrasResult ApplyOptionToUnit<T>(ConquestGameElement<T> model, ConquestUnitOutput output, IOption option)
         {
             //NonImpactfulOption - an intangible that cannot be analyzed with math
             //ImpactfulWithUnit - is impactful but only after the character is joined with the unit 
@@ -295,7 +295,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="model"></param>
         /// <param name="regex"></param>
         /// <exception cref="InvalidCastException">Thrown if the value passed is not numeric</exception>
-        private static void ApplyBarrageRegex<T>(ConquestGameElementGameElement<T> model, string regex)
+        private static void ApplyBarrageRegex<T>(ConquestGameElement<T> model, string regex)
         {
             //string will come in like "barrage4_20" or something similar.  The first number is what to apply the barrage score to, the second is the range
             var score = regex.Replace("barrage", "");

@@ -52,6 +52,7 @@ namespace ConquestBuilder.ViewModels
         public ICommand AddSelectedToRoster { get; set; }
         public ICommand DeleteRosterElement { get; set; }
         public ICommand OptionElement { get; set; }
+        public ICommand RenameElement { get; set; }
         #endregion Commands
 
         #region Public Properties
@@ -152,6 +153,23 @@ namespace ConquestBuilder.ViewModels
                 NotifyPropertyChanged("SelectedRosterUnit");
 
                 SelectedRosterElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+            }
+        }
+
+        public IConquestGameElement SelectedElement
+        {
+            get
+            {
+                if (SelectedRosterUnit != null)
+                {
+                    return SelectedRosterUnit;
+                }
+                if (SelectedRosterCharacter != null)
+                {
+                    return SelectedRosterCharacter.Character;
+                }
+                
+                throw new InvalidOperationException("Option was selected but no roster elements are selected");
             }
         }
 
@@ -423,6 +441,7 @@ namespace ConquestBuilder.ViewModels
             AddSelectedToRoster = new RelayCommand(OnSelectionAdded, param=>CanExecute);
             DeleteRosterElement = new RelayCommand(OnRosterElementDeleted, param => this.CanExecute);
             OptionElement = new RelayCommand(OnRosterElementOption, param => this.CanExecute);
+            RenameElement = new RelayCommand(OnRenameElement, param => this.CanExecute);
         }
 
         private void InitializeControls()
@@ -455,7 +474,7 @@ namespace ConquestBuilder.ViewModels
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
-            var character = unit.Tag as CharacterGameElementGameElementModel;
+            var character = unit.Tag as CharacterGameElementModel;
             SelectedPortraitCharacter = character ?? throw new InvalidOperationException("Item tag was not correct type");
             LoadUnits(MainstayButtons, character.MainstayChoices, "MainstayButtons");
             LoadUnits(RestrictedButtons, character.RestrictedChoices, "RestrictedButtons");
@@ -702,7 +721,7 @@ namespace ConquestBuilder.ViewModels
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
-            var regiment = unit.Tag as UnitGameElementGameElementModel;
+            var regiment = unit.Tag as UnitGameElementModel;
             SelectedPortraitUnit = regiment ?? throw new InvalidOperationException("Item tag was not correct type");
 
             LoadStatGrid(SelectedPortraitUnit);
@@ -733,30 +752,15 @@ namespace ConquestBuilder.ViewModels
 
         private void OnRosterElementOption(object element)
         {
-            IConquestGameElementOption selectedElement;
             Guid selectedGuid;
+            selectedGuid = SelectedElement.ID;
 
-            if (SelectedRosterUnit != null)
-            {
-                selectedElement = (IConquestGameElementOption)SelectedRosterUnit;
-                selectedGuid = SelectedRosterUnit.ID;
-            }
-            else if (SelectedRosterCharacter != null)
-            {
-                selectedElement = (IConquestGameElementOption)SelectedRosterCharacter.Character;
-                selectedGuid = SelectedRosterCharacter.Character.ID;
-            }
-            else
-            {
-                throw new InvalidOperationException("Option was selected but no roster elements are selected");
-            }
-
-            var optionVM = new OptionViewModel(selectedElement);
+            var optionVM = new OptionViewModel(SelectedElement);
             var window = new OptionsWindow(_view, optionVM);
 
             if (window.ShowDialog() == true)
             {
-                SynchronizeElement(optionVM, selectedElement);
+                SynchronizeElement(optionVM, SelectedElement);
                 RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs(){RosterElement = SelectedRosterCharacter, SelectedElementID = selectedGuid});
             }
         }
@@ -767,6 +771,22 @@ namespace ConquestBuilder.ViewModels
             foreach (var option in vm.Options.Where(p=>p.IsChecked))
             {
                 element.ActiveOptions.Add((IOption)option.Model);
+            }
+        }
+
+        private void OnRenameElement(object element)
+        {
+            var vm = new InputBoxViewModel(){Caption = "Rename Regiment", Data = SelectedElement.UserName, Message = "Enter the new name of the Selected Regiment or Character"};
+            var window = new InputBox(_view, vm);
+            Guid selectedGuid = SelectedElement.ID;
+
+            if (window.ShowDialog() == true)
+            {
+                if (!string.IsNullOrEmpty(vm.Data))
+                {
+                    SelectedElement.UserName = vm.Data;
+                    RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs() { RosterElement = SelectedRosterCharacter, SelectedElementID = selectedGuid });
+                }
             }
         }
     }

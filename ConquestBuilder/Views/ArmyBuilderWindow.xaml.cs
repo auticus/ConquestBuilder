@@ -109,7 +109,7 @@ namespace ConquestBuilder.Views
                 {
                     var mainstayRegiment = new TreeViewItem()
                     {
-                        Header = $"{regiment.Unit} - {regiment.TotalPoints} pts",
+                        Header = $"{regiment} - {regiment.TotalPoints} pts",
                         IsSelected = (regiment.ID == e.SelectedElementID),
                         IsExpanded = true,
                         Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment, RosterCharacter = character}
@@ -135,7 +135,7 @@ namespace ConquestBuilder.Views
                 {
                     var restrictedRegiment = new TreeViewItem()
                     {
-                        Header = $"{regiment.Unit} - {regiment.TotalPoints} pts",
+                        Header = $"{regiment} - {regiment.TotalPoints} pts",
                         IsSelected = (regiment.ID == e.SelectedElementID),
                         IsExpanded = true,
                         Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment, RosterCharacter = character}

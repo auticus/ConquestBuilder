@@ -4,10 +4,11 @@ using System.Collections.ObjectModel;
 
 namespace ConquestController.Models.Input
 {
-    public interface IConquestGameElement : IConquestBaseInput, IConquestGameElementOption
+    public interface IConquestGameElement : IConquestGameElementOption
     {
         EventHandler PointsChanged { get; set; }
         Guid ID { get; set; }
+        string UserName { get; set; } //user name of the regiment
         string Weight { get; set; }
         string ModelType { get; set; }
         int Models { get; set; }

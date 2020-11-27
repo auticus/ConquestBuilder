@@ -45,6 +45,15 @@
         <Setter Property="FontSize" Value="18"></Setter>
     </Style>
 
+    <Style x:Key="darkMediumLabel" TargetType="Label">
+        <Setter Property="Foreground" Value="Gray"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="14"></Setter>
+    </Style>
+
+
     <Style x:Key="Grids" TargetType="Grid">
         <Setter Property="ShowGridLines" Value="True"/>
     </Style>

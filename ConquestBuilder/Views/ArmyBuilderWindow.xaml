@@ -271,7 +271,7 @@
                 </Grid.ColumnDefinitions>
                 <!--Row 1 - roster info panel -->
                 <WrapPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
-                    <Label Content="Roster Name" Style="{StaticResource defaultLabel}"/>
+                    <Label Content="Roster UserName" Style="{StaticResource defaultLabel}"/>
                     <TextBox Text="{Binding Roster.RosterName}" Margin="5,0,0,0" Width="200" TextAlignment="Center" VerticalAlignment="Center"/>
                     <Label Content="{Binding Roster.TotalPoints}" Margin="10,0,0,0" Style="{StaticResource defaultLabel}"/>
                 </WrapPanel>
@@ -301,6 +301,9 @@
                 <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,60,0,0" Content="Options" FontSize="18" FontWeight="Bold"
                         IsEnabled = "{Binding SelectedRosterElementEnabled}"
                         Command="{Binding OptionElement}"/>
+                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,110,0,0" Content="Rename" FontSize="18" FontWeight="Bold"
+                        IsEnabled = "{Binding SelectedRosterElementEnabled}"
+                        Command="{Binding RenameElement}"/>
             </Grid>
         </Grid>
     </Grid>
