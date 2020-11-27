@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace ConquestController.Models.Input
 {
-    public abstract class ConquestGameElementGameElement<T> : IConquestGameElement, IConquestGameElementOption
+    public abstract class ConquestGameElement<T> : IConquestGameElement, IConquestGameElementOption
     {
-        protected ConquestGameElementGameElement()
+        protected ConquestGameElement()
         {
             Options = new List<IConquestBaseInput>();
             ActiveOptions = new ObservableCollection<IOption>();
@@ -23,6 +23,7 @@ namespace ConquestController.Models.Input
         public Guid ID { get; set; }
         public string Faction { get; set; }
         public string Unit { get; set; }
+        public string UserName { get; set; }
         public string Weight { get; set; }
         public string ModelType { get; set; }
 
@@ -123,5 +124,15 @@ namespace ConquestController.Models.Input
         public abstract bool CanCalculateDefense();
         public abstract bool CanCastSpells();
         public abstract IConquestGameElement Copy();
+
+        public override string ToString()
+        {
+            if (UserName.Trim() != Unit)
+            {
+                return $"{UserName} - [{Unit}]";
+            }
+
+            return Unit;
+        }
     }
 }

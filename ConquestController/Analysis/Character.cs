@@ -22,7 +22,7 @@ namespace ConquestController.Analysis
         /// <param name="allResolve"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public static IList<ConquestUnitOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementGameElementModel gameElementModel, List<int> allClash,
+        public static IList<ConquestUnitOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementModel gameElementModel, List<int> allClash,
             List<int> allDefenses, List<int> allResolve, IEnumerable<SpellModel> spells)
         {
             //loop through all spells that this gameElementModel can have applied to it
@@ -50,17 +50,17 @@ namespace ConquestController.Analysis
             return output;
         }
 
-        public static IEnumerable<CharacterGameElementGameElementModel> GetAllCharacters(string inputFilePath, string inputOptionsFilePath, IEnumerable<SpellModel> spells)
+        public static IEnumerable<CharacterGameElementModel> GetAllCharacters(string inputFilePath, string inputOptionsFilePath, IEnumerable<SpellModel> spells)
         {
             //assign characters
-            var characters = DataRepository.GetInputFromFileToList<CharacterGameElementGameElementModel>(inputFilePath);
+            var characters = DataRepository.GetInputFromFileToList<CharacterGameElementModel>(inputFilePath);
 
             //assign mainstay and restricted choices
             AssignCharacterExtras(characters, spells, inputOptionsFilePath);
 
             return characters;
         }
-        private static void AssignCharacterExtras(IEnumerable<CharacterGameElementGameElementModel> characters, IEnumerable<SpellModel> spells, string inputOptionsFilePath)
+        private static void AssignCharacterExtras(IEnumerable<CharacterGameElementModel> characters, IEnumerable<SpellModel> spells, string inputOptionsFilePath)
         {
             var spellModels = spells.ToList();
 

@@ -17,11 +17,11 @@ namespace ConquestController.Analysis
         /// <param name="models"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public IList<ConquestUnitOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells) where T: ConquestGameElementGameElement<T>
+        public IList<ConquestUnitOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells) where T: ConquestGameElement<T>
         {
             //regiments we base on 3, characters on 1
-            var standCount = typeof(T) == typeof(CharacterGameElementGameElementModel) ? 1 : 3;
-            var frontageCount = typeof(T) == typeof(CharacterGameElementGameElementModel) ? 1 : 3;
+            var standCount = typeof(T) == typeof(CharacterGameElementModel) ? 1 : 3;
+            var frontageCount = typeof(T) == typeof(CharacterGameElementModel) ? 1 : 3;
             
             //using keyvalue pair here because we need to be able to see what input model was attached to the baseline output that was generated from it
             var outputKvp = InitializeBroadAnalysis(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
@@ -55,11 +55,11 @@ namespace ConquestController.Analysis
         /// <param name="frontageCount"></param>
         /// <param name="applyFullyDeadly"></param>
         /// <returns>A dictionary containing a key value that is the output matched by the model that it is derived from as the value</returns>
-        private static IDictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>> InitializeBroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells, int analysisStandCount, 
+        private static IDictionary<ConquestUnitOutput, ConquestGameElement<T>> InitializeBroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells, int analysisStandCount, 
             int frontageCount, bool applyFullyDeadly)
-            where T: ConquestGameElementGameElement<T>
+            where T: ConquestGameElement<T>
         {
-            var dictionary = new Dictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>>();
+            var dictionary = new Dictionary<ConquestUnitOutput, ConquestGameElement<T>>();
 
             foreach (var primeModel in models)
             {
@@ -81,7 +81,7 @@ namespace ConquestController.Analysis
         }
 
         private static ConquestUnitOutput AnalyzeModel<T>(AnalysisInput<T> input)
-            where T : ConquestGameElementGameElement<T>
+            where T : ConquestGameElement<T>
         {
             ProcessModelDefaults(input.Model);
             var output = new ConquestUnitOutput
@@ -116,8 +116,8 @@ namespace ConquestController.Analysis
             return output;
         }
 
-        private static void ApplyExtraOptions<T>(IDictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>> normalizedOutputKvp, int analysisStandCount,
-            int frontageCount, bool applyFullyDeadly) where T: ConquestGameElementGameElement<T>
+        private static void ApplyExtraOptions<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> normalizedOutputKvp, int analysisStandCount,
+            int frontageCount, bool applyFullyDeadly) where T: ConquestGameElement<T>
         {
             //T primeModel, AnalysisInput< T > input
             //input has the BaselineOutput applied to it so make sure you apply that here
@@ -153,7 +153,7 @@ namespace ConquestController.Analysis
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExtra">The extra we are processing (option, spell, etc)</typeparam>
-        private static void AnalyzeModelExtras<T, TExtra>(AnalysisInput<T> input) where T : ConquestGameElementGameElement<T>
+        private static void AnalyzeModelExtras<T, TExtra>(AnalysisInput<T> input) where T : ConquestGameElement<T>
         {
             if (!ExtraProcessingRequired<T, TExtra>(input)) return;
 
@@ -177,7 +177,7 @@ namespace ConquestController.Analysis
         /// <typeparam name="TExtra"></typeparam>
         /// <param name="input"></param>
         /// <returns></returns>
-        private static bool ExtraProcessingRequired<T, TExtra>(AnalysisInput<T> input) where T : ConquestGameElementGameElement<T>
+        private static bool ExtraProcessingRequired<T, TExtra>(AnalysisInput<T> input) where T : ConquestGameElement<T>
         {
             if (typeof(TExtra) == typeof(UnitOptionModel))
             {
@@ -200,7 +200,7 @@ namespace ConquestController.Analysis
         /// <typeparam name="TExtra"></typeparam>
         /// <param name="input"></param>
         /// <param name="q"></param>
-        private static void ExtraBuildQueue<T, TExtra>(AnalysisInput<T> input, Queue<object> q) where T : ConquestGameElementGameElement<T>
+        private static void ExtraBuildQueue<T, TExtra>(AnalysisInput<T> input, Queue<object> q) where T : ConquestGameElement<T>
         {
             if (typeof(TExtra) == typeof(UnitOptionModel))
             {
@@ -231,7 +231,7 @@ namespace ConquestController.Analysis
         /// <param name="input"></param>
         /// <param name="extra"></param>
         /// <returns></returns>
-        private static AnalysisInput<T> BuildInput<T>(AnalysisInput<T> input, object extra) where T: ConquestGameElementGameElement<T>
+        private static AnalysisInput<T> BuildInput<T>(AnalysisInput<T> input, object extra) where T: ConquestGameElement<T>
         {
             if (extra.GetType() == typeof(UnitOptionModel))
                 return BuildOptionInput(input, extra);
@@ -258,9 +258,9 @@ namespace ConquestController.Analysis
             throw new InvalidOperationException("GetOptionName was passed an object that is not recognized");
         }
 
-        private static AnalysisInput<T> BuildOptionInput<T>(AnalysisInput<T> input, object extra) where T : ConquestGameElementGameElement<T>
+        private static AnalysisInput<T> BuildOptionInput<T>(AnalysisInput<T> input, object extra) where T : ConquestGameElement<T>
         {
-            var optionModel = (ConquestGameElementGameElement<T>)input.Model.Copy();
+            var optionModel = (ConquestGameElement<T>)input.Model.Copy();
             if (!(extra is UnitOptionModel option)) throw new InvalidOperationException("Object sent to BuildOptionInput is not an option model");
 
             var aInput = new AnalysisInput<T>()
@@ -276,9 +276,9 @@ namespace ConquestController.Analysis
         }
 
         private static AnalysisInput<T> BuildSpellInput<T>(AnalysisInput<T> input, object extra)
-            where T : ConquestGameElementGameElement<T>
+            where T : ConquestGameElement<T>
         {
-            var optionModel = (ConquestGameElementGameElement<T>)input.Model.Copy();
+            var optionModel = (ConquestGameElement<T>)input.Model.Copy();
             if (!(extra is SpellModel option))
                 throw new InvalidOperationException("Object sent to BuildSpellInput is not a spell model");
 
@@ -294,7 +294,7 @@ namespace ConquestController.Analysis
             return aInput;
         }
 
-        private static void CalculateOffense<T>(ConquestUnitOutput output, ConquestGameElementGameElement<T> model, 
+        private static void CalculateOffense<T>(ConquestUnitOutput output, ConquestGameElement<T> model, 
             bool applyFullyDeadly)
         {
             var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
@@ -372,7 +372,7 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static void CalculateDefense<T>(ConquestUnitOutput output, ConquestGameElementGameElement<T> model)
+        private static void CalculateDefense<T>(ConquestUnitOutput output, ConquestGameElement<T> model)
         {
             var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
 
@@ -408,7 +408,7 @@ namespace ConquestController.Analysis
                 defenseOutputs[1];
         }
 
-        private static void NormalizeAndEfficiencyData<T>(IDictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>> data)
+        private static void NormalizeAndEfficiencyData<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
         {
             var aggregateList = GetAllOutputsFromRawOutputs(data);
 
@@ -460,7 +460,7 @@ namespace ConquestController.Analysis
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        private static IList<ConquestUnitOutput> GetAllOutputsFromRawOutputs<T>(IDictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>> data)
+        private static IList<ConquestUnitOutput> GetAllOutputsFromRawOutputs<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
         {
             var returnList = new List<ConquestUnitOutput>();
             foreach (var key in data.Keys)
@@ -496,7 +496,7 @@ namespace ConquestController.Analysis
         /// <summary>
         /// Efficiency is where the lower the score, the better that is.  That is not intuitive and this method will flip those scores
         /// </summary>
-        private static void FinalizeEfficiency<T>(IDictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>> data)
+        private static void FinalizeEfficiency<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
         {
             var aggregateList = GetAllOutputsFromRawOutputs(data);
 
@@ -561,7 +561,7 @@ namespace ConquestController.Analysis
             };
         }
 
-        private static void FinalizeAnalysis<T>(IDictionary<ConquestUnitOutput, ConquestGameElementGameElement<T>> data)
+        private static void FinalizeAnalysis<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
         {
             //todo: flaw here - using average defense efficiency but character defense score is not calculated
             //todo: magic score not caculated as part of this analysis
@@ -616,9 +616,9 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static void ProcessModelDefaults<T>(ConquestGameElementGameElement<T> model) 
+        private static void ProcessModelDefaults<T>(ConquestGameElement<T> model) 
         {
-            if (typeof(T) == typeof(CharacterGameElementGameElementModel))
+            if (typeof(T) == typeof(CharacterGameElementModel))
             {
                 model.Models = 1;
             }

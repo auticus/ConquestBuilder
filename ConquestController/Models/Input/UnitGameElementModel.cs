@@ -1,53 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ConquestController.Models.Input
 {
-    public class CharacterGameElementGameElementModel : ConquestGameElementGameElement<CharacterGameElementGameElementModel>, IConquestSpellcaster, IConquestCharacter
+    public class UnitGameElementModel : ConquestGameElement<UnitGameElementModel>
     {
-        public int IsQuickSilverStrike { get; set; }
-        public int ItemCount { get; set; }
-
-        public string Mainstay { get; set; } //mapped to MainstayChoices
-        public string Restricted { get; set; } // mapped to RestrictedChoices
-
-        public int NoWarlord { get; set; }
-        public string SupremacyTitle { get; set; }
-        public string SupremacyNotes { get; set; }
-        public string SpellSchools { get; set; } //mapped to Schools, comes from input
-        public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1
-        
-        /// <summary>
-        /// The list of units that can be chosen by this character as a mainstay
-        /// </summary>
-        public IEnumerable<string> MainstayChoices { get; set; }
-
-        /// <summary>
-        /// The list of units that can be chosen by this character as restricted
-        /// </summary>
-        public IEnumerable<string> RestrictedChoices { get; set; }
-        public List<string> Schools { get; set; }
-        public List<SpellModel> Spells { get; set; }
-
-        public CharacterGameElementGameElementModel()
+        public UnitGameElementModel()
         {
-            MainstayChoices = new List<string>();
-            RestrictedChoices = new List<string>();
-            Schools = new List<string>();
-            Spells = new List<SpellModel>();
+            
         }
 
-        public override bool CanCalculateDefense() => false;
-        public override bool CanCastSpells() => true;  //characters have the ability to cast spells if they have the rules for it
-
-        public override string ToString()
-        {
-            return Unit;
-        }
+        public override bool CanCalculateDefense() => true;
+        public override bool CanCastSpells() => false;
 
         public override IConquestGameElement Copy()
         {
-            var model = new CharacterGameElementGameElementModel()
+            var model = new UnitGameElementModel
             {
                 Faction = Faction,
                 Unit = Unit,
@@ -88,9 +55,8 @@ namespace ConquestController.Models.Input
                 IsFearless = IsFearless,
                 ResistDecay = ResistDecay,
                 AlwaysInspire = AlwaysInspire,
+                AnalysisOnly = AnalysisOnly,
                 Image = Image,
-                SpellSchools = SpellSchools,
-                Schools = Schools,
                 BuffDefenseOrEvasion = BuffDefenseOrEvasion,
                 Healing = Healing,
                 NoObscure = NoObscure,
@@ -103,16 +69,14 @@ namespace ConquestController.Models.Input
                 Decay = Decay,
                 Notes = Notes,
                 IsTorrential = IsTorrential,
-                ModelType = ModelType
+                ModelType = ModelType,
+                UserName = Unit
             };
 
             foreach (var option in Options)
             {
                 model.Options.Add(option);
             }
-
-            model.MainstayChoices = new List<string>(this.MainstayChoices);
-            model.RestrictedChoices = new List<string>(this.RestrictedChoices);
 
             return model;
         }

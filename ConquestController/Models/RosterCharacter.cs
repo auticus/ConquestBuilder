@@ -23,7 +23,7 @@ namespace ConquestController.Models
         public ObservableCollection<IConquestGameElement> MainstayRegiments { get; }
         public ObservableCollection<IConquestGameElement> RestrictedRegiments { get; }
 
-        public string CharacterHeader => $"{Character.Unit} - {Character.TotalPoints} pts";
+        public string CharacterHeader => $"{Character} - {Character.TotalPoints}";
 
         public RosterCharacter(IConquestGameElement character)
         {
