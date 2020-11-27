@@ -24,8 +24,8 @@ namespace ConquestBuilder.Models
         private string _masteriesFile;
         private string _itemsFile;
 
-        public IList<CharacterInputModel> Characters { get; private set; }
-        public IList<UnitInputModel> Units { get; private set; }
+        public IList<CharacterGameElementGameElementModel> Characters { get; private set; }
+        public IList<UnitGameElementGameElementModel> Units { get; private set; }
         public IList<SpellModel> Spells { get; private set; }
         public IList<RetinueModel> Retinues { get; private set; }
         public IList<MasteryModel> Masteries { get; private set; }
@@ -109,8 +109,8 @@ namespace ConquestBuilder.Models
             try
             {
                 //assign units and their options
-                Units = DataRepository.GetInputFromFileToList<UnitInputModel>(_appPath + "\\" + _unitInputFile);
-                DataRepository.AssignUnitOptionsToModelsFromFile(Units.Cast<IConquestOptionInput>().ToList(), _appPath + "\\" + _unitOptionsFile);
+                Units = DataRepository.GetInputFromFileToList<UnitGameElementGameElementModel>(_appPath + "\\" + _unitInputFile);
+                DataRepository.AssignUnitOptionsToModelsFromFile(Units.Cast<IConquestGameElementOption>().ToList(), _appPath + "\\" + _unitOptionsFile);
 
                 var characterInputFilePath = _appPath + "\\" + _characterInputFile;
                 var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;

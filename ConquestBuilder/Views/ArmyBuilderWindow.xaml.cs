@@ -115,6 +115,19 @@ namespace ConquestBuilder.Views
                         Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment, RosterCharacter = character}
                     };
 
+                    foreach (var option in regiment.ActiveOptions)
+                    {
+                        var regimentOptions = new TreeViewItem()
+                        {
+                            Header = $"{option.Name}",
+                            IsSelected = false,
+                            IsExpanded = true,
+                            Tag = new TreeViewRoster() {Category = RosterCategory.Option, Model = option, RosterCharacter = character}
+                        };
+
+                        mainstayRegiment.Items.Add(regimentOptions);
+                    }
+
                     mainstayNode.Items.Add(mainstayRegiment);
                 }
 
@@ -128,7 +141,33 @@ namespace ConquestBuilder.Views
                         Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment, RosterCharacter = character}
                     };
 
+                    foreach (var option in regiment.ActiveOptions)
+                    {
+                        var regimentOptions = new TreeViewItem()
+                        {
+                            Header = $"{option.Name}",
+                            IsSelected = false,
+                            IsExpanded = true,
+                            Tag = new TreeViewRoster() {Category = RosterCategory.Option, Model = option, RosterCharacter = character}
+                        };
+
+                        restrictedRegiment.Items.Add(regimentOptions);
+                    }
+
                     restrictedNode.Items.Add(restrictedRegiment);
+                }
+
+                foreach (var option in character.Character.ActiveOptions)
+                {
+                    var characterOption = new TreeViewItem()
+                    {
+                        Header = $"{option.Name}",
+                        IsSelected = false,
+                        IsExpanded = true,
+                        Tag = new TreeViewRoster() {Category = RosterCategory.Option, Model = option, RosterCharacter = character }
+                    };
+
+                    optionsNode.Items.Add(characterOption);
                 }
 
                 tvItem.Items.Add(optionsNode);
@@ -160,7 +199,7 @@ namespace ConquestBuilder.Views
                     break;
                 case RosterCategory.MainstayRegiment:
                 case RosterCategory.RestrictedRegiment:
-                    _vm.SelectedRosterUnit = (IConquestInput)rosterElement.Model;
+                    _vm.SelectedRosterUnit = (IConquestGameElement)rosterElement.Model;
                     break;
                 case RosterCategory.MainstayLabel:
                 case RosterCategory.OptionLabel:

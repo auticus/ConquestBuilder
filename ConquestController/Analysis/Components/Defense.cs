@@ -18,7 +18,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="standCount">How many stands are we calculating defense for here</param>
         /// <param name="noShields">If shields are being bypassed in this analysis</param>
         /// <returns>an array of doubles in the format of [raw, resolve] where the mean of the two is the total</returns>
-        public static double[] CalculateOutput<T>(ConquestInput<T> model, List<int> defenseModificationValues, 
+        public static double[] CalculateOutput<T>(ConquestGameElementGameElement<T> model, List<int> defenseModificationValues, 
             int standCount, bool noShields = false) 
         {
             if (model.BuffDefenseOrEvasion)
@@ -39,7 +39,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="standCount"></param>
         /// <param name="noShields"></param>
         /// <returns></returns>
-        private static double[] CalculateDefenseBuffedForHalfAttacks<T>(ConquestInput<T> model, List<int> defenseModificationValues, int standCount,
+        private static double[] CalculateDefenseBuffedForHalfAttacks<T>(ConquestGameElementGameElement<T> model, List<int> defenseModificationValues, int standCount,
             bool noShields = false)
         {
             var normalDefenseOutput = CalculateDefense(model, defenseModificationValues, standCount, noShields);
@@ -69,7 +69,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="standCount"></param>
         /// <param name="noShields"></param>
         /// <returns></returns>
-        private static double[] CalculateDefenseBuffed<T>(ConquestInput<T> model, List<int> defenseModificationValues, int standCount,
+        private static double[] CalculateDefenseBuffed<T>(ConquestGameElementGameElement<T> model, List<int> defenseModificationValues, int standCount,
             bool noShields = false)
         {
             model.Defense++;
@@ -96,7 +96,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="standCount"></param>
         /// <param name="noShields"></param>
         /// <returns></returns>
-        private static double[] CalculateDefense<T>(ConquestInput<T> model, List<int> defenseModificationValues,
+        private static double[] CalculateDefense<T>(ConquestGameElementGameElement<T> model, List<int> defenseModificationValues,
             int standCount, bool noShields = false) 
         {
             var returnOutput = new[] { 0.0d, 0.0d };

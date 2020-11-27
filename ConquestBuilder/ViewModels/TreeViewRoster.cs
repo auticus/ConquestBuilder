@@ -10,7 +10,8 @@ namespace ConquestBuilder.ViewModels
         RestrictedRegiment,
         OptionLabel,
         MainstayLabel,
-        RestrictedLabel
+        RestrictedLabel,
+        Option
     }
 
     public enum OptionCategory
@@ -66,6 +67,18 @@ namespace ConquestBuilder.ViewModels
             {
                 _optionGrouping = value;
                 NotifyPropertyChanged("OptionGrouping");
+            }
+        }
+
+        private bool _groupCanMultiSelect;
+
+        public bool GroupCanMultiSelect
+        {
+            get => _groupCanMultiSelect;
+            set
+            {
+                _groupCanMultiSelect = value;
+                NotifyPropertyChanged("GroupCanMultiSelect");
             }
         }
     }

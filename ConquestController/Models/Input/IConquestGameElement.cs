@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace ConquestController.Models.Input
 {
-    public interface IConquestInput : IConquestBaseInput
+    public interface IConquestGameElement : IConquestBaseInput, IConquestGameElementOption
     {
         EventHandler PointsChanged { get; set; }
         Guid ID { get; set; }
@@ -10,9 +12,6 @@ namespace ConquestController.Models.Input
         string ModelType { get; set; }
         int Models { get; set; }
         int Points { get; set; }
-        int AdditionalPoints { get; set; }
-        int LeaderPoints { get; set; }
-        int StandardPoints { get; set; }
         int Move { get; set; }
         int Volley { get; set; }
         int Clash { get; set; }
@@ -26,6 +25,6 @@ namespace ConquestController.Models.Input
 
         string SpecialRules { get; set; }
 
-        IConquestInput Copy();
+        IConquestGameElement Copy();
     }
 }

@@ -2,9 +2,9 @@
 
 namespace ConquestController.Models.Input
 {
-    public class UnitInputModel : ConquestInput<UnitInputModel>
+    public class UnitGameElementGameElementModel : ConquestGameElementGameElement<UnitGameElementGameElementModel>
     {
-        public UnitInputModel()
+        public UnitGameElementGameElementModel()
         {
             
         }
@@ -17,9 +17,9 @@ namespace ConquestController.Models.Input
             return Unit;
         }
 
-        public override IConquestInput Copy()
+        public override IConquestGameElement Copy()
         {
-            var model = new UnitInputModel
+            var model = new UnitGameElementGameElementModel
             {
                 Faction = Faction,
                 Unit = Unit,
