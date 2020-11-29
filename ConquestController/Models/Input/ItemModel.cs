@@ -1,5 +1,4 @@
-﻿
-namespace ConquestController.Models.Input
+﻿namespace ConquestController.Models.Input
 {
     /// <summary>
     /// Represents magic items, heirlooms, etc
@@ -19,7 +18,7 @@ namespace ConquestController.Models.Input
 
         public override string ToString()
         {
-            return Name;
+            return $"[{Category}] - {Name}";
         }
     }
 }

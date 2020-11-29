@@ -17,7 +17,10 @@ namespace ConquestBuilder.ViewModels
     public enum OptionCategory
     {
         OptionLabel = 0,
-        Option
+        Option,
+        Item,
+        Mastery,
+        Retinue
     }
 
     public class TreeViewRoster
@@ -70,14 +73,29 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private bool _groupCanMultiSelect;
+        private int _maxAllowableSelectableForGroup;
 
-        public bool GroupCanMultiSelect
+        public int MaxAllowableSelectableForGroup
         {
-            get => _groupCanMultiSelect;
+            get => _maxAllowableSelectableForGroup;
             set
             {
-                _groupCanMultiSelect = value;
+                _maxAllowableSelectableForGroup = value;
+                NotifyPropertyChanged("MaxAllowableSelectableForGroup");
+            }
+        }
+
+        private bool _groupCanSelectAll;
+
+        /// <summary>
+        /// When TRUE means ALL items of the collection may be selected
+        /// </summary>
+        public bool GroupCanSelectAll
+        {
+            get => _groupCanSelectAll;
+            set
+            {
+                _groupCanSelectAll = value;
                 NotifyPropertyChanged("GroupCanMultiSelect");
             }
         }

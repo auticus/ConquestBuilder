@@ -43,6 +43,15 @@ namespace ConquestBuilder.ViewModels
                 };
             }
         }
+
+        private List<IOption> FilteredMagicItems
+        {
+            get
+            {
+                return _data.Items.Where(p => p.Faction == Filter).OrderBy(p => p.Category).ThenBy(p => p.Name)
+                    .Cast<IOption>().ToList();
+            }
+        }
         #endregion Private Fields
 
         #region Commands
@@ -755,7 +764,7 @@ namespace ConquestBuilder.ViewModels
             Guid selectedGuid;
             selectedGuid = SelectedElement.ID;
 
-            var optionVM = new OptionViewModel(SelectedElement);
+            var optionVM = new OptionViewModel(SelectedElement, FilteredMagicItems);
             var window = new OptionsWindow(_view, optionVM);
 
             if (window.ShowDialog() == true)
@@ -768,9 +777,15 @@ namespace ConquestBuilder.ViewModels
         private void SynchronizeElement(OptionViewModel vm, IConquestGameElementOption element)
         {
             element.ActiveOptions.Clear();
-            foreach (var option in vm.Options.Where(p=>p.IsChecked))
+            element.ActiveItems.Clear();
+            foreach (var option in vm.Options.Where(p=>p.Category == OptionCategory.Option && p.IsChecked))
             {
                 element.ActiveOptions.Add((IOption)option.Model);
+            }
+
+            foreach (var option in vm.Options.Where(p => p.Category == OptionCategory.Item && p.IsChecked))
+            {
+                element.ActiveItems.Add((IOption)option.Model);
             }
         }
 

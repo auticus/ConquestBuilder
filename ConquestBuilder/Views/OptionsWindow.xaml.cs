@@ -51,10 +51,5 @@ namespace ConquestBuilder.Views
         {
             this.DialogResult = true;
         }
-
-        private void OptionsWindow_OnLoaded(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

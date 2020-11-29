@@ -7,8 +7,10 @@ namespace ConquestController.Models.Input
     {
         List<IConquestBaseInput> Options { get; }
         ObservableCollection<IOption> ActiveOptions { get; }
+        ObservableCollection<IOption> ActiveItems { get; }
         int AdditionalPoints { get; set; }
         int LeaderPoints { get; set; }
         int StandardPoints { get; set; }
+        int MaxAllowableItems { get; set; }
     }
 }
