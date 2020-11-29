@@ -11,11 +11,17 @@ namespace ConquestController.Models.Input
         {
             Options = new List<IConquestBaseInput>();
             ActiveOptions = new ObservableCollection<IOption>();
+            ActiveItems = new ObservableCollection<IOption>();
             ID = Guid.NewGuid();
 
             ActiveOptions.CollectionChanged += (sender, args) =>
             {
                 PointsChanged?.Invoke(this, EventArgs.Empty);
+            };
+
+            ActiveItems.CollectionChanged += (sender, args) =>
+            {
+                PointsChanged?.Invoke(this, System.EventArgs.Empty);
             };
         }
         public EventHandler PointsChanged { get; set; }
@@ -105,11 +111,9 @@ namespace ConquestController.Models.Input
         /// </summary>
         public int AnalysisOnly { get; set; }
 
-        public int TotalPoints
-        {
+        public int TotalPoints =>
             //take all of the total
-            get => Points + ActiveOptions.Sum(p => p.Points);
-        }
+            Points + ActiveOptions.Sum(p => p.Points) + ActiveItems.Sum(p=>p.Points);
 
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
@@ -120,6 +124,10 @@ namespace ConquestController.Models.Input
         /// For a roster element, the actively selected options
         /// </summary>
         public ObservableCollection<IOption> ActiveOptions { get; set; }
+
+        public ObservableCollection<IOption> ActiveItems { get; set; }
+
+        public int MaxAllowableItems { get; set; }
 
         public abstract bool CanCalculateDefense();
         public abstract bool CanCastSpells();

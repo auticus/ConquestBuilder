@@ -35,6 +35,8 @@ namespace ConquestController.Models.Input
             RestrictedChoices = new List<string>();
             Schools = new List<string>();
             Spells = new List<SpellModel>();
+
+            MaxAllowableItems = 1;
         }
 
         public override bool CanCalculateDefense() => false;

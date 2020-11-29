@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -145,7 +146,7 @@ namespace ConquestBuilder.Views
                     {
                         var regimentOptions = new TreeViewItem()
                         {
-                            Header = $"{option.Name}",
+                            Header = $"{option}",
                             IsSelected = false,
                             IsExpanded = true,
                             Tag = new TreeViewRoster() {Category = RosterCategory.Option, Model = option, RosterCharacter = character}
@@ -157,11 +158,14 @@ namespace ConquestBuilder.Views
                     restrictedNode.Items.Add(restrictedRegiment);
                 }
 
-                foreach (var option in character.Character.ActiveOptions)
+                var allOptions = character.Character.ActiveOptions.ToList();
+                allOptions.AddRange(character.Character.ActiveItems);
+                
+                foreach (var option in allOptions)
                 {
                     var characterOption = new TreeViewItem()
                     {
-                        Header = $"{option.Name}",
+                        Header = $"{option}",
                         IsSelected = false,
                         IsExpanded = true,
                         Tag = new TreeViewRoster() {Category = RosterCategory.Option, Model = option, RosterCharacter = character }
@@ -195,16 +199,14 @@ namespace ConquestBuilder.Views
             switch (rosterElement.Category) //potential null warning but yes if its null i want this to throw up because thats bad
             {
                 case RosterCategory.Character:
+                case RosterCategory.OptionLabel:
+                case RosterCategory.MainstayLabel:
+                case RosterCategory.RestrictedLabel:
                     _vm.SelectedRosterUnit = null;
                     break;
                 case RosterCategory.MainstayRegiment:
                 case RosterCategory.RestrictedRegiment:
                     _vm.SelectedRosterUnit = (IConquestGameElement)rosterElement.Model;
-                    break;
-                case RosterCategory.MainstayLabel:
-                case RosterCategory.OptionLabel:
-                case RosterCategory.RestrictedLabel:
-                    //currently do nothing when these tree view branches are selected
                     break;
                 default:
                     throw new InvalidOperationException($"Roster Element category {rosterElement.Category} is not recognized");
