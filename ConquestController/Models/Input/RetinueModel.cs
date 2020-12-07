@@ -18,5 +18,26 @@
         {
             return Name;
         }
-    }
+
+        /// <summary>
+        /// Returns a RetinueModel
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return new RetinueModel
+            {
+                Category = this.Category,
+                Faction = this.Faction,
+                Name = this.Name,
+                Notes = this.Notes,
+                Points = this.Points,
+                SelfOnly = this.SelfOnly,
+                Tag = this.Tag,
+                WarlordOnly = this.WarlordOnly,
+                NotAllowed = this.NotAllowed,
+                Tier = this.Tier
+            };
+        }
+}
 }

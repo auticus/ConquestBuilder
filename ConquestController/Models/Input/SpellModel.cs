@@ -16,6 +16,30 @@
         public int WarlordOnly { get; set; }
         public string Notes { get; set; }
 
+        /// <summary>
+        /// Returns a SpellModel
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return new SpellModel
+            {
+                Category = this.Category,
+                Difficulty = this.Difficulty,
+                EffectCausedPer = this.EffectCausedPer,
+                Faction = this.Faction,
+                HitsCaused = this.HitsCaused,
+                IsScaling = this.IsScaling,
+                Name = this.Name,
+                Notes = this.Notes,
+                Points = this.Points,
+                Range = this.Range,
+                Tag = this.Tag,
+                SelfOnly = this.SelfOnly,
+                WarlordOnly = this.WarlordOnly
+            };
+        }
+
         public override string ToString()
         {
             return Name;

@@ -5,13 +5,14 @@ using System.Linq;
 
 namespace ConquestController.Models.Input
 {
-    public abstract class ConquestGameElement<T> : IConquestGameElement, IConquestGameElementOption
+    public abstract class ConquestGameElement<T> : IConquestGamePiece
     {
         protected ConquestGameElement()
         {
-            Options = new List<IConquestBaseInput>();
+            Options = new List<IConquestBase>();
             ActiveOptions = new ObservableCollection<IOption>();
             ActiveItems = new ObservableCollection<IOption>();
+            ActiveMasteries = new ObservableCollection<IMastery>();
             ID = Guid.NewGuid();
 
             ActiveOptions.CollectionChanged += (sender, args) =>
@@ -21,7 +22,12 @@ namespace ConquestController.Models.Input
 
             ActiveItems.CollectionChanged += (sender, args) =>
             {
-                PointsChanged?.Invoke(this, System.EventArgs.Empty);
+                PointsChanged?.Invoke(this, EventArgs.Empty);
+            };
+
+            ActiveMasteries.CollectionChanged += (sender, args) =>
+            {
+                PointsChanged?.Invoke(this, EventArgs.Empty);
             };
         }
         public EventHandler PointsChanged { get; set; }
@@ -113,12 +119,12 @@ namespace ConquestController.Models.Input
 
         public int TotalPoints =>
             //take all of the total
-            Points + ActiveOptions.Sum(p => p.Points) + ActiveItems.Sum(p=>p.Points);
+            Points + ActiveOptions.Sum(p => p.Points) + ActiveItems.Sum(p=>p.Points) + ActiveMasteries.Sum(p=>p.Points);
 
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
         /// </summary>
-        public List<IConquestBaseInput> Options { get; }
+        public List<IConquestBase> Options { get; }
 
         /// <summary>
         /// For a roster element, the actively selected options
@@ -126,12 +132,19 @@ namespace ConquestController.Models.Input
         public ObservableCollection<IOption> ActiveOptions { get; set; }
 
         public ObservableCollection<IOption> ActiveItems { get; set; }
+        public ObservableCollection<IMastery> ActiveMasteries { get; set; }
 
         public int MaxAllowableItems { get; set; }
+        public int MaxAllowableMasteries { get; set; }
 
         public abstract bool CanCalculateDefense();
         public abstract bool CanCastSpells();
-        public abstract IConquestGameElement Copy();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>An IConquestGameElement</returns>
+        public abstract object Clone();
 
         public override string ToString()
         {

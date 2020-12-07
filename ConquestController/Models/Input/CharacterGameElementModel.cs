@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using ConquestController.Extensions;
 
 namespace ConquestController.Models.Input
 {
@@ -10,6 +13,8 @@ namespace ConquestController.Models.Input
 
         public string Mainstay { get; set; } //mapped to MainstayChoices
         public string Restricted { get; set; } // mapped to RestrictedChoices
+        public string Retinue { get; set; } //mapped to RetinueChoices
+        public string Masteries { get; set; } //mapped to MasteryChoices
 
         public int NoWarlord { get; set; }
         public string SupremacyTitle { get; set; }
@@ -26,6 +31,9 @@ namespace ConquestController.Models.Input
         /// The list of units that can be chosen by this character as restricted
         /// </summary>
         public IEnumerable<string> RestrictedChoices { get; set; }
+
+        public RetinueAvailability RetinueChoices { get; set; }
+        public ObservableCollection<IMastery> MasteryChoices { get; set; }
         public List<string> Schools { get; set; }
         public List<SpellModel> Spells { get; set; }
 
@@ -35,14 +43,26 @@ namespace ConquestController.Models.Input
             RestrictedChoices = new List<string>();
             Schools = new List<string>();
             Spells = new List<SpellModel>();
+            MasteryChoices = new ObservableCollection<IMastery>();
+            RetinueChoices = new RetinueAvailability();
 
             MaxAllowableItems = 1;
+            MaxAllowableMasteries = 1;
         }
 
         public override bool CanCalculateDefense() => false;
         public override bool CanCastSpells() => true;  //characters have the ability to cast spells if they have the rules for it
 
-        public override IConquestGameElement Copy()
+        public override string ToString()
+        {
+            return Unit;
+        }
+
+        /// <summary>
+        /// returns an IConquestGameElement
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
         {
             var model = new CharacterGameElementModel()
             {
@@ -101,7 +121,9 @@ namespace ConquestController.Models.Input
                 Notes = Notes,
                 IsTorrential = IsTorrential,
                 ModelType = ModelType,
-                UserName = Unit
+                UserName = Unit,
+                MasteryChoices = MasteryChoices.CopyCollection(),
+                RetinueChoices = RetinueChoices
             };
 
             foreach (var option in Options)

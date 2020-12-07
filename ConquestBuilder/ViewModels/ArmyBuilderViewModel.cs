@@ -104,12 +104,12 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestGameElement _selectedPortraitCharacter;
+        private IConquestGamePiece _selectedPortraitCharacter;
 
         /// <summary>
         /// Represents the character portrait that is selected in the UI (not the selected character on the roster)
         /// </summary>
-        public IConquestGameElement SelectedPortraitCharacter
+        public IConquestGamePiece SelectedPortraitCharacter
         {
             get => _selectedPortraitCharacter;
             set
@@ -119,9 +119,9 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestGameElement _selectedPortraitUnit;
+        private IConquestGamePiece _selectedPortraitUnit;
 
-        public IConquestGameElement SelectedPortraitUnit
+        public IConquestGamePiece SelectedPortraitUnit
         {
             get => _selectedPortraitUnit;
             set
@@ -148,12 +148,12 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private IConquestGameElement _selectedRosterUnit;
+        private IConquestGamePiece _selectedRosterUnit;
 
         /// <summary>
         /// The selected unit from the roster
         /// </summary>
-        public IConquestGameElement SelectedRosterUnit
+        public IConquestGamePiece SelectedRosterUnit
         {
             get => _selectedRosterUnit;
             set
@@ -165,7 +165,7 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        public IConquestGameElement SelectedElement
+        public IConquestGamePiece SelectedElement
         {
             get
             {
@@ -620,7 +620,7 @@ namespace ConquestBuilder.ViewModels
             {
                 if (CanMainstayBeAdded(character))
                 {
-                    var regiment = SelectedPortraitUnit.Copy();
+                    var regiment = SelectedPortraitUnit.Clone() as IConquestGamePiece;
                     character.MainstayRegiments.Add(regiment);
 
                     var e = new RosterChangedEventArgs
@@ -641,7 +641,7 @@ namespace ConquestBuilder.ViewModels
             unit = selectedCharacterWarbands.RestrictedChoices.First(p => p == SelectedPortraitUnit.Unit); //called to trap for another value not existing, we want that to fail
             if (CanRestrictedBeAdded(character))
             {
-                var regiment = SelectedPortraitUnit.Copy();
+                var regiment = SelectedPortraitUnit.Clone() as IConquestGamePiece;
                 character.RestrictedRegiments.Add(regiment);
 
                 var e = new RosterChangedEventArgs
@@ -671,7 +671,7 @@ namespace ConquestBuilder.ViewModels
                     character.RestrictedRegiments.Count < character.MainstayRegiments.Count);
         }
 
-        private void LoadStatGrid(IConquestGameElement data)
+        private void LoadStatGrid(IConquestBaseGameElement data)
         {
             SelectedUnitName = data.Unit;
             SelectedUnitPoints = data.Points + " pts";
@@ -699,7 +699,7 @@ namespace ConquestBuilder.ViewModels
             DataPanelEnabled = true;
         }
 
-        private Tuple<IConquestAnalysisOutput, double[]> GetSelectedOutput(IConquestGameElement data)
+        private Tuple<IConquestAnalysisOutput, double[]> GetSelectedOutput(IConquestBaseGameElement data)
         {
             //try to find it in the unit collection first
             IConquestAnalysisOutput output = null;
@@ -759,33 +759,126 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        /// <summary>
+        /// Handles when a mastery is deleted from the Option Window
+        /// </summary>
+        /// <param name="mastery"></param>
+        private void HandleMasteryDeletion(IMastery mastery)
+        {
+            if (!Roster.MasterySpam.ContainsKey(mastery.Name)) return;
+            if (Roster.MasterySpam[mastery.Name].Count == 0) return;
+
+            //at this point we know there are active spammed items (or they were spammed when this was called, which is invoked in the option window) that exist
+            //that need to have their points adjusted down because one of the spammed items got deleted
+
+            //***the trick here is that the mastery will still be in the active mastery list of the character so we have to ignore the character because this method gets
+            //fired from the option window as soon as the check mark is unchecked***
+            var affectedElements = new List<Tuple<RosterCharacter, IMastery>>();
+
+            foreach (var rosterElement in this.Roster.RosterCharacters)
+            {
+                var target = rosterElement.Character.ActiveMasteries.FirstOrDefault(p => p.Name == mastery.Name);
+                if (target == null) continue;
+
+                affectedElements.Add(new Tuple<RosterCharacter, IMastery>(rosterElement, target));
+            }
+
+            affectedElements = affectedElements.OrderBy(p => p.Item2.Points).ToList();
+            var iteration = 0;
+
+            //the sort order is very important for this loop, we must start with the lowest and work our way up
+            foreach (var (character, curMastery) in affectedElements)
+            {
+                curMastery.Points = curMastery.BasePoints;
+                for (var i = 0; i < iteration; i++)
+                {
+                    curMastery.Points *= 2;
+                }
+
+                //every time we do this, pump up the iteration by one because we need to modify the next one in the chain to be an additional doubling
+                iteration++;
+            }
+
+            this.Roster.RefreshPoints();
+        }
+
+        /// <summary>
+        /// Opens the option dialog modal
+        /// </summary>
+        /// <param name="element"></param>
         private void OnRosterElementOption(object element)
         {
-            Guid selectedGuid;
-            selectedGuid = SelectedElement.ID;
+            var selectedGuid = SelectedElement.ID;
 
-            var optionVM = new OptionViewModel(SelectedElement, FilteredMagicItems);
+            var optionVM = new OptionViewModel(SelectedElement, FilteredMagicItems, selectedGuid);
             var window = new OptionsWindow(_view, optionVM);
 
             if (window.ShowDialog() == true)
             {
-                SynchronizeElement(optionVM, SelectedElement);
+                //add and remove the elements from the collections
+                SynchronizeGameElement(optionVM, SelectedElement);
+
+                //adjust the point values for any masteries that were deleted which can cause a chain reaction of spammed items needing readjusted
+                foreach (var mastery in optionVM.ActiveMasteryState.Where(p => p.Item2 == false))
+                    HandleMasteryDeletion(mastery.Item1);
+
+                //redraw the tree
                 RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs(){RosterElement = SelectedRosterCharacter, SelectedElementID = selectedGuid});
             }
         }
 
-        private void SynchronizeElement(OptionViewModel vm, IConquestGameElementOption element)
+        /// <summary>
+        /// Add and remove the new options and masteries that were selected 
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <param name="element"></param>
+        private void SynchronizeGameElement(OptionViewModel vm, IConquestGamePiece element)
         {
             element.ActiveOptions.Clear();
-            element.ActiveItems.Clear();
-            foreach (var option in vm.Options.Where(p=>p.Category == OptionCategory.Option && p.IsChecked))
-            {
-                element.ActiveOptions.Add((IOption)option.Model);
-            }
 
-            foreach (var option in vm.Options.Where(p => p.Category == OptionCategory.Item && p.IsChecked))
+            if (element is IConquestCharacter)
             {
-                element.ActiveItems.Add((IOption)option.Model);
+                SynchronizeCharacterElement(vm, (IConquestCharacter)element);
+                return;
+            }
+            
+            foreach (var option in vm.Options.Where(p => p.IsChecked))
+            {
+                switch (option.Category)
+                {
+                    case OptionCategory.Option:
+                        element.ActiveOptions.Add((IOption)option.Model);
+                        break;
+                    case OptionCategory.Item:
+                    case OptionCategory.Mastery:
+                        throw new InvalidOperationException($"Category '{option.Category}' was passed for a base game piece which is not supported");
+                    default:
+                        throw new InvalidOperationException($"The category '{option.Category}' was not accounted for in ArmyBuilderViewModel::SynchronizeElement");
+                }
+            }
+        }
+
+        private void SynchronizeCharacterElement(OptionViewModel vm, IConquestCharacter element)
+        {
+            element.ActiveItems.Clear();
+            element.ActiveMasteries.Clear();
+
+            foreach (var option in vm.Options.Where(p => p.IsChecked))
+            {
+                switch (option.Category)
+                {
+                    case OptionCategory.Option:
+                        element.ActiveOptions.Add((IOption)option.Model);
+                        break;
+                    case OptionCategory.Item:
+                        element.ActiveItems.Add((IOption)option.Model);
+                        break;
+                    case OptionCategory.Mastery:
+                        element.ActiveMasteries.Add((IMastery)option.Model);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"The category '{option.Category}' was not accounted for in ArmyBuilderViewModel::SynchronizeElement");
+                }
             }
         }
 

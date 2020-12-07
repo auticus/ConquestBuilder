@@ -110,7 +110,7 @@ namespace ConquestBuilder.Models
             {
                 //assign units and their options
                 Units = DataRepository.GetInputFromFileToList<UnitGameElementModel>(_appPath + "\\" + _unitInputFile);
-                DataRepository.AssignUnitOptionsToModelsFromFile(Units.Cast<IConquestGameElementOption>().ToList(), _appPath + "\\" + _unitOptionsFile);
+                DataRepository.AssignUnitOptionsToModelsFromFile(Units.Cast<IConquestGamePiece>().ToList(), _appPath + "\\" + _unitOptionsFile);
 
                 var characterInputFilePath = _appPath + "\\" + _characterInputFile;
                 var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
@@ -120,7 +120,7 @@ namespace ConquestBuilder.Models
                 Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile) as List<MasteryModel>;
                 Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile) as List<ItemModel>;
 
-                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells).ToList();
+                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries).ToList();
             }
             catch (Exception ex)
             {
@@ -135,6 +135,7 @@ namespace ConquestBuilder.Models
             CharacterOutput = analysis.BroadAnalysis(Characters, Spells);
         }
 
+        //todo: turn this back on!!
         private void WriteAnalysisDataToFile()
         {
             AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, UnitOutput, includeUselessOptions: false);

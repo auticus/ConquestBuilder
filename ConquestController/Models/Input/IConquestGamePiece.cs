@@ -3,14 +3,17 @@ using System.Collections.ObjectModel;
 
 namespace ConquestController.Models.Input
 {
-    public interface IConquestGameElementOption : IConquestBaseInput
+    /// <summary>
+    /// Interface that exposes all of the options available to any game piece (be it regiment or character)
+    /// </summary>
+    public interface IConquestGamePiece : IConquestBaseGameElement
     {
-        List<IConquestBaseInput> Options { get; }
+        List<IConquestBase> Options { get; }
         ObservableCollection<IOption> ActiveOptions { get; }
-        ObservableCollection<IOption> ActiveItems { get; }
+
         int AdditionalPoints { get; set; }
         int LeaderPoints { get; set; }
         int StandardPoints { get; set; }
-        int MaxAllowableItems { get; set; }
     }
+
 }

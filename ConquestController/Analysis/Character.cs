@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ConquestController.Analysis.Components;
 using ConquestController.Data;
@@ -50,17 +51,31 @@ namespace ConquestController.Analysis
             return output;
         }
 
-        public static IEnumerable<CharacterGameElementModel> GetAllCharacters(string inputFilePath, string inputOptionsFilePath, IEnumerable<SpellModel> spells)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFilePath"></param>
+        /// <param name="inputOptionsFilePath"></param>
+        /// <param name="spells"></param>
+        /// <param name="masteries">All masteries in the game not limited by faction</param>
+        /// <returns></returns>
+        public static IEnumerable<CharacterGameElementModel> GetAllCharacters(string inputFilePath, 
+            string inputOptionsFilePath, 
+            IEnumerable<SpellModel> spells, 
+            IEnumerable<IOption> masteries)
         {
             //assign characters
             var characters = DataRepository.GetInputFromFileToList<CharacterGameElementModel>(inputFilePath);
 
             //assign mainstay and restricted choices
-            AssignCharacterExtras(characters, spells, inputOptionsFilePath);
+            AssignCharacterExtras(characters, spells, masteries, inputOptionsFilePath);
 
             return characters;
         }
-        private static void AssignCharacterExtras(IEnumerable<CharacterGameElementModel> characters, IEnumerable<SpellModel> spells, string inputOptionsFilePath)
+        private static void AssignCharacterExtras(IEnumerable<CharacterGameElementModel> characters, 
+            IEnumerable<SpellModel> spells, 
+            IEnumerable<IOption> masteries, 
+            string inputOptionsFilePath)
         {
             var spellModels = spells.ToList();
 
@@ -69,7 +84,7 @@ namespace ConquestController.Analysis
                 //assign restricted and mainstay choices
                 DataRepository.AssignDelimitedPropertyToList(character.MainstayChoices as IList<string>, character.Mainstay);
                 DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices as IList<string>, character.Restricted);
-                DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestGameElementOption>(){character}, inputOptionsFilePath);
+                DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestGamePiece>(){character}, inputOptionsFilePath);
                 
                 //assign spell schools and individual spells to the character
                 DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
@@ -77,7 +92,22 @@ namespace ConquestController.Analysis
                 {
                     character.Spells.AddRange(spellModels.Where(p => p.Category == school));
                 }
+
+                //masteries chosen by retinues cannot be set here as there is no way of knowing what retinue the character has at this point
+                var filteredMasteries = Mastery.GetFilteredMasteries(character, masteries.Cast<IMastery>().ToList());
+                var masteryList = character.MasteryChoices.Cast<IOption>().ToList();
+                DataRepository.AssignDelimitedPropertyToOptionList(masteryList,
+                        filteredMasteries, 
+                            character.Masteries);
+                foreach (var mastery in masteryList)
+                {
+                    character.MasteryChoices.Add((IMastery)mastery);
+                }
+
+                DataRepository.AssignRetinueAvailabilities(character.RetinueChoices, character.Retinue);
             }
         }
+
+        
     }
 }

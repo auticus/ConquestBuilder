@@ -24,6 +24,11 @@
         <ListView Name="lvOptions" Margin="10,10,10,10"
                   AlternationCount="2"
                   ItemsSource="{Binding Source={StaticResource itemSrc}}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="ToolTip" Value="{Binding Tooltip}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridView.ColumnHeaderContainerStyle>
