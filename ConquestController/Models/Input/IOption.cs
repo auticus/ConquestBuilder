@@ -1,6 +1,8 @@
-﻿namespace ConquestController.Models.Input
+﻿using System;
+
+namespace ConquestController.Models.Input
 {
-    public interface IOption
+    public interface IOption : ICloneable
     {
         string Name { get; set; }
         string Tag { get; set; }

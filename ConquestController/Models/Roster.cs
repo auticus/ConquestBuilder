@@ -8,6 +8,11 @@ namespace ConquestController.Models
 {
     public class Roster : BaseViewModel
     {
+        /// <summary>
+        /// List of mastery strings (the name) and the character guid they are attached to so that they can be counted up
+        /// </summary>
+        public static Dictionary<string, List<Guid>> MasterySpam { get; private set; }
+
         private Guid _id;
         public Guid ID
         {
@@ -62,6 +67,12 @@ namespace ConquestController.Models
             RosterCharacters.CollectionChanged += RosterCharacters_OnCollectionChanged;
 
             TotalPoints = FormatPoints(0);
+            MasterySpam = new Dictionary<string, List<Guid>>();
+        }
+
+        public void RefreshPoints()
+        {
+            PointsChanged(this, EventArgs.Empty);
         }
 
         private void RosterCharacters_OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

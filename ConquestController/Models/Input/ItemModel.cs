@@ -16,6 +16,26 @@
         public string Notes { get; set; }
         public string Restrictions { get; set; }
 
+        /// <summary>
+        /// Returns an ItemModel
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return new ItemModel
+            {
+                Category = this.Category,
+                Faction = this.Faction,
+                Name = this.Name,
+                Notes = this.Notes,
+                Points = this.Points,
+                Tag = this.Tag,
+                SelfOnly = this.SelfOnly,
+                WarlordOnly = this.WarlordOnly,
+                Restrictions = this.Restrictions
+            };
+        }
+
         public override string ToString()
         {
             return $"[{Category}] - {Name}";

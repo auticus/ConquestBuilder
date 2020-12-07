@@ -99,5 +99,17 @@ namespace ConquestBuilder.ViewModels
                 NotifyPropertyChanged("GroupCanMultiSelect");
             }
         }
+
+        private string _tooltip;
+
+        public string Tooltip
+        {
+            get => _tooltip;
+            set
+            {
+                _tooltip = value;
+                NotifyPropertyChanged("Tooltip");
+            }
+        }
     }
 }

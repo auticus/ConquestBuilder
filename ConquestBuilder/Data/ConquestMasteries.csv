@@ -2,7 +2,7 @@ Faction,Restrictions,Name,Category,Points,Tag,Notes
 ALL,Light|Medium,Disciplined,Tactical,40,[],Once per game the character and any regiment they have joined may perform a clean withdrawal without rolling a die or suffering any wounds
 ALL,Tier3TacticalRetinue,Knowledged,Tactical,35,[],The character may replace their supremacy ability with any other supremacy ability in the list
 ALL,[],Calm Strategist,Tactical,25,[],Once per game the character may refuse a duel without suffering any penalty
-ALL,Tier2TacticalRetinue,Eccentric,Tactical,20,[],The character must select 2 Core Regiments and only 1 Restricted regiment but they may select any regiment in the list as their Restricted option
+ALL,Tier2TacticalRetinue,Eccentric,Tactical,20,AllRestricted,The character must select 2 Core Regiments and only 1 Restricted regiment but they may select any regiment in the list as their Restricted option
 ALL,[],Long Lineage,Tactical,15,[],May take an extra heirloom/trove find/relic/mutation
 ALL,[],Expose Weakness,Combat,20,[],At the beginning of a duel action where this character is involved - choose one of your opponents items or retinue bonuses or masteries and it has no effect during this duel
 ALL,[],Marksmanship,Combat,15,[],The character gains Barrage +2.  If they do not have barrage they gain Barrage(2)(24 inches)
@@ -14,20 +14,20 @@ ALL,[],Magus,Arcane,20,[],The character increases any non-scaling spell difficul
 ALL,Tier2MagicRetinue,Cautious Casting,Arcane,15,[],Once per game the character may re-roll all dice for a single spellcasting roll
 ALL,[],Focused,Arcane,15,[],The character may reroll 1 die during any spellcasting action
 ALL,Tier3MagicRetinue,Wizened Caster,Arcane,15,[],The character gains the benefits of 1st rank Tactical Retinue
-100K,ImperialOfficer,Captain of the Garrison,Tactical,35,[],At the beginning of deployment choose a regiment of Crossbowmen.  That regiment gains the forward deployment special rule.
-100K,[],Trained in Trigonometry,Tactical,15,[],The character and any regiment that they have joined gain the Arcing Fire special rule
-100K,PrioryCommander|NobleLord,Wedge,Combat,30,[],The character exchanges their supremacy ability with the following:  The character and all regiments within 6 inches gain the Linebreaker special rule
-100K,TheistPriest,Death Cult,Arcane,20,[],The character and any devout regiment they have joined gain the Aura of Death special rule
-100K,[],Mystical Wards,Arcane,15,[],The character and any regiment they have joined gain the Resist Decay(1) special rule and reroll all Injury rolls caused by Aura of Death special rule
-Spires,HighCloneExecutor,Attracting Pheromones,Tactical,45,[],The character and any regiment that they join gain the Spearhead special rule
-Spires,LineageHighborn,Elder,Combat,25,[],The character may purchase two additional mutations
+100k,Imperial Officer,Captain of the Garrison,Tactical,35,[],At the beginning of deployment choose a regiment of Crossbowmen.  That regiment gains the forward deployment special rule.
+100k,[],Trained in Trigonometry,Tactical,15,[],The character and any regiment that they have joined gain the Arcing Fire special rule
+100k,Priory Commander|Noble Lord - Infantry|Noble Lord - Cavalry,Wedge,Combat,30,[],The character exchanges their supremacy ability with the following:  The character and all regiments within 6 inches gain the Linebreaker special rule
+100k,Theist Priest,Death Cult,Arcane,20,[],The character and any devout regiment they have joined gain the Aura of Death special rule
+100k,[],Mystical Wards,Arcane,15,[],The character and any regiment they have joined gain the Resist Decay(1) special rule and reroll all Injury rolls caused by Aura of Death special rule
+Spires,High Clone Executor,Attracting Pheromones,Tactical,45,[],The character and any regiment that they join gain the Spearhead special rule
+Spires,Lineage Highborn,Elder,Combat,25,[],The character may purchase two additional mutations
 Spires,[],Eagle Eye,Combat,10,[],The character may reroll natural rolls of 6 when taking part in a Volley Action
 Spires,Biomancer,Fleshcarver,Arcane,25,[],When a friendly regiment receives any healing effects caused by this character they heal 1 extra wound
 Spires,[],Plaguelord,Arcane,15,[],Whenever an enemy model is removed as a casualty by Decay effects caused by this character or regiment - another wound is dealt to the enemy regiment (no saves allowed)
-Dweghom,HoldRaegh,Beastmaster,Tactical,15,[],Friendly monsters within 12 inches of this character gain +1 Resolve
+Dweghom,Hold Raegh,Beastmaster,Tactical,15,[],Friendly monsters within 12 inches of this character gain +1 Resolve
 Dweghom,[],Fuelled by the Furnace,Arcane,30,[],The character has +3 attacks but for each roll of a natural 6 they must make an injury roll on their base armor or suffer a wound
-Dweghom,TemperedSorcerer|Steelshaper,Lava Shots,Combat,15,[],Natural rolls of a 1 made by the character during a Volley action gain the smite special rule
-Dweghom,ArdentKeraweg,Flaming Oratory,Arcane,20,IsBastion,The character gains the Bastion draw event
+Dweghom,Tempered Sorcerer|Tempered Steelshaper,Lava Shots,Combat,15,[],Natural rolls of a 1 made by the character during a Volley action gain the smite special rule
+Dweghom,Ardent Keraweg,Flaming Oratory,Arcane,20,IsBastion,The character gains the Bastion draw event
 Dweghom,[],Potent Scryer,Arcane,10,[],Instead of using a spellcasting action - the character may look at the top 2 cards of the opponents stack
 Nords,[],The Hunts Instinct,Tactical,15,[],The character gains the Fire and Advance draw event
 Nords,Blooded,Curse of the Wolfen,Combat,20,[],The character changes his type to Brute and may no longer gain a Retinue.  

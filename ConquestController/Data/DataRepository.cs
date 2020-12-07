@@ -46,7 +46,7 @@ namespace ConquestController.Data
         /// <param name="filePath">The file path of the options file</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"/>
-        public static void AssignUnitOptionsToModelsFromFile(List<IConquestGameElementOption> models, string filePath)
+        public static void AssignUnitOptionsToModelsFromFile(List<IConquestGamePiece> models, string filePath)
         {
             using var rdr = new StreamReader(filePath);
 
@@ -80,6 +80,52 @@ namespace ConquestController.Data
             {
                 if (element == string.Empty) continue;
                 list.Add(element);
+            }
+        }
+
+        public static void AssignDelimitedPropertyToOptionList(IList<IOption> list, IList<IOption> sourceList,
+            string data, char delimiter = '|')
+        {
+            var splitData = data.Split(delimiter);
+            foreach (var element in splitData)
+            {
+                if (element == string.Empty) continue;
+
+                //this will throw an error if the mastery sent in doesn't match anything from the source - which is what we want
+                var viableElements = sourceList.Where(p => p.Category == element);
+                foreach (var viable in viableElements)
+                {
+                    list.Add(viable);
+                }
+            }
+        }
+
+        public static void AssignRetinueAvailabilities(RetinueAvailability availability, string data, char delimiter = '|')
+        {
+            var splitData = data.Split(delimiter);
+            for (int i = 0; i < 3; i++) //retinues have 3 items, Tactical|Combat|Magic
+            {
+                RetinueAvailability.Availability avail = splitData[i] switch
+                {
+                    "N" => RetinueAvailability.Availability.NotAvailable,
+                    "A" => RetinueAvailability.Availability.Available,
+                    "R" => RetinueAvailability.Availability.Restricted,
+                    _ => throw new ArgumentException(
+                        $"The data '{splitData[i]}' passed for retinue availability is not recognized")
+                };
+
+                switch (i)
+                {
+                    case 0:
+                        availability.Tactical = avail;
+                        break;
+                    case 1:
+                        availability.Combat = avail;
+                        break;
+                    case 2:
+                        availability.Magic = avail;
+                        break;
+                }
             }
         }
 

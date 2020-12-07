@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace ConquestController.Models.Input
 {
-    public interface IConquestGameElement : IConquestGameElementOption
+    public interface IConquestBaseGameElement : IConquestBase, ICloneable
     {
         EventHandler PointsChanged { get; set; }
         Guid ID { get; set; }
@@ -25,7 +25,5 @@ namespace ConquestController.Models.Input
         int TotalPoints { get; }
 
         string SpecialRules { get; set; }
-
-        IConquestGameElement Copy();
     }
 }

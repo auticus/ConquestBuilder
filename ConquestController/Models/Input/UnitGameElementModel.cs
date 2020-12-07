@@ -12,7 +12,11 @@ namespace ConquestController.Models.Input
         public override bool CanCalculateDefense() => true;
         public override bool CanCastSpells() => false;
 
-        public override IConquestGameElement Copy()
+        /// <summary>
+        /// Returns an IConquestGameElement
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
         {
             var model = new UnitGameElementModel
             {
