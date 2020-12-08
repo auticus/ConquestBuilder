@@ -4,6 +4,7 @@ namespace ConquestController.Models.Input
 {
     public interface IOption : ICloneable
     {
+        string Faction { get; set; }
         string Name { get; set; }
         string Tag { get; set; }
         int Points { get; set; }

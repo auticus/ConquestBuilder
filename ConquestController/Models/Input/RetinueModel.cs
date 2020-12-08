@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class RetinueModel : IOption
+    public class RetinueModel : IRetinue
     {
         public string Name { get; set; }
         public string Tag { get; set; }
@@ -8,7 +8,6 @@
         public int SelfOnly { get; set; }
 
         public string Faction { get; set; }
-        public string NotAllowed { get; set; }
         public int Tier { get; set; }
         public string Category { get; set; }
         public string Notes { get; set; }
@@ -35,7 +34,6 @@
                 SelfOnly = this.SelfOnly,
                 Tag = this.Tag,
                 WarlordOnly = this.WarlordOnly,
-                NotAllowed = this.NotAllowed,
                 Tier = this.Tier
             };
         }

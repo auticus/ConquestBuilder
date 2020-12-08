@@ -23,11 +23,11 @@ namespace ConquestController.Analysis
         /// <param name="allResolve"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public static IList<ConquestUnitOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementModel gameElementModel, List<int> allClash,
+        public static IList<IConquestAnalysisOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementModel gameElementModel, List<int> allClash,
             List<int> allDefenses, List<int> allResolve, IEnumerable<SpellModel> spells)
         {
             //loop through all spells that this gameElementModel can have applied to it
-            var output = new List<ConquestUnitOutput>();
+            var output = new List<IConquestAnalysisOutput>();
 
             if (!gameElementModel.Schools.Any()) return output;
 
@@ -59,7 +59,7 @@ namespace ConquestController.Analysis
         /// <param name="spells"></param>
         /// <param name="masteries">All masteries in the game not limited by faction</param>
         /// <returns></returns>
-        public static IEnumerable<CharacterGameElementModel> GetAllCharacters(string inputFilePath, 
+        public static IEnumerable<IConquestCharacter> GetAllCharacters(string inputFilePath, 
             string inputOptionsFilePath, 
             IEnumerable<SpellModel> spells, 
             IEnumerable<IOption> masteries)
@@ -72,7 +72,7 @@ namespace ConquestController.Analysis
 
             return characters;
         }
-        private static void AssignCharacterExtras(IEnumerable<CharacterGameElementModel> characters, 
+        private static void AssignCharacterExtras(IEnumerable<IConquestCharacter> characters, 
             IEnumerable<SpellModel> spells, 
             IEnumerable<IOption> masteries, 
             string inputOptionsFilePath)
@@ -87,10 +87,9 @@ namespace ConquestController.Analysis
                 DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestGamePiece>(){character}, inputOptionsFilePath);
                 
                 //assign spell schools and individual spells to the character
-                DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
-                foreach (var school in character.Schools)
+                if (character is IConquestSpellcaster spellcaster)
                 {
-                    character.Spells.AddRange(spellModels.Where(p => p.Category == school));
+                    AssignSpells(spellcaster, spellModels);
                 }
 
                 //masteries chosen by retinues cannot be set here as there is no way of knowing what retinue the character has at this point
@@ -108,6 +107,15 @@ namespace ConquestController.Analysis
             }
         }
 
+        private static void AssignSpells(IConquestSpellcaster caster, List<SpellModel> spellModels)
+        {
+            //assign spell schools and individual spells to the character
+            DataRepository.AssignDelimitedPropertyToList(caster.Schools, caster.SpellSchools);
+            foreach (var school in caster.Schools)
+            {
+                caster.Spells.AddRange(spellModels.Where(p => p.Category == school));
+            }
+        }
         
     }
 }

@@ -17,7 +17,7 @@ namespace ConquestController.Analysis
         /// <param name="models"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public IList<ConquestUnitOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells) where T: ConquestGameElement<T>
+        public IList<IConquestAnalysisOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells) where T: IConquestGamePiece
         {
             //regiments we base on 3, characters on 1
             var standCount = typeof(T) == typeof(CharacterGameElementModel) ? 1 : 3;
@@ -27,12 +27,12 @@ namespace ConquestController.Analysis
             var outputKvp = InitializeBroadAnalysis(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
                 applyFullyDeadly: false);
 
-            ApplyExtraOptions(outputKvp, analysisStandCount: standCount, frontageCount: frontageCount, applyFullyDeadly: false);
+            ApplyExtraOptions(normalizedOutputKvp: outputKvp, analysisStandCount: standCount, frontageCount: frontageCount, applyFullyDeadly: false);
             NormalizeAndEfficiencyData(outputKvp);
             FinalizeEfficiency(outputKvp);
             FinalizeAnalysis(outputKvp);
             
-            return outputKvp.Keys.ToList();
+            return outputKvp.Keys.Cast<IConquestAnalysisOutput>().ToList();
         }
 
         /// <summary>
@@ -55,16 +55,19 @@ namespace ConquestController.Analysis
         /// <param name="frontageCount"></param>
         /// <param name="applyFullyDeadly"></param>
         /// <returns>A dictionary containing a key value that is the output matched by the model that it is derived from as the value</returns>
-        private static IDictionary<ConquestUnitOutput, ConquestGameElement<T>> InitializeBroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells, int analysisStandCount, 
-            int frontageCount, bool applyFullyDeadly)
-            where T: ConquestGameElement<T>
+        private static IDictionary<IConquestAnalysisOutput, IConquestGamePiece> InitializeBroadAnalysis<T>(IEnumerable<T> models, 
+            IEnumerable<SpellModel> spells, 
+            int analysisStandCount, 
+            int frontageCount, 
+            bool applyFullyDeadly)
+            where T: IConquestGamePiece
         {
-            var dictionary = new Dictionary<ConquestUnitOutput, ConquestGameElement<T>>();
+            var dictionary = new Dictionary<IConquestAnalysisOutput, IConquestGamePiece>();
 
             foreach (var primeModel in models)
             {
                 //analyze the base model
-                var input = new AnalysisInput<T>()
+                var input = new AnalysisInput()
                 {
                     Model = primeModel,
                     AnalysisStandCount = analysisStandCount,
@@ -80,8 +83,7 @@ namespace ConquestController.Analysis
             return dictionary;
         }
 
-        private static ConquestUnitOutput AnalyzeModel<T>(AnalysisInput<T> input)
-            where T : ConquestGameElement<T>
+        private static ConquestUnitOutput AnalyzeModel(AnalysisInput input)
         {
             ProcessModelDefaults(input.Model);
             var output = new ConquestUnitOutput
@@ -98,7 +100,7 @@ namespace ConquestController.Analysis
 
             //the optionals like options, spells, etc methods will all bounce out immediately if the model passed in has none so freely just call the chain
             //process options
-            Option.ProcessOption(input, output, input.Option);
+            Option.ProcessOption(input, output, input.Option, input.Model is IConquestCharacter);
             //todo: spells!
             //ProcessSpell(input, output);
 
@@ -116,8 +118,10 @@ namespace ConquestController.Analysis
             return output;
         }
 
-        private static void ApplyExtraOptions<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> normalizedOutputKvp, int analysisStandCount,
-            int frontageCount, bool applyFullyDeadly) where T: ConquestGameElement<T>
+        private static void ApplyExtraOptions(IDictionary<IConquestAnalysisOutput, IConquestGamePiece> normalizedOutputKvp, 
+            int analysisStandCount,
+            int frontageCount, 
+            bool applyFullyDeadly)
         {
             //T primeModel, AnalysisInput< T > input
             //input has the BaselineOutput applied to it so make sure you apply that here
@@ -125,7 +129,7 @@ namespace ConquestController.Analysis
             foreach (var output in normalizedOutputKvp)
             {
                 //analyze the base model
-                var input = new AnalysisInput<T>()
+                var input = new AnalysisInput()
                 {
                     Model = output.Value,
                     AnalysisStandCount = analysisStandCount,
@@ -137,13 +141,13 @@ namespace ConquestController.Analysis
                 //analyze options and add those to the baseline object as comparisons
                 if (output.Value.Options.Any())
                 {
-                    AnalyzeModelExtras<T, UnitOptionModel>(input);
+                    AnalyzeModelExtras<IOption>(input);
                 }
 
                 //analyze spells
                 if (output.Value.CanCastSpells())
                 {
-                    AnalyzeModelExtras<T, SpellModel>(input);
+                    AnalyzeModelExtras<SpellModel>(input);
                 }
             }
         }
@@ -153,19 +157,19 @@ namespace ConquestController.Analysis
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TExtra">The extra we are processing (option, spell, etc)</typeparam>
-        private static void AnalyzeModelExtras<T, TExtra>(AnalysisInput<T> input) where T : ConquestGameElement<T>
+        private static void AnalyzeModelExtras<TExtra>(AnalysisInput input)
         {
-            if (!ExtraProcessingRequired<T, TExtra>(input)) return;
+            if (!ExtraProcessingRequired<TExtra>(input)) return;
 
             //options (assumption can only take one)
             var optionQueue = new Queue<object>(); //IConquestGameElement or SpellModel
-            ExtraBuildQueue<T, TExtra>(input, optionQueue);
+            ExtraBuildQueue<TExtra>(input, optionQueue);
 
             while (optionQueue.Count > 0)
             {
                 var option = optionQueue.Dequeue();
                 var aInput = BuildInput(input, option);
-                var output = AnalyzeModel<T>(aInput);
+                var output = AnalyzeModel(aInput);
                 input.BaselineOutput.UpgradeOutputModifications.Add(output);
             }
         }
@@ -177,7 +181,7 @@ namespace ConquestController.Analysis
         /// <typeparam name="TExtra"></typeparam>
         /// <param name="input"></param>
         /// <returns></returns>
-        private static bool ExtraProcessingRequired<T, TExtra>(AnalysisInput<T> input) where T : ConquestGameElement<T>
+        private static bool ExtraProcessingRequired<TExtra>(AnalysisInput input)
         {
             if (typeof(TExtra) == typeof(UnitOptionModel))
             {
@@ -200,7 +204,7 @@ namespace ConquestController.Analysis
         /// <typeparam name="TExtra"></typeparam>
         /// <param name="input"></param>
         /// <param name="q"></param>
-        private static void ExtraBuildQueue<T, TExtra>(AnalysisInput<T> input, Queue<object> q) where T : ConquestGameElement<T>
+        private static void ExtraBuildQueue<TExtra>(AnalysisInput input, Queue<object> q)
         {
             if (typeof(TExtra) == typeof(UnitOptionModel))
             {
@@ -231,7 +235,7 @@ namespace ConquestController.Analysis
         /// <param name="input"></param>
         /// <param name="extra"></param>
         /// <returns></returns>
-        private static AnalysisInput<T> BuildInput<T>(AnalysisInput<T> input, object extra) where T: ConquestGameElement<T>
+        private static AnalysisInput BuildInput(AnalysisInput input, object extra)
         {
             if (extra.GetType() == typeof(UnitOptionModel))
                 return BuildOptionInput(input, extra);
@@ -258,12 +262,12 @@ namespace ConquestController.Analysis
             throw new InvalidOperationException("GetOptionName was passed an object that is not recognized");
         }
 
-        private static AnalysisInput<T> BuildOptionInput<T>(AnalysisInput<T> input, object extra) where T : ConquestGameElement<T>
+        private static AnalysisInput BuildOptionInput(AnalysisInput input, object extra)
         {
-            var optionModel = (ConquestGameElement<T>)input.Model.Clone();
+            var optionModel = (IConquestGamePiece)input.Model.Clone();
             if (!(extra is UnitOptionModel option)) throw new InvalidOperationException("Object sent to BuildOptionInput is not an option model");
 
-            var aInput = new AnalysisInput<T>()
+            var aInput = new AnalysisInput()
             {
                 Model = optionModel,
                 AnalysisStandCount = input.AnalysisStandCount,
@@ -275,14 +279,13 @@ namespace ConquestController.Analysis
             return aInput;
         }
 
-        private static AnalysisInput<T> BuildSpellInput<T>(AnalysisInput<T> input, object extra)
-            where T : ConquestGameElement<T>
+        private static AnalysisInput BuildSpellInput(AnalysisInput input, object extra)
         {
-            var optionModel = (ConquestGameElement<T>)input.Model.Clone();
+            var optionModel = (IConquestGamePiece)input.Model.Clone();
             if (!(extra is SpellModel option))
                 throw new InvalidOperationException("Object sent to BuildSpellInput is not a spell model");
 
-            var aInput = new AnalysisInput<T>()
+            var aInput = new AnalysisInput()
             {
                 Model = optionModel,
                 AnalysisStandCount = input.AnalysisStandCount,
@@ -294,7 +297,7 @@ namespace ConquestController.Analysis
             return aInput;
         }
 
-        private static void CalculateOffense<T>(ConquestUnitOutput output, ConquestGameElement<T> model, 
+        private static void CalculateOffense(ConquestUnitOutput output, IConquestGamePiece model, 
             bool applyFullyDeadly)
         {
             var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
@@ -372,7 +375,7 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static void CalculateDefense<T>(ConquestUnitOutput output, ConquestGameElement<T> model)
+        private static void CalculateDefense(IConquestAnalysisOutput output, IConquestGamePiece model)
         {
             var allCleave = new List<int>() { 0, 1, 2, 3, 4 };
 
@@ -408,7 +411,7 @@ namespace ConquestController.Analysis
                 defenseOutputs[1];
         }
 
-        private static void NormalizeAndEfficiencyData<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
+        private static void NormalizeAndEfficiencyData(IDictionary<IConquestAnalysisOutput, IConquestGamePiece> data)
         {
             var aggregateList = GetAllOutputsFromRawOutputs(data);
 
@@ -460,9 +463,9 @@ namespace ConquestController.Analysis
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        private static IList<ConquestUnitOutput> GetAllOutputsFromRawOutputs<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
+        private static IList<IConquestAnalysisOutput> GetAllOutputsFromRawOutputs(IDictionary<IConquestAnalysisOutput,IConquestGamePiece> data)
         {
-            var returnList = new List<ConquestUnitOutput>();
+            var returnList = new List<IConquestAnalysisOutput>();
             foreach (var key in data.Keys)
             {
                 returnList.Add(key);
@@ -477,7 +480,7 @@ namespace ConquestController.Analysis
         /// </summary>
         /// <param name="standIndex"></param>
         /// <param name="dataPoint"></param>
-        private static void CalculateEfficiency(int standIndex, ConquestUnitOutput dataPoint)
+        private static void CalculateEfficiency(int standIndex, IConquestAnalysisOutput dataPoint)
         {
             //this is designed to only work with the full output stand.  If you want to break this into the smaller stand calculations
             //you must use their AdditionalPoints value, not the Points.
@@ -496,7 +499,7 @@ namespace ConquestController.Analysis
         /// <summary>
         /// Efficiency is where the lower the score, the better that is.  That is not intuitive and this method will flip those scores
         /// </summary>
-        private static void FinalizeEfficiency<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
+        private static void FinalizeEfficiency(IDictionary<IConquestAnalysisOutput, IConquestGamePiece> data)
         {
             var aggregateList = GetAllOutputsFromRawOutputs(data);
 
@@ -547,7 +550,7 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static double[] GetAverageScores(IList<ConquestUnitOutput> data)
+        private static double[] GetAverageScores(IList<IConquestAnalysisOutput> data)
         {
             var totalOutput = data.Sum(dataPoint => dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].OutputScore);
             var totalOffenseEfficiency = data.Sum(dataPoint => dataPoint.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.Efficiency);
@@ -561,10 +564,10 @@ namespace ConquestController.Analysis
             };
         }
 
-        private static void FinalizeAnalysis<T>(IDictionary<ConquestUnitOutput, ConquestGameElement<T>> data)
+        private static void FinalizeAnalysis(IDictionary<IConquestAnalysisOutput, IConquestGamePiece> data)
         {
             //todo: flaw here - using average defense efficiency but character defense score is not calculated
-            //todo: magic score not caculated as part of this analysis
+            //todo: magic score not calculated as part of this analysis
 
             var aggregateList = GetAllOutputsFromRawOutputs(data);
 
@@ -616,9 +619,9 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static void ProcessModelDefaults<T>(ConquestGameElement<T> model) 
+        private static void ProcessModelDefaults(IConquestGamePiece model) 
         {
-            if (typeof(T) == typeof(CharacterGameElementModel))
+            if (model is IConquestCharacter)
             {
                 model.Models = 1;
             }
