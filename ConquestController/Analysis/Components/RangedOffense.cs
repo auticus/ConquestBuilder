@@ -15,7 +15,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="supportOnly"></param>
         /// <param name="applyFullDeadly">Set to true if you know deadly blades is being applied fully, otherwise it will be halved</param>
         /// <returns>The average ranged output against the range of defense values passed</returns>
-        public static double CalculateOutput<T>(ConquestGameElement<T> model, List<int> defenseValues, bool supportOnly = false, bool applyFullDeadly = false)
+        public static double CalculateOutput(IConquestGamePiece model, List<int> defenseValues, bool supportOnly = false, bool applyFullDeadly = false)
         {
             var shotsFired = supportOnly ? 1 : model.Models * model.Barrage;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Xaml;
 using ConquestController.Data;
 using ConquestController.Models;
 using ConquestController.Models.Input;
@@ -11,7 +12,8 @@ namespace ConquestBuilder.ViewModels
     public class OptionViewModel : BaseViewModel
     {
         private IConquestGamePiece _element;
-        private readonly IList<IOption> _magicItems;
+        private readonly IEnumerable<IOption> _magicItems;
+        private readonly IEnumerable<ITieredOption> _retinues;
         private readonly Guid _characterID;
 
         public ObservableCollection<ListViewOption> Options { get; set; } //not worried about notification because the lists are initialized in the constructor
@@ -39,12 +41,12 @@ namespace ConquestBuilder.ViewModels
         /// </summary>
         /// <param name="element">the element having the options applied to it</param>
         /// <param name="magicItems">Magic Items to display</param>
-        /// <param name="masteries">Filtered masteries that can be applied</param>
-        /// <param name="reconcileExistingMasteryCosts">Passed in function that will be called if spammed masteries are found and we remove a pre selected mastery this time</param>
-        public OptionViewModel(IConquestGamePiece element, IList<IOption> magicItems, Guid characterID)
+        /// <param name="retinues">Filtered retinues by the faction</param>
+        public OptionViewModel(IConquestGamePiece element, IEnumerable<IOption> magicItems, IEnumerable<ITieredOption> retinues, Guid characterID)
         {
             Element = element;
             _magicItems = magicItems;
+            _retinues = retinues;
             _characterID = characterID;
 
             ActiveMasteryState = new List<Tuple<IMastery,bool>>();
@@ -63,6 +65,7 @@ namespace ConquestBuilder.ViewModels
             {
                 AddMagicItems(element);
                 AddMasteries(element);
+                AddRetinues(element);
             }
             
             SetInitialCheckedState();
@@ -118,6 +121,19 @@ namespace ConquestBuilder.ViewModels
                         lvo.IsChecked = true;
 
                         ActiveMasteryState.Add(new Tuple<IMastery, bool>(mastery, true));
+                        break;
+                    }
+                }
+            }
+
+            foreach (var retinue in element.ActiveRetinues)
+            {
+                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Retinue))
+                {
+                    var lvOption = (ITieredOption) lvo.Model;
+                    if (retinue.Name == lvOption.Name)
+                    {
+                        lvo.IsChecked = true;
                         break;
                     }
                 }
@@ -200,6 +216,53 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        private void AddRetinues(IConquestCharacter element)
+        {
+
+            //RETINUE RULES
+            //Restricted - only go to max level 2 , AND they cost double
+            //Must choose all tiers below the chosen.  Ex: choose tier 3, you also choose tier 2 and 1
+
+            //todo: tac level 2 retinues give bonus items (look for Tag == "Perk"
+            //100k - select additional battlefield drill officer p.231 - spires tactic High Clone Executor 252, dweghom additional relic, nords additional aspect 284
+
+            var availableRetinues =
+                element.RetinueMetaData.RetinueAvailabilities.Where(p =>
+                    p.Value != RetinueAvailability.Availability.NotAvailable);
+
+            if (!availableRetinues.Any()) return;
+
+            foreach (var retinue in _retinues)
+            {
+                if (availableRetinues.Any(p => p.Key == retinue.Category) == false) continue;
+
+                //this will either be available or restricted
+                var restrictionClass = availableRetinues.First(p => p.Key == retinue.Category);
+
+                var retinueCopy = (ITieredOption)retinue.Clone();
+
+                if (restrictionClass.Value == RetinueAvailability.Availability.Restricted &&
+                    retinueCopy.Tier > 2) continue; //restricted items cannot exceed 2nd tier
+
+                if (restrictionClass.Value == RetinueAvailability.Availability.Restricted)
+                    retinueCopy.Points *= 2; //restricted items cost double to take
+
+                var option = new ListViewOption()
+                {
+                    Category = OptionCategory.Retinue,
+                    Model = retinueCopy,
+                    Text = $"[{retinue.Category}] {retinueCopy} - {retinueCopy.Points} pts",
+                    CheckChanged = ListViewItem_CheckChanged,
+                    OptionGrouping = $"{retinueCopy.Category} Retinue",
+                    GroupCanSelectAll = true,
+                    MaxAllowableSelectableForGroup = 0,
+                    Tooltip = retinueCopy.Notes,
+                    TieredSelection = true
+                };
+                Options.Add(option);
+            }
+        }
+
         private int GetNextSpammedElementPoints(IMastery mastery)
         {
             int elements = 0;
@@ -251,8 +314,11 @@ namespace ConquestBuilder.ViewModels
             };
         }
 
+        private bool _tierRecursionActivated = false;
         private void ListViewItem_CheckChanged(object sender, bool newSelectedValue)
         {
+            if (_tierRecursionActivated) return;
+
             var element = (ListViewOption) sender;
 
             //if mastery, need to adjust the roster's spam collection to keep track of how many have been selected or deselected over all
@@ -260,6 +326,19 @@ namespace ConquestBuilder.ViewModels
             if (element.Category == OptionCategory.Mastery)
             {
                 SynchronizeMasteries(element, newSelectedValue);
+            }
+
+            //if tiered selection is on and we are turning something on we have to make sure everything under it is turned on as well
+            if (element.TieredSelection)
+            {
+                _tierRecursionActivated = true;
+
+                if (newSelectedValue)
+                    ActivateSubservientTiers(element);
+                else
+                    ValidateDeactivationSubservientTiers(element);
+
+                _tierRecursionActivated = false;
             }
 
             //now if we can select everything in this group OR the value is false, we are unchecking... so we don't need to synch anything
@@ -337,6 +416,42 @@ namespace ConquestBuilder.ViewModels
                     ActiveMasteryState.Remove(masteryState);
 
                     ActiveMasteryState.Add(new Tuple<IMastery, bool>(mastery, false));
+                }
+            }
+        }
+
+        private void ActivateSubservientTiers(ListViewOption element)
+        {
+            if (element.IsChecked == false) return;
+
+            //if tier 3 is selected, then make sure tier 1 and 2 are selected - etc
+            var item = (ITieredOption)element.Model;
+
+            var tierGroupedItems = Options.Where(p => p.OptionGrouping == element.OptionGrouping);
+            foreach (var tgi in tierGroupedItems)
+            {
+                var tieredItem = (ITieredOption) tgi.Model;
+                if (tieredItem.Tier < item.Tier && tgi.IsChecked == false) 
+                    tgi.IsChecked = true;
+            }
+        }
+
+        private void ValidateDeactivationSubservientTiers(ListViewOption element)
+        {
+            //if tiered items 1 & 2 are selected, and i try to deactivate #1, that should not be allowed because an active checked item of a greater tier is selected
+            if (element.IsChecked) return;
+
+            var item = (ITieredOption) element.Model;
+            var tierGroupedItems = Options.Where(p => p.OptionGrouping == element.OptionGrouping);
+            foreach (var tgi in tierGroupedItems)
+            {
+                var tieredItem = (ITieredOption)tgi.Model;
+                if (tieredItem.Tier <= item.Tier) continue;
+
+                if (tgi.IsChecked)
+                {
+                    element.IsChecked = true;
+                    return;
                 }
             }
         }

@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConquestController", "Conqu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConquestBuilder", "ConquestBuilder\ConquestBuilder.csproj", "{D086BB4B-2F97-40A7-BF95-A26847332AE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConquestUnitTests", "ConquestUnitTests\ConquestUnitTests.csproj", "{C9152244-F893-42D3-91DC-A9CD0BD8E462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConquestUnitTests", "ConquestUnitTests\ConquestUnitTests.csproj", "{C9152244-F893-42D3-91DC-A9CD0BD8E462}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{78B6208A-12F2-4EA4-93CC-68D08CD7606E}"
+	ProjectSection(SolutionItems) = preProject
+		InterfaceDiagram.drawio = InterfaceDiagram.drawio
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

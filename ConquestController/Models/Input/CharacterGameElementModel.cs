@@ -32,7 +32,11 @@ namespace ConquestController.Models.Input
         /// </summary>
         public IEnumerable<string> RestrictedChoices { get; set; }
 
-        public RetinueAvailability RetinueChoices { get; set; }
+        /// <summary>
+        /// Contains a string list of Retinue categories and if their level of access
+        /// </summary>
+        public RetinueAvailability RetinueMetaData { get; set; }
+
         public ObservableCollection<IMastery> MasteryChoices { get; set; }
         public List<string> Schools { get; set; }
         public List<SpellModel> Spells { get; set; }
@@ -44,7 +48,8 @@ namespace ConquestController.Models.Input
             Schools = new List<string>();
             Spells = new List<SpellModel>();
             MasteryChoices = new ObservableCollection<IMastery>();
-            RetinueChoices = new RetinueAvailability();
+            ActiveRetinues = new ObservableCollection<ITieredOption>();
+            RetinueMetaData = new RetinueAvailability();
 
             MaxAllowableItems = 1;
             MaxAllowableMasteries = 1;
@@ -123,7 +128,8 @@ namespace ConquestController.Models.Input
                 ModelType = ModelType,
                 UserName = Unit,
                 MasteryChoices = MasteryChoices.CopyCollection(),
-                RetinueChoices = RetinueChoices
+                ActiveRetinues = ActiveRetinues.CopyCollection(),
+                RetinueMetaData = RetinueMetaData
             };
 
             foreach (var option in Options)

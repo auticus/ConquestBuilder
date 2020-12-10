@@ -24,15 +24,15 @@ namespace ConquestBuilder.Models
         private string _masteriesFile;
         private string _itemsFile;
 
-        public IList<CharacterGameElementModel> Characters { get; private set; }
-        public IList<UnitGameElementModel> Units { get; private set; }
+        public IList<IConquestCharacter> Characters { get; private set; }
+        public IList<IConquestGamePiece> Units { get; private set; }
         public IList<SpellModel> Spells { get; private set; }
-        public IList<RetinueModel> Retinues { get; private set; }
-        public IList<MasteryModel> Masteries { get; private set; }
-        public IList<ItemModel> Items { get; private set; }
+        public IList<ITieredOption> Retinues { get; private set; }
+        public IList<IMastery> Masteries { get; private set; }
+        public IList<IOption> Items { get; private set; }
         
-        public IList<ConquestUnitOutput> UnitOutput { get; private set; }
-        public IList<ConquestUnitOutput> CharacterOutput { get; private set; }
+        public IList<IConquestAnalysisOutput> UnitOutput { get; private set; }
+        public IList<IConquestAnalysisOutput> CharacterOutput { get; private set; }
 
         public double AverageUnitOffense
         {
@@ -109,18 +109,18 @@ namespace ConquestBuilder.Models
             try
             {
                 //assign units and their options
-                Units = DataRepository.GetInputFromFileToList<UnitGameElementModel>(_appPath + "\\" + _unitInputFile);
+                Units = DataRepository.GetInputFromFileToList<UnitGameElementModel>(_appPath + "\\" + _unitInputFile).Cast<IConquestGamePiece>().ToList();
                 DataRepository.AssignUnitOptionsToModelsFromFile(Units.Cast<IConquestGamePiece>().ToList(), _appPath + "\\" + _unitOptionsFile);
 
                 var characterInputFilePath = _appPath + "\\" + _characterInputFile;
                 var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
-                
-                Spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile) as List<SpellModel>;
-                Retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile) as List<RetinueModel>;
-                Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile) as List<MasteryModel>;
-                Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile) as List<ItemModel>;
 
-                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries).ToList();
+                Spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile).Cast<SpellModel>().ToList(); //todo interface this
+                Retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile).Cast<ITieredOption>().ToList();
+                Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile).Cast<IMastery>().ToList();
+                Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile).Cast<IOption>().ToList();
+
+                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries, Retinues).ToList();
             }
             catch (Exception ex)
             {
