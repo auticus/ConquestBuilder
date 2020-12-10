@@ -18,7 +18,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="supportOnly"></param>
         /// <param name="applyFullyDeadly">Set to true if you know deadly blades is being applied fully, otherwise it will be halved</param>
         /// <returns></returns>
-        public static double[] CalculateOutput<T>(ConquestGameElement<T> model, List<int> defenseValues, List<int> resolveValues, bool supportOnly = false,
+        public static double[] CalculateOutput(IConquestGamePiece model, List<int> defenseValues, List<int> resolveValues, bool supportOnly = false,
                 bool applyFullyDeadly = false) 
         {
             return CalculateFullAttacksOutput(model, defenseValues, resolveValues, supportOnly, applyFullyDeadly);
@@ -54,7 +54,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="resolveValues"></param>
         /// <param name="supportOnly"></param>
         /// <returns></returns>
-        private static double[] CalculateFullAttacksOutput<T>(ConquestGameElement<T> model, IEnumerable<int> defenseValues, List<int> resolveValues, 
+        private static double[] CalculateFullAttacksOutput(IConquestGamePiece model, IEnumerable<int> defenseValues, List<int> resolveValues, 
             bool supportOnly = false, bool applyFullyDeadly = false) 
         {
             if (!defenseValues.Any()) return new[] {0.0d, 0.0d};
@@ -116,7 +116,7 @@ namespace ConquestController.Analysis.Components
                                         : new[] {totalOutput / totalScores, 0};
         }
 
-        private static double CalculateClashFragment<T>(int defense, ConquestGameElement<T> model, double attacks, double hitProbability, 
+        private static double CalculateClashFragment(int defense, IConquestGamePiece model, double attacks, double hitProbability, 
             List<int> resolveValues, bool applyFullyDeadly, bool thisIsImpactHits) 
         {
             var finalD = thisIsImpactHits ? Math.Clamp(defense - model.BrutalImpact, 0, 6) : Math.Clamp(defense - model.Cleave, 0, 6);

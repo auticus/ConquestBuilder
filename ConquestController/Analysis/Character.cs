@@ -23,11 +23,11 @@ namespace ConquestController.Analysis
         /// <param name="allResolve"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public static IList<ConquestUnitOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementModel gameElementModel, List<int> allClash,
+        public static IList<IConquestAnalysisOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementModel gameElementModel, List<int> allClash,
             List<int> allDefenses, List<int> allResolve, IEnumerable<SpellModel> spells)
         {
             //loop through all spells that this gameElementModel can have applied to it
-            var output = new List<ConquestUnitOutput>();
+            var output = new List<IConquestAnalysisOutput>();
 
             if (!gameElementModel.Schools.Any()) return output;
 
@@ -59,25 +59,28 @@ namespace ConquestController.Analysis
         /// <param name="spells"></param>
         /// <param name="masteries">All masteries in the game not limited by faction</param>
         /// <returns></returns>
-        public static IEnumerable<CharacterGameElementModel> GetAllCharacters(string inputFilePath, 
+        public static IEnumerable<IConquestCharacter> GetAllCharacters(string inputFilePath, 
             string inputOptionsFilePath, 
             IEnumerable<SpellModel> spells, 
-            IEnumerable<IOption> masteries)
+            IEnumerable<IOption> masteries,
+            IEnumerable<ITieredOption> retinues)
         {
             //assign characters
             var characters = DataRepository.GetInputFromFileToList<CharacterGameElementModel>(inputFilePath);
 
             //assign mainstay and restricted choices
-            AssignCharacterExtras(characters, spells, masteries, inputOptionsFilePath);
+            AssignCharacterExtras(characters, spells, masteries, retinues, inputOptionsFilePath);
 
             return characters;
         }
-        private static void AssignCharacterExtras(IEnumerable<CharacterGameElementModel> characters, 
+        private static void AssignCharacterExtras(IEnumerable<IConquestCharacter> characters, 
             IEnumerable<SpellModel> spells, 
-            IEnumerable<IOption> masteries, 
+            IEnumerable<IOption> masteries,
+            IEnumerable<ITieredOption> retinues,
             string inputOptionsFilePath)
         {
             var spellModels = spells.ToList();
+            var factionRetinues = new Dictionary<string, IEnumerable<string>>();
 
             foreach (var character in characters)
             {
@@ -87,10 +90,9 @@ namespace ConquestController.Analysis
                 DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestGamePiece>(){character}, inputOptionsFilePath);
                 
                 //assign spell schools and individual spells to the character
-                DataRepository.AssignDelimitedPropertyToList(character.Schools, character.SpellSchools);
-                foreach (var school in character.Schools)
+                if (character is IConquestSpellcaster spellcaster)
                 {
-                    character.Spells.AddRange(spellModels.Where(p => p.Category == school));
+                    AssignSpells(spellcaster, spellModels);
                 }
 
                 //masteries chosen by retinues cannot be set here as there is no way of knowing what retinue the character has at this point
@@ -104,10 +106,33 @@ namespace ConquestController.Analysis
                     character.MasteryChoices.Add((IMastery)mastery);
                 }
 
-                DataRepository.AssignRetinueAvailabilities(character.RetinueChoices, character.Retinue);
+                //retinues
+                if (!factionRetinues.ContainsKey(character.Faction))
+                {
+                    var retinueList = BuildFactionRetinueList(character.Faction, retinues);
+                    factionRetinues.Add(character.Faction, retinueList);
+                }
+
+                //need array of categories and the array of data (Tactical|Combat|Magic)
+                //IMPORTANT if that order gets changed, your data will be messed up... the categories should always be Tactical|Combat|Magic|Misc faction specific!!!
+                DataRepository.AssignRetinueAvailabilities(character.RetinueMetaData, factionRetinues[character.Faction].ToArray(),character.Retinue.Split("|"));
             }
         }
 
+        private static IEnumerable<string> BuildFactionRetinueList(string faction, IEnumerable<ITieredOption> retinues)
+        {
+            return retinues.Where(p => p.Faction == "ALL" || p.Faction == faction).Select(p => p.Category).Distinct().ToList();
+        }
+
+        private static void AssignSpells(IConquestSpellcaster caster, List<SpellModel> spellModels)
+        {
+            //assign spell schools and individual spells to the character
+            DataRepository.AssignDelimitedPropertyToList(caster.Schools, caster.SpellSchools);
+            foreach (var school in caster.Schools)
+            {
+                caster.Spells.AddRange(spellModels.Where(p => p.Category == school));
+            }
+        }
         
     }
 }

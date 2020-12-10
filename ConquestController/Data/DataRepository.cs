@@ -100,32 +100,23 @@ namespace ConquestController.Data
             }
         }
 
-        public static void AssignRetinueAvailabilities(RetinueAvailability availability, string data, char delimiter = '|')
+        public static void AssignRetinueAvailabilities(RetinueAvailability availability, string[] retinueCategories, string[] data)
         {
-            var splitData = data.Split(delimiter);
-            for (int i = 0; i < 3; i++) //retinues have 3 items, Tactical|Combat|Magic
+            //this will blow up if the data piped string doesn't have as many elements as the retinueCategories array
+            var index = 0;
+            foreach (var element in data)
             {
-                RetinueAvailability.Availability avail = splitData[i] switch
+                var avail = element switch
                 {
                     "N" => RetinueAvailability.Availability.NotAvailable,
                     "A" => RetinueAvailability.Availability.Available,
                     "R" => RetinueAvailability.Availability.Restricted,
                     _ => throw new ArgumentException(
-                        $"The data '{splitData[i]}' passed for retinue availability is not recognized")
+                        $"The data '{element}' passed for retinue availability is not recognized")
                 };
 
-                switch (i)
-                {
-                    case 0:
-                        availability.Tactical = avail;
-                        break;
-                    case 1:
-                        availability.Combat = avail;
-                        break;
-                    case 2:
-                        availability.Magic = avail;
-                        break;
-                }
+                availability.RetinueAvailabilities.Add(retinueCategories[index], avail);
+                index++;
             }
         }
 

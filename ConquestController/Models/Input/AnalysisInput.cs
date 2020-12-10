@@ -2,11 +2,11 @@
 
 namespace ConquestController.Models.Input
 {
-    public class AnalysisInput<T> where T: ConquestGameElement<T>
+    public class AnalysisInput
     {
-        public ConquestGameElement<T> Model { get; set; }
-        public ConquestUnitOutput BaselineOutput { get; set; }
-        public UnitOptionModel Option { get; set; }
+        public IConquestGamePiece Model { get; set; }
+        public IConquestAnalysisOutput BaselineOutput { get; set; }
+        public IOption Option { get; set; }
         public SpellModel Spell { get; set; }
         public int AnalysisStandCount { get; set; }
         public int FrontageCount { get; set; }

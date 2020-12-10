@@ -13,6 +13,7 @@ namespace ConquestController.Models.Input
             ActiveOptions = new ObservableCollection<IOption>();
             ActiveItems = new ObservableCollection<IOption>();
             ActiveMasteries = new ObservableCollection<IMastery>();
+            ActiveRetinues = new ObservableCollection<ITieredOption>();
             ID = Guid.NewGuid();
 
             ActiveOptions.CollectionChanged += (sender, args) =>
@@ -28,6 +29,11 @@ namespace ConquestController.Models.Input
             ActiveMasteries.CollectionChanged += (sender, args) =>
             {
                 PointsChanged?.Invoke(this, EventArgs.Empty);
+            };
+
+            ActiveRetinues.CollectionChanged += (sender, EventArgs) =>
+            {
+                PointsChanged?.Invoke(this, EventArgs);
             };
         }
         public EventHandler PointsChanged { get; set; }
@@ -119,7 +125,10 @@ namespace ConquestController.Models.Input
 
         public int TotalPoints =>
             //take all of the total
-            Points + ActiveOptions.Sum(p => p.Points) + ActiveItems.Sum(p=>p.Points) + ActiveMasteries.Sum(p=>p.Points);
+            Points + ActiveOptions.Sum(p => p.Points)
+                   + ActiveItems.Sum(p => p.Points)
+                   + ActiveMasteries.Sum(p => p.Points)
+                   + ActiveRetinues.Sum(p => p.Points);
 
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
@@ -133,6 +142,8 @@ namespace ConquestController.Models.Input
 
         public ObservableCollection<IOption> ActiveItems { get; set; }
         public ObservableCollection<IMastery> ActiveMasteries { get; set; }
+
+        public ObservableCollection<ITieredOption> ActiveRetinues { get; set; }
 
         public int MaxAllowableItems { get; set; }
         public int MaxAllowableMasteries { get; set; }

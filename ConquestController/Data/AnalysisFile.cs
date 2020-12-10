@@ -7,7 +7,7 @@ namespace ConquestController.Data
 {
     public class AnalysisFile
     {
-        public static void WriteAnalysis(string filePath, IList<ConquestUnitOutput> data, bool includeUselessOptions)
+        public static void WriteAnalysis(string filePath, IList<IConquestAnalysisOutput> data, bool includeUselessOptions)
         {
             using var writer = new StreamWriter(filePath, append: false);
             //header

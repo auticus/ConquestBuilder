@@ -62,7 +62,7 @@ namespace ConquestController.Models.Output
         /// </summary>
         public bool IsBaselineOutput { get; set; }
 
-        public List<ConquestUnitOutput> UpgradeOutputModifications { get; set; }
+        public IList<IConquestAnalysisOutput> UpgradeOutputModifications { get; set; }
 
         private AnalysisFileOutput AnalysisOutputData { get; set; }
 
@@ -89,7 +89,7 @@ namespace ConquestController.Models.Output
 
             Analysis = new AnalysisOutput();
             Summary = new AnalysisSummary();
-            UpgradeOutputModifications = new List<ConquestUnitOutput>();
+            UpgradeOutputModifications = new List<IConquestAnalysisOutput>();
 
             Stands = new[] { standFull, standExtra1, standExtra2, standExtra3, standSupport1, standSupport2, standSupport3 };
             ID = Guid.NewGuid();
