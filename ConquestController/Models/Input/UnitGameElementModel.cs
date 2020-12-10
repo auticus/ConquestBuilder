@@ -2,11 +2,26 @@
 
 namespace ConquestController.Models.Input
 {
-    public class UnitGameElementModel : ConquestGameElement<UnitGameElementModel>
+    public class UnitGameElementModel : ConquestGameElement
     {
+        private const int MONSTER_STAND_COUNT = 1;
+        private const int STARTING_REGIMENT_STAND_COUNT = 3;
+
         public UnitGameElementModel()
         {
             
+        }
+
+        private string _modelType;
+
+        public override string ModelType
+        {
+            get => _modelType;
+            set
+            {
+                _modelType = value;
+                StandCount = ModelType.ToUpper() == "MONSTER" ? MONSTER_STAND_COUNT : STARTING_REGIMENT_STAND_COUNT;
+            }
         }
 
         public override bool CanCalculateDefense() => true;
@@ -74,7 +89,8 @@ namespace ConquestController.Models.Input
                 Notes = Notes,
                 IsTorrential = IsTorrential,
                 ModelType = ModelType,
-                UserName = Unit
+                UserName = Unit,
+                StandCount = StandCount
             };
 
             foreach (var option in Options)

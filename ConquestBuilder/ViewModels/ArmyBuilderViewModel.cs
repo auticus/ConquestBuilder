@@ -62,6 +62,8 @@ namespace ConquestBuilder.ViewModels
         public ICommand DeleteRosterElement { get; set; }
         public ICommand OptionElement { get; set; }
         public ICommand RenameElement { get; set; }
+        public ICommand DecrementElement { get; set; }
+        public ICommand IncrementElement { get; set; }
         #endregion Commands
 
         #region Public Properties
@@ -145,6 +147,7 @@ namespace ConquestBuilder.ViewModels
                 NotifyPropertyChanged("SelectedRosterCharacter");
 
                 SelectedRosterElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+                CanSelectedRosterElementIncrement();
             }
         }
 
@@ -162,25 +165,11 @@ namespace ConquestBuilder.ViewModels
                 NotifyPropertyChanged("SelectedRosterUnit");
 
                 SelectedRosterElementEnabled = SelectedRosterCharacter != null || SelectedRosterUnit != null;
+                CanSelectedRosterElementIncrement();
             }
         }
 
-        public IConquestGamePiece SelectedElement
-        {
-            get
-            {
-                if (SelectedRosterUnit != null)
-                {
-                    return SelectedRosterUnit;
-                }
-                if (SelectedRosterCharacter != null)
-                {
-                    return SelectedRosterCharacter.Character;
-                }
-                
-                throw new InvalidOperationException("Option was selected but no roster elements are selected");
-            }
-        }
+        public IConquestGamePiece SelectedElement => SelectedRosterUnit ?? SelectedRosterCharacter?.Character; //three chances for that sweet sweet null
 
 
         private bool _dataPanelEnabled;
@@ -408,6 +397,18 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        private bool _selectedRosterElementCanGrow;
+
+        public bool SelectedRosterElementCanGrow
+        {
+            get => _selectedRosterElementCanGrow;
+            set
+            {
+                _selectedRosterElementCanGrow = value;
+                NotifyPropertyChanged("SelectedRosterElementCanGrow");
+            }
+        }
+
         //The following area deals with the treeview, which I admit my WPF-fu is not powerful enough to hook up via xaml properly so am using code behind to make things work
         public EventHandler<RosterChangedEventArgs> RefreshRosterTreeView { get; set; }
         #endregion Public Properties
@@ -451,6 +452,8 @@ namespace ConquestBuilder.ViewModels
             DeleteRosterElement = new RelayCommand(OnRosterElementDeleted, param => this.CanExecute);
             OptionElement = new RelayCommand(OnRosterElementOption, param => this.CanExecute);
             RenameElement = new RelayCommand(OnRenameElement, param => this.CanExecute);
+            DecrementElement = new RelayCommand(OnDecrementElement, param => this.SelectedRosterElementCanGrow);
+            IncrementElement = new RelayCommand(OnIncrementElement, param => this.SelectedRosterElementCanGrow);
         }
 
         private void InitializeControls()
@@ -477,6 +480,20 @@ namespace ConquestBuilder.ViewModels
             };
 
             RefreshRosterTreeView(this, new RosterChangedEventArgs());
+        }
+
+        private void CanSelectedRosterElementIncrement()
+        {
+            //but can we now increment or decrement it?
+            SelectedRosterElementCanGrow = (
+                (SelectedElement != null) &&
+                (SelectedElement is IConquestCharacter) == false &&
+                (
+                    SelectedElement.ModelType.ToUpper() == "INFANTRY" ||
+                    SelectedElement.ModelType.ToUpper() == "CAVALRY" ||
+                    SelectedElement.ModelType.ToUpper() == "BRUTE"
+                )
+            );
         }
 
         private void OnCharacterSelected(object tag)
@@ -570,6 +587,36 @@ namespace ConquestBuilder.ViewModels
 
                 throw new InvalidOperationException("The selected regiment was not found to be deleted!");
             }
+        }
+
+        private void OnIncrementElement(object canExecute)
+        {
+            if (!IsEligibleForStandCountChange()) return;
+
+            SelectedElement.StandCount++;
+            SelectedElement.Points += SelectedElement.AdditionalPoints;
+            SelectedElement.PointsChanged?.Invoke(this, EventArgs.Empty);
+            RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs() { RosterElement = SelectedRosterCharacter, SelectedElementID = SelectedElement.ID });
+        }
+
+        private void OnDecrementElement(object canExecute)
+        {
+            if (!IsEligibleForStandCountChange()) return;
+            if (SelectedElement.StandCount == 3) return;  //3 is the min stand count for a regiment
+
+            SelectedElement.StandCount--;
+            SelectedElement.Points -= SelectedElement.AdditionalPoints;
+            SelectedElement.PointsChanged?.Invoke(this, EventArgs.Empty);
+            RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs() { RosterElement = SelectedRosterCharacter, SelectedElementID = SelectedElement.ID });
+        }
+
+        private bool IsEligibleForStandCountChange()
+        {
+            if (SelectedElement == null) return false; //this should not be happening
+            if (SelectedElement is IConquestCharacter) return false;
+            if (SelectedElement.ModelType.ToUpper() == "MONSTER") return false;
+
+            return true;
         }
 
         private bool CanRemoveMainstay(IRosterCharacter element)

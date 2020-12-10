@@ -128,8 +128,10 @@
         <!-- Right panel List and Detail Column -->
         <Grid Grid.Column="1" Style="{StaticResource Grids}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.3*"/> <!--Data Display of selected item -->
-                <RowDefinition/> <!--Roster information name and selected items -->
+                <RowDefinition Height="0.3*"/>
+                <!--Data Display of selected item -->
+                <RowDefinition/>
+                <!--Roster information name and selected items -->
             </Grid.RowDefinitions>
             <Border BorderThickness="1" Grid.Row="0" 
                     CornerRadius="20,20,0,0" 
@@ -196,7 +198,8 @@
                             </Grid>
 
                         </Grid>
-                    </Border> <!-- end of brown inner box -->
+                    </Border>
+                    <!-- end of brown inner box -->
                     <!-- begin statistic grid and border -->
                     <Border BorderThickness="1"
                         BorderBrush="Black"
@@ -243,12 +246,17 @@
                         </Grid>
                     </Border>
                     <!-- end of brown inner box -->
-                    <Grid Style="{StaticResource Grids}" Grid.Row="2" Margin="10,-10,10,0"> <!--footer grid of data card -->
+                    <Grid Style="{StaticResource Grids}" Grid.Row="2" Margin="10,-10,10,0">
+                        <!--footer grid of data card -->
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/> <!--Offense-->
-                            <ColumnDefinition/> <!--Defense-->
-                            <ColumnDefinition/> <!--Overall -->
-                            <ColumnDefinition/> <!--Command-->
+                            <ColumnDefinition/>
+                            <!--Offense-->
+                            <ColumnDefinition/>
+                            <!--Defense-->
+                            <ColumnDefinition/>
+                            <!--Overall -->
+                            <ColumnDefinition/>
+                            <!--Command-->
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding SelectedOffense}" FontSize="14" Grid.Column="0"/>
                         <TextBlock Text="{Binding SelectedDefense}" FontSize="14" Grid.Column="1"/>
@@ -258,24 +266,28 @@
                                 IsEnabled="{Binding DataPanelEnabled}"
                                 Margin = "20,0,20,0" Grid.Column="3"/>
                     </Grid>
-                </Grid> <!--end of grid in the white box-->
-            </Border> <!--end of white box -->
-            <Grid Row="1"> <!--List view and roster add/options etc panel-->
+                </Grid>
+                <!--end of grid in the white box-->
+            </Border>
+            <!--end of white box -->
+            <Grid Row="1">
+                <!--List view and roster add/options etc panel-->
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.1*"/>
                     <RowDefinition Height="0.9*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.8*"/>
-                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition Width="280*"/>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="61*"/>
                 </Grid.ColumnDefinitions>
                 <!--Row 1 - roster info panel -->
-                <WrapPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
+                <WrapPanel Grid.Column="0" VerticalAlignment="Center">
                     <Label Content="Roster UserName" Style="{StaticResource defaultLabel}"/>
                     <TextBox Text="{Binding Roster.RosterName}" Margin="5,0,0,0" Width="200" TextAlignment="Center" VerticalAlignment="Center"/>
                     <Label Content="{Binding Roster.TotalPoints}" Margin="10,0,0,0" Style="{StaticResource defaultLabel}"/>
                 </WrapPanel>
-                
+
                 <!--Row 2-->
                 <TreeView Name="tvRoster" Grid.Column="0" Grid.Row="1" Margin="10,10,10,10"
                           SelectedItemChanged="TreeView_RosterSelectedChanged"
@@ -295,15 +307,25 @@
                 </TreeView>
 
                 <!--Side Panel off of the roster -->
-                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,10,0,0" Content="X" FontSize="18" FontWeight="Bold"
+                <Button Grid.Column="2" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="12,10,30,0" Content="X" FontSize="18" FontWeight="Bold"
                         IsEnabled = "{Binding SelectedRosterElementEnabled}"
                         Command="{Binding DeleteRosterElement}"/>
-                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,60,0,0" Content="Options" FontSize="18" FontWeight="Bold"
+                <Button Grid.Column="2" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="12,60,30,0" Content="Options" FontSize="18" FontWeight="Bold"
                         IsEnabled = "{Binding SelectedRosterElementEnabled}"
                         Command="{Binding OptionElement}"/>
-                <Button Grid.Column="1" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="0,110,0,0" Content="Rename" FontSize="18" FontWeight="Bold"
+                <Button Grid.Column="2" Grid.Row="1" Height="32" Width="80" VerticalAlignment="Top" Margin="12,110,30,0" Content="Rename" FontSize="18" FontWeight="Bold"
                         IsEnabled = "{Binding SelectedRosterElementEnabled}"
                         Command="{Binding RenameElement}"/>
+                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Margin="10,50,0,50" HorizontalAlignment="Left" Grid.ColumnSpan="2">
+                    <Button Height="32" Width="50" VerticalAlignment="Top" Margin="0,110,20,0" Content="-" FontSize="18" FontWeight="Bold"
+                            IsEnabled = "{Binding SelectedRosterElementCanGrow}"
+                            Command="{Binding DecrementElement}"
+                            ToolTip="Decrement a stand from the total stand count"/>
+                    <Button Height="32" Width="50" VerticalAlignment="Top" Margin="0,110,0,0" Content="+" FontSize="18" FontWeight="Bold"
+                            IsEnabled = "{Binding SelectedRosterElementCanGrow}"
+                            Command="{Binding IncrementElement}"
+                            ToolTip="Increment a stand to the total stand count"/>
+                </StackPanel>
             </Grid>
         </Grid>
     </Grid>

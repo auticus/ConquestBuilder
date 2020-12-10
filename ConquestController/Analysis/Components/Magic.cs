@@ -7,7 +7,7 @@ namespace ConquestController.Analysis.Components
 {
     public class Magic : BaseComponent
     {
-        //todo: implement magic output
+        //todo: implement magic output - lots of this module is dead or useless right now
 
         /// <summary>
         /// Magic can both do damage as well as buff regiments or models, this method has to figure out all of those
@@ -20,7 +20,7 @@ namespace ConquestController.Analysis.Components
         /// <param name="resolveValues">For buffs and damage</param>
         /// <returns>An array where the 0 element is raw output and the 1 element is resolve output</returns>
         public static double CalculateOutput<T>(T model, SpellModel spell, List<int> clashValues,
-            List<int> defenseValues, List<int> resolveValues) where T : ConquestGameElement<T>
+            List<int> defenseValues, List<int> resolveValues) where T : ConquestGameElement
         {
             var output = 0.0d;
             var tags = GetTags(spell);
@@ -45,8 +45,8 @@ namespace ConquestController.Analysis.Components
 
         }
 
-        private static double HandleOffensiveSpell<T>(T model, SpellModel spell, List<int> clashValues,
-            List<int> defenseValues, List<int> resolveValues, List<string> tags) where T : ConquestGameElement<T>
+        private static double HandleOffensiveSpell(IConquestGamePiece model, SpellModel spell, List<int> clashValues,
+            List<int> defenseValues, List<int> resolveValues, List<string> tags)
         {
             /*
             int cleave = 0;

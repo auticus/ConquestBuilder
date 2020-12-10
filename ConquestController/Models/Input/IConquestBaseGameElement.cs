@@ -23,6 +23,7 @@ namespace ConquestController.Models.Input
         int Evasion { get; set; }
 
         int TotalPoints { get; }
+        int StandCount { get; set; }
 
         string SpecialRules { get; set; }
     }
