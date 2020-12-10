@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using ConquestController.Extensions;
 
 namespace ConquestController.Models.Input
 {
-    public class CharacterGameElementModel : ConquestGameElement<CharacterGameElementModel>, IConquestSpellcaster, IConquestCharacter
+    public class CharacterGameElementModel : ConquestGameElement, IConquestSpellcaster, IConquestCharacter
     {
         public int IsQuickSilverStrike { get; set; }
         public int ItemCount { get; set; }
@@ -53,6 +51,7 @@ namespace ConquestController.Models.Input
 
             MaxAllowableItems = 1;
             MaxAllowableMasteries = 1;
+            StandCount = 1;
         }
 
         public override bool CanCalculateDefense() => false;
@@ -129,7 +128,8 @@ namespace ConquestController.Models.Input
                 UserName = Unit,
                 MasteryChoices = MasteryChoices.CopyCollection(),
                 ActiveRetinues = ActiveRetinues.CopyCollection(),
-                RetinueMetaData = RetinueMetaData
+                RetinueMetaData = RetinueMetaData,
+                StandCount = StandCount
             };
 
             foreach (var option in Options)

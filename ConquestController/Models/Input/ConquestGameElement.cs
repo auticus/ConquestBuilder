@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ConquestController.Models.Input
 {
-    public abstract class ConquestGameElement<T> : IConquestGamePiece
+    public abstract class ConquestGameElement : IConquestGamePiece
     {
         protected ConquestGameElement()
         {
@@ -43,7 +43,7 @@ namespace ConquestController.Models.Input
         public string Unit { get; set; }
         public string UserName { get; set; }
         public string Weight { get; set; }
-        public string ModelType { get; set; }
+        public virtual string ModelType { get; set; }
 
         /// <summary>
         /// Total model count of the regiment
@@ -51,6 +51,7 @@ namespace ConquestController.Models.Input
         public int Models { get; set; }
         public int Points { get; set; }
         public int AdditionalPoints { get; set; }
+        public int StandCount { get; set; }
         public int LeaderPoints { get; set; }
         public int StandardPoints { get; set; }
         public int IsReleased { get; set; }

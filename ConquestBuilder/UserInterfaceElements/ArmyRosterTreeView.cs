@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using ConquestBuilder.ViewModels;
-using ConquestController.Analysis.Components;
 using ConquestController.Models;
-using ConquestController.Models.Input;
 
 namespace ConquestBuilder.UserInterfaceElements
 {
@@ -89,7 +86,7 @@ namespace ConquestBuilder.UserInterfaceElements
             {
                 var mainstayRegiment = new TreeViewItem()
                 {
-                    Header = $"{regiment} - {regiment.TotalPoints} pts",
+                    Header = $"{regiment} - [x{regiment.StandCount}] - {regiment.TotalPoints} pts",
                     IsSelected = (regiment.ID == selectedElementID),
                     IsExpanded = true,
                     Tag = new TreeViewRoster() { Category = RosterCategory.MainstayRegiment, Model = regiment, RosterCharacter = character }
@@ -119,7 +116,7 @@ namespace ConquestBuilder.UserInterfaceElements
             {
                 var restrictedRegiment = new TreeViewItem()
                 {
-                    Header = $"{regiment} - {regiment.TotalPoints} pts",
+                    Header = $"{regiment} - [x{regiment.StandCount}] - {regiment.TotalPoints} pts",
                     IsSelected = (regiment.ID == selectedElementID),
                     IsExpanded = true,
                     Tag = new TreeViewRoster() { Category = RosterCategory.RestrictedRegiment, Model = regiment, RosterCharacter = character }
