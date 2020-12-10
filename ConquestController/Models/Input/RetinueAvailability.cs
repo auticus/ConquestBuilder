@@ -1,4 +1,6 @@
-﻿namespace ConquestController.Models.Input
+﻿using System.Collections.Generic;
+
+namespace ConquestController.Models.Input
 {
     public class RetinueAvailability
     {
@@ -8,8 +10,12 @@
             Restricted,
             Available
         }
-        public Availability Tactical { get; set; }
-        public Availability Combat { get; set; }
-        public Availability Magic { get; set; }
+
+        public Dictionary<string, Availability> RetinueAvailabilities { get; }
+
+        public RetinueAvailability()
+        {
+            RetinueAvailabilities = new Dictionary<string, Availability>();
+        }
     }
 }

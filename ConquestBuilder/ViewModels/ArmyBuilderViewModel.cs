@@ -810,7 +810,7 @@ namespace ConquestBuilder.ViewModels
         {
             var selectedGuid = SelectedElement.ID;
 
-            var optionVM = new OptionViewModel(SelectedElement, FilteredMagicItems, selectedGuid);
+            var optionVM = new OptionViewModel(SelectedElement, FilteredMagicItems, _data.Retinues.Where(p=>p.Faction == "ALL" || p.Faction == SelectedElement.Faction), selectedGuid);
             var window = new OptionsWindow(_view, optionVM);
 
             if (window.ShowDialog() == true)
@@ -862,6 +862,7 @@ namespace ConquestBuilder.ViewModels
         {
             element.ActiveItems.Clear();
             element.ActiveMasteries.Clear();
+            element.ActiveRetinues.Clear();
 
             foreach (var option in vm.Options.Where(p => p.IsChecked))
             {
@@ -875,6 +876,9 @@ namespace ConquestBuilder.ViewModels
                         break;
                     case OptionCategory.Mastery:
                         element.ActiveMasteries.Add((IMastery)option.Model);
+                        break;
+                    case OptionCategory.Retinue:
+                        element.ActiveRetinues.Add((ITieredOption)option.Model);
                         break;
                     default:
                         throw new InvalidOperationException($"The category '{option.Category}' was not accounted for in ArmyBuilderViewModel::SynchronizeElement");

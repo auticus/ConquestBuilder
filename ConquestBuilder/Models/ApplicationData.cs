@@ -27,7 +27,7 @@ namespace ConquestBuilder.Models
         public IList<IConquestCharacter> Characters { get; private set; }
         public IList<IConquestGamePiece> Units { get; private set; }
         public IList<SpellModel> Spells { get; private set; }
-        public IList<IRetinue> Retinues { get; private set; }
+        public IList<ITieredOption> Retinues { get; private set; }
         public IList<IMastery> Masteries { get; private set; }
         public IList<IOption> Items { get; private set; }
         
@@ -116,11 +116,11 @@ namespace ConquestBuilder.Models
                 var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
 
                 Spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile).Cast<SpellModel>().ToList(); //todo interface this
-                Retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile).Cast<IRetinue>().ToList();
+                Retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile).Cast<ITieredOption>().ToList();
                 Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile).Cast<IMastery>().ToList();
                 Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile).Cast<IOption>().ToList();
 
-                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries).ToList();
+                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries, Retinues).ToList();
             }
             catch (Exception ex)
             {

@@ -9,7 +9,7 @@ ALL,[],Marksmanship,Combat,15,[],The character gains Barrage +2.  If they do not
 ALL,Tier3CombatRetinue,Veteran Warrior,Combat,15,[],The character gains the benefits of 1st Tier Tactical Retinue
 ALL,Tier2CombatRetinue,Overkill,Combat,10,[],Every time this character wounds an enemy character during a duel - the accompanying enemy regiment must make a number of moral tests equal to the wounds suffered by their character
 ALL,[],Disorienting Strikes,Combat,10,[],Any character in a duel action with this character suffers a -1 clash penalty during the duel
-ALL,[],Learned in the Occult,Arcane,20,[],The character may purchase one extra spell from a different school
+ALL,[],Learned in the Occult,Arcane,20,AnyFactionSpell,The character may purchase one extra spell from a different school
 ALL,[],Magus,Arcane,20,[],The character increases any non-scaling spell difficulty value by 1
 ALL,Tier2MagicRetinue,Cautious Casting,Arcane,15,[],Once per game the character may re-roll all dice for a single spellcasting roll
 ALL,[],Focused,Arcane,15,[],The character may reroll 1 die during any spellcasting action

@@ -35,6 +35,21 @@ namespace ConquestBuilder.ViewModels
         public OptionCategory Category { get; set; }
         public object Model { get; set; }
         public EventHandler<bool> CheckChanged { get; set; }
+        
+        private bool _tieredSelection { get; set; }
+
+        /// <summary>
+        /// When TRUE indicates that a tier system is in place and items under this will be selected as well by default when choosing an item
+        /// </summary>
+        public bool TieredSelection
+        {
+            get => _tieredSelection;
+            set
+            {
+                _tieredSelection = value;
+                NotifyPropertyChanged("TieredSelection");
+            }
+        }
 
         private bool _isChecked;
 

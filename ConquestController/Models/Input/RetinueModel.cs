@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class RetinueModel : IRetinue
+    public class RetinueModel : ITieredOption
     {
         public string Name { get; set; }
         public string Tag { get; set; }
@@ -15,7 +15,7 @@
 
         public override string ToString()
         {
-            return Name;
+            return $"[{Category} Retinue] {Name}";
         }
 
         /// <summary>

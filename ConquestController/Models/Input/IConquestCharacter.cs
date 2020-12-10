@@ -30,11 +30,12 @@ namespace ConquestController.Models.Input
         /// </summary>
         ObservableCollection<IMastery> MasteryChoices { get; set; }
         ObservableCollection<IMastery> ActiveMasteries { get; }
+        ObservableCollection<ITieredOption> ActiveRetinues { get; }
 
         /// <summary>
         /// Data input field
         /// </summary>
         string Retinue { get; set; }
-        RetinueAvailability RetinueChoices { get; set; }
+        RetinueAvailability RetinueMetaData { get; set; }
     }
 }

@@ -62,22 +62,25 @@ namespace ConquestController.Analysis
         public static IEnumerable<IConquestCharacter> GetAllCharacters(string inputFilePath, 
             string inputOptionsFilePath, 
             IEnumerable<SpellModel> spells, 
-            IEnumerable<IOption> masteries)
+            IEnumerable<IOption> masteries,
+            IEnumerable<ITieredOption> retinues)
         {
             //assign characters
             var characters = DataRepository.GetInputFromFileToList<CharacterGameElementModel>(inputFilePath);
 
             //assign mainstay and restricted choices
-            AssignCharacterExtras(characters, spells, masteries, inputOptionsFilePath);
+            AssignCharacterExtras(characters, spells, masteries, retinues, inputOptionsFilePath);
 
             return characters;
         }
         private static void AssignCharacterExtras(IEnumerable<IConquestCharacter> characters, 
             IEnumerable<SpellModel> spells, 
-            IEnumerable<IOption> masteries, 
+            IEnumerable<IOption> masteries,
+            IEnumerable<ITieredOption> retinues,
             string inputOptionsFilePath)
         {
             var spellModels = spells.ToList();
+            var factionRetinues = new Dictionary<string, IEnumerable<string>>();
 
             foreach (var character in characters)
             {
@@ -103,8 +106,22 @@ namespace ConquestController.Analysis
                     character.MasteryChoices.Add((IMastery)mastery);
                 }
 
-                DataRepository.AssignRetinueAvailabilities(character.RetinueChoices, character.Retinue);
+                //retinues
+                if (!factionRetinues.ContainsKey(character.Faction))
+                {
+                    var retinueList = BuildFactionRetinueList(character.Faction, retinues);
+                    factionRetinues.Add(character.Faction, retinueList);
+                }
+
+                //need array of categories and the array of data (Tactical|Combat|Magic)
+                //IMPORTANT if that order gets changed, your data will be messed up... the categories should always be Tactical|Combat|Magic|Misc faction specific!!!
+                DataRepository.AssignRetinueAvailabilities(character.RetinueMetaData, factionRetinues[character.Faction].ToArray(),character.Retinue.Split("|"));
             }
+        }
+
+        private static IEnumerable<string> BuildFactionRetinueList(string faction, IEnumerable<ITieredOption> retinues)
+        {
+            return retinues.Where(p => p.Faction == "ALL" || p.Faction == faction).Select(p => p.Category).Distinct().ToList();
         }
 
         private static void AssignSpells(IConquestSpellcaster caster, List<SpellModel> spellModels)

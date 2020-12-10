@@ -1,13 +1,13 @@
 Faction,Name,Tier,Category,Points,Tag,Notes
-ALL,Tactical Retinue 1,1,Tactical,5,[],Character and Regiment can reroll one failed Resolve die per Caracter Tier in Tactics
-ALL,Tactical Retinue 2,2,Tactical,10,[],Character may purchase 1 different perk from the perk list on p.193
-ALL,Tactical Retinue 3,3,Tactical,35,[],Character and Regiment gain Flank special rule
-ALL,Combat Retinue 1,1,Combat,5,[],Character gains a wound
-ALL,Combat Retinue 2,2,Combat,10,[],Character gains +1 Clash
-ALL,Combat Retinue 3,3,Combat,25,[],Character gains +1 Cleave and +1 Attack
-ALL,Magic Retinue 1,1,Magic,10,[],Character gains Blessed rule and +1 Wizard/Priest Level.  If not a Wizard counts as a Wizard(1) for Disruption
-ALL,Magic Retinue 2,2,Magic,20,[],Character treats all regiments as having 3 fewer stands for scaling purposes
-ALL,Magic Retinue 3,3,Magic,30,[],Character adds 1 success when using a Spellcasting Action
-Spires,Mastery of Flesh Retinue 1,1,Mastery of Flesh,5,[],"The character may choose a friendly character within 12"" and roll 1d6.  On a 1-2 heals 2 wounds - otherwise only heals 1 wound"
-Spires,Mastery of Flesh Retinue 2,2,Mastery of Flesh,20,[],The character gains Resist Decay(+1)
-Spires,Mastery of Flesh Retinue 3,3,Mastery of Flesh,30,[],The character may take an Additional Pheromancy/Biomancy and may activate an additional Draw Event per turn
+ALL,1,1,Tactical,5,[],Character and Regiment can reroll one failed Resolve die per Caracter Tier in Tactics
+ALL,2,2,Tactical,10,Perk,Character may purchase 1 different perk from the perk list on p.193
+ALL,3,3,Tactical,35,[],Character and Regiment gain Flank special rule
+ALL,1,1,Combat,5,[],Character gains a wound
+ALL,2,2,Combat,10,[],Character gains +1 Clash
+ALL,3,3,Combat,25,[],Character gains +1 Cleave and +1 Attack
+ALL,1,1,Magic,10,[],Character gains Blessed rule and +1 Wizard/Priest Level.  If not a Wizard counts as a Wizard(1) for Disruption
+ALL,2,2,Magic,20,[],Character treats all regiments as having 3 fewer stands for scaling purposes
+ALL,3,3,Magic,30,[],Character adds 1 success when using a Spellcasting Action
+Spires,1,1,Mastery of Flesh,5,[],"The character may choose a friendly character within 12"" and roll 1d6.  On a 1-2 heals 2 wounds - otherwise only heals 1 wound"
+Spires,2,2,Mastery of Flesh,20,[],The character gains Resist Decay(+1)
+Spires,3,3,Mastery of Flesh,30,[],The character may take an Additional Pheromancy/Biomancy and may activate an additional Draw Event per turn
