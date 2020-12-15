@@ -7,7 +7,7 @@ namespace ConquestController.Analysis.Components
 {
     public class Mastery
     {
-        public static IList<IOption> GetFilteredMasteries(IConquestBaseGameElement character,
+        public static IList<IOption> GetFilteredMasteries(IConquestCharacter character,
             IList<IMastery> masteries)
         {
             var returnList = new List<IMastery>();
@@ -15,7 +15,6 @@ namespace ConquestController.Analysis.Components
 
             FilterByCharacterType(character, returnList);
             FilterByWeightClass(character, returnList);
-            FilterByRetinueRestrictions(character, returnList);
             AssignBasePoints(returnList);
 
             var castedList = returnList.Cast<IOption>().ToList();
@@ -85,7 +84,8 @@ namespace ConquestController.Analysis.Components
                         case "light":
                         case "medium":
                         case "heavy":
-                            classRestrictionSuccess = String.Equals(character.Weight, restriction, StringComparison.CurrentCultureIgnoreCase);
+                            classRestrictionSuccess = String.Equals(character.Weight, restriction,
+                                StringComparison.CurrentCultureIgnoreCase);
                             break;
                     }
 
@@ -96,13 +96,7 @@ namespace ConquestController.Analysis.Components
                 {
                     masteries.Remove(masteries[i]);
                 }
-
             }
-        }
-
-        private static void FilterByRetinueRestrictions(IConquestBaseGameElement character, List<IMastery> masteries)
-        {
-            //todo: implement in issue 18
         }
     }
 }

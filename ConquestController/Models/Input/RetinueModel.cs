@@ -37,5 +37,19 @@
                 Tier = this.Tier
             };
         }
-}
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if ((obj is RetinueModel) == false) return false;
+
+            var retinue = (RetinueModel) obj;
+
+            return (retinue.Category == this.Category &&
+                    retinue.Tag == this.Tag &&
+                    retinue.Points == this.Points &&
+                    retinue.Name == this.Name &&
+                    retinue.Tier == this.Tier);
+        }
+    }
 }
