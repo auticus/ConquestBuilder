@@ -1,4 +1,4 @@
-Faction,Category,Spell,Points,Range,Difficulty,IsScaling,Tag,HitsCaused,EffectCausedPer,SelfOnly,Notes
+Faction,Category,Name,Points,Range,Difficulty,IsScaling,Tag,HitsCaused,EffectCausedPer,SelfOnly,Notes
 100k,Priest,Divine Sanction,15,0,3,0,Cleave2|IsDeadlyBlades,0,[],1,May immediately perform a duel action
 100k,Priest,Fervour,15,12,3,1,[],0,[],0,Remove broken status from target
 100k,Priest,Heavenly Blessing,40,0,3,1,IsBlessed,0,[],0,All stands in the casters regiment gain Blessed until end of turn

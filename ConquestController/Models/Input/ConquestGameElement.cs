@@ -15,6 +15,7 @@ namespace ConquestController.Models.Input
             ActiveMasteries = new ObservableCollection<IMastery>();
             ActiveRetinues = new ObservableCollection<ITieredBaseOption>();
             ActivePerks = new ObservableCollection<IPerkOption>();
+            ActiveSpells = new ObservableCollection<IBaseOption>();
             ID = Guid.NewGuid();
 
             ActiveOptions.CollectionChanged += (sender, args) =>
@@ -38,6 +39,11 @@ namespace ConquestController.Models.Input
             };
 
             ActivePerks.CollectionChanged += (sender, EventArgs) =>
+            {
+                PointsChanged?.Invoke(this, EventArgs);
+            };
+
+            ActiveSpells.CollectionChanged += (sender, EventArgs) =>
             {
                 PointsChanged?.Invoke(this, EventArgs);
             };
@@ -136,7 +142,8 @@ namespace ConquestController.Models.Input
                    + ActiveItems.Sum(p => p.Points)
                    + ActiveMasteries.Sum(p => p.Points)
                    + ActiveRetinues.Sum(p => p.Points)
-                   + ActivePerks.Sum(p => p.Points);
+                   + ActivePerks.Sum(p => p.Points)
+                   + ActiveSpells.Sum(p => p.Points);
 
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
@@ -153,6 +160,7 @@ namespace ConquestController.Models.Input
 
         public ObservableCollection<ITieredBaseOption> ActiveRetinues { get; set; }
         public ObservableCollection<IPerkOption> ActivePerks { get; set; }
+        public ObservableCollection<IBaseOption> ActiveSpells { get; set; }
 
         public int MaxAllowableItems { get; set; }
         public int MaxAllowableMasteries { get; set; }

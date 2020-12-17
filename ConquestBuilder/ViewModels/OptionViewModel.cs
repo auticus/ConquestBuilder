@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using ConquestController.Analysis.Components;
 using ConquestController.Data;
@@ -80,6 +82,7 @@ namespace ConquestBuilder.ViewModels
                 AddRetinues(element);
                 AddMasteries(element);
                 AddPerks(element);
+                AddSpells(element);
             }
             
             SetInitialCheckedState();
@@ -112,53 +115,29 @@ namespace ConquestBuilder.ViewModels
         private void SetCharacterInitialCheckedState()
         {
             var element = (IConquestCharacter)Element;
-            foreach (var item in element.ActiveItems)
+            var lists = new List<Tuple<IEnumerable<IBaseOption>, OptionCategory>>()
             {
-                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Item))
-                {
-                    var lvOption = (IBaseOption)lvo.Model;
-                    if (item.Name == lvOption.Name)
-                    {
-                        lvo.IsChecked = true;
-                        break;
-                    }
-                }
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveItems, OptionCategory.Item),
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveMasteries, OptionCategory.Mastery),
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveRetinues, OptionCategory.Retinue),
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActivePerks, OptionCategory.Perk),
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveSpells, OptionCategory.Spell)
+            };
+
+            foreach (var list in lists)
+            {
+                CheckActiveOptions(list.Item1, list.Item2);
             }
+        }
 
-            foreach (var mastery in element.ActiveMasteries)
+        private void CheckActiveOptions(IEnumerable<IBaseOption> list, OptionCategory category)
+        {
+            foreach (var component in list)
             {
-                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Mastery))
+                foreach (var lvo in Options.Where(p => p.Category == category))
                 {
-                    var lvOption = (IMastery)lvo.Model;
-                    if (mastery.Name == lvOption.Name)
-                    {
-                        lvo.IsChecked = true;
-
-                        ActiveMasteryState.Add(new Tuple<IMastery, bool>(mastery, true));
-                        break;
-                    }
-                }
-            }
-
-            foreach (var retinue in element.ActiveRetinues)
-            {
-                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Retinue))
-                {
-                    var lvOption = (ITieredBaseOption) lvo.Model;
-                    if (retinue.Name == lvOption.Name)
-                    {
-                        lvo.IsChecked = true;
-                        break;
-                    }
-                }
-            }
-
-            foreach (var perk in element.ActivePerks)
-            {
-                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Perk))
-                {
-                    var lvOption = (IPerkOption)lvo.Model;
-                    if (perk.Name == lvOption.Name)
+                    var lvOption = (IBaseOption) lvo.Model;
+                    if (component.Name == lvOption.Name)
                     {
                         lvo.IsChecked = true;
                         break;
@@ -367,7 +346,7 @@ namespace ConquestBuilder.ViewModels
 
             if (!perkRetinueActive) return;
 
-            if (Options.Any(p => p.OptionGrouping == "Perks")) return;  //we already added perks we aren't doing it again
+            if (Options.Any(p => p.Category == OptionCategory.Perk)) return;  //we already added perks we aren't doing it again
 
             foreach (var perk in _perks.Where(p => p.Faction == element.Faction))
             {
@@ -406,6 +385,30 @@ namespace ConquestBuilder.ViewModels
 
             foreach(var option in clearList)
                 Options.Remove(option);
+        }
+
+        private void AddSpells(IConquestCharacter element)
+        {
+            if (!(element is IConquestSpellcaster caster)) return;
+            
+            foreach (var spell in caster.Spells)
+            {
+                var spellCopy = (IBaseOption)spell.Clone();
+
+                var option = new ListViewOption()
+                {
+                    Category = OptionCategory.Spell,
+                    Model = spellCopy,
+                    Text = $"[{spellCopy.Category}] {spellCopy.Name} - {spellCopy.Points} pts",
+                    CheckChanged = ListViewItem_CheckChanged,
+                    OptionGrouping = $"Spells",
+                    GroupCanSelectAll = true,
+                    MaxAllowableSelectableForGroup = 0,
+                    Tooltip = spellCopy.Notes,
+                    TieredSelection = false
+                };
+                Options.Add(option);
+            }
         }
 
         private int GetNextSpammedElementPoints(IMastery mastery)

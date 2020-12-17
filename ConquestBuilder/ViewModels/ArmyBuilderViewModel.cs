@@ -916,6 +916,7 @@ namespace ConquestBuilder.ViewModels
             element.ActiveMasteries.Clear();
             element.ActiveRetinues.Clear();
             element.ActivePerks.Clear();
+            element.ActiveSpells.Clear();
 
             foreach (var option in vm.Options.Where(p => p.IsChecked))
             {
@@ -935,6 +936,9 @@ namespace ConquestBuilder.ViewModels
                         break;
                     case OptionCategory.Perk:
                         element.ActivePerks.Add((IPerkOption)option.Model);
+                        break;
+                    case OptionCategory.Spell:
+                        element.ActiveSpells.Add((IBaseOption)option.Model);
                         break;
                     default:
                         throw new InvalidOperationException($"The category '{option.Category}' was not accounted for in ArmyBuilderViewModel::SynchronizeElement");

@@ -19,5 +19,19 @@ namespace ConquestController.Extensions
 
             return newList;
         }
+
+        public static List<T> CopyList<T>(this List<T> options)
+        {
+            var newList = new List<T>();
+
+            foreach (var option in options)
+            {
+                if (!(option is ICloneable element)) throw new InvalidOperationException("Item passed to collection does not implement ICloneable");
+
+                newList.Add((T)element.Clone());
+            }
+
+            return newList;
+        }
     }
 }

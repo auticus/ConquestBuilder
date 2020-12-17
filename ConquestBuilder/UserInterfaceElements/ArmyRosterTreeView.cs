@@ -146,6 +146,7 @@ namespace ConquestBuilder.UserInterfaceElements
             allOptions.AddRange(character.Character.ActiveMasteries);
             allOptions.AddRange(character.Character.ActiveRetinues);
             allOptions.AddRange(character.Character.ActivePerks);
+            allOptions.AddRange(character.Character.ActiveSpells);
 
             foreach (var option in allOptions)
             {

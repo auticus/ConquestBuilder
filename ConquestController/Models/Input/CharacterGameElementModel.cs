@@ -18,7 +18,7 @@ namespace ConquestController.Models.Input
         public string SupremacyTitle { get; set; }
         public string SupremacyNotes { get; set; }
         public string SpellSchools { get; set; } //mapped to Schools, comes from input
-        public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1
+        public int MaxSpells { get; set; } //how many they get to pick from a school, most of the time its unlimited but biomancy restricts to just 1 (currently just not going to care)
         
         /// <summary>
         /// The list of units that can be chosen by this character as a mainstay
@@ -48,6 +48,7 @@ namespace ConquestController.Models.Input
             MasteryChoices = new ObservableCollection<IMastery>();
             ActiveRetinues = new ObservableCollection<ITieredBaseOption>();
             ActivePerks = new ObservableCollection<IPerkOption>();
+            ActiveSpells = new ObservableCollection<IBaseOption>();
             RetinueMetaData = new RetinueAvailability();
 
             MaxAllowableItems = 1;
@@ -129,6 +130,7 @@ namespace ConquestController.Models.Input
                 UserName = Unit,
                 MasteryChoices = MasteryChoices.CopyCollection(),
                 ActiveRetinues = ActiveRetinues.CopyCollection(),
+                Spells = Spells.CopyList(),
                 RetinueMetaData = RetinueMetaData,
                 StandCount = StandCount
             };

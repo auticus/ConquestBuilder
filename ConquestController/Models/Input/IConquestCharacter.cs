@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace ConquestController.Models.Input
 {
@@ -32,6 +30,7 @@ namespace ConquestController.Models.Input
         ObservableCollection<IMastery> ActiveMasteries { get; }
         ObservableCollection<ITieredBaseOption> ActiveRetinues { get; }
         ObservableCollection<IPerkOption> ActivePerks { get; }
+        ObservableCollection<IBaseOption> ActiveSpells { get; }
 
         /// <summary>
         /// Data input field

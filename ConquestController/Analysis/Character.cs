@@ -156,7 +156,7 @@ namespace ConquestController.Analysis
             DataRepository.AssignDelimitedPropertyToList(caster.Schools, caster.SpellSchools);
             foreach (var school in caster.Schools)
             {
-                caster.Spells.AddRange(spellModels.Where(p => p.Category == school));
+                caster.Spells.AddRange(spellModels.Where(p => p.Category == school && p.Faction == caster.Faction));
             }
         }
         
