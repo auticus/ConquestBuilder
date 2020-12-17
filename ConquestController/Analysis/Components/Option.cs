@@ -23,13 +23,13 @@ namespace ConquestController.Analysis.Components
         /// <typeparam name="T"></typeparam>
         /// <param name="input"></param>
         /// <param name="output"></param>
-        /// <param name="option"></param>
-        public static void ProcessOption(AnalysisInput input, IConquestAnalysisOutput output, IOption option, bool isCharacter)
+        /// <param name="baseOption"></param>
+        public static void ProcessOption(AnalysisInput input, IConquestAnalysisOutput output, IBaseOption baseOption, bool isCharacter)
         {
             //process options
-            if (option == null) return;
+            if (baseOption == null) return;
 
-            var optionResult = ApplyOptionToUnit(input.Model, output, option);
+            var optionResult = ApplyOptionToUnit(input.Model, output, baseOption);
 
             switch (optionResult)
             {
@@ -50,9 +50,9 @@ namespace ConquestController.Analysis.Components
         /// Will attempt to apply the given option to the model.  However, if the option does not impact the output score, will return false
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="option"></param>
+        /// <param name="baseOption"></param>
         /// <returns>TRUE if option affects output, FALSE otherwise</returns>
-        private static ApplyExtrasResult ApplyOptionToUnit(IConquestGamePiece model, IConquestAnalysisOutput output, IOption option)
+        private static ApplyExtrasResult ApplyOptionToUnit(IConquestGamePiece model, IConquestAnalysisOutput output, IBaseOption baseOption)
         {
             //NonImpactfulOption - an intangible that cannot be analyzed with math
             //ImpactfulWithUnit - is impactful but only after the character is joined with the unit 
@@ -60,20 +60,20 @@ namespace ConquestController.Analysis.Components
 
             //option.SelfOnly applies only to character inputs, and means only applying to the character themself
 
-            output.Unit += $" ({option.Name})";
-            output.Points += option.Points;
+            output.Unit += $" ({baseOption.Name})";
+            output.Points += baseOption.Points;
 
             var impactful =
-                option.SelfOnly == 1 ? ApplyExtrasResult.ImpactfulWithUnit : ApplyExtrasResult.ImpactfulOption;
+                baseOption.SelfOnly == 1 ? ApplyExtrasResult.ImpactfulWithUnit : ApplyExtrasResult.ImpactfulOption;
 
-            var onlyImpactfulWithUnit = option.SelfOnly == 1
+            var onlyImpactfulWithUnit = baseOption.SelfOnly == 1
                 ? ApplyExtrasResult.NonImpactfulOption
                 : ApplyExtrasResult.ImpactfulWithUnit;
 
             //whether the rule is useful or not depends on the tag
             ApplyExtrasResult result = ApplyExtrasResult.NotOption;
 
-            var tags = new List<string>(option.Tag.Split('|'));
+            var tags = new List<string>(baseOption.Tag.Split('|'));
             foreach (var tag in tags)
             {
                 switch (tag.ToLower())

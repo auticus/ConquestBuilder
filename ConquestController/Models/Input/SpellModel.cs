@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class SpellModel : IOption
+    public class SpellModel : IBaseOption
     {
         public string Name { get; set; }
         public string Tag { get; set; }

@@ -65,7 +65,7 @@ namespace ConquestController.Data
                 if (header.Length != line.Length)
                     throw new InvalidOperationException("The header and the data line do not match length of field count");
 
-                var option = ProcessModel<UnitOptionModel>(header, line);
+                var option = ProcessModel<BaseOption>(header, line);
                 var model = models.FirstOrDefault(x => x.Faction == option.Faction && x.Unit == option.Unit);
 
                 model?.Options.Add(option);
@@ -83,7 +83,7 @@ namespace ConquestController.Data
             }
         }
 
-        public static void AssignDelimitedPropertyToOptionList(IList<IOption> list, IList<IOption> sourceList,
+        public static void AssignDelimitedPropertyToOptionList(IList<IBaseOption> list, IList<IBaseOption> sourceList,
             string data, char delimiter = '|')
         {
             var splitData = data.Split(delimiter);

@@ -7,7 +7,7 @@ namespace ConquestController.Analysis.Components
 {
     public class Mastery
     {
-        public static IList<IOption> GetFilteredMasteries(IConquestCharacter character,
+        public static IList<IBaseOption> GetFilteredMasteries(IConquestCharacter character,
             IList<IMastery> masteries)
         {
             var returnList = new List<IMastery>();
@@ -17,7 +17,7 @@ namespace ConquestController.Analysis.Components
             FilterByWeightClass(character, returnList);
             AssignBasePoints(returnList);
 
-            var castedList = returnList.Cast<IOption>().ToList();
+            var castedList = returnList.Cast<IBaseOption>().ToList();
             return castedList;
         }
 

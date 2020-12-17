@@ -4,9 +4,9 @@ namespace ConquestController.Data
 {
     public class OptionFactory
     {
-        public static UnitOptionModel CreateAdhocOption(string faction, string unit, string optionName, string optionNotes, int points)
+        public static BaseOption CreateAdhocOption(string faction, string unit, string optionName, string optionNotes, int points)
         {
-            var option = new UnitOptionModel()
+            var option = new BaseOption()
             {
                 Category="0",
                 Faction= faction,

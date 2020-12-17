@@ -100,7 +100,7 @@ namespace ConquestController.Analysis
 
             //the optionals like options, spells, etc methods will all bounce out immediately if the model passed in has none so freely just call the chain
             //process options
-            Option.ProcessOption(input, output, input.Option, input.Model is IConquestCharacter);
+            Option.ProcessOption(input, output, input.BaseOption, input.Model is IConquestCharacter);
             //todo: spells!
             //ProcessSpell(input, output);
 
@@ -141,7 +141,7 @@ namespace ConquestController.Analysis
                 //analyze options and add those to the baseline object as comparisons
                 if (output.Value.Options.Any())
                 {
-                    AnalyzeModelExtras<IOption>(input);
+                    AnalyzeModelExtras<IBaseOption>(input);
                 }
 
                 //analyze spells
@@ -183,7 +183,7 @@ namespace ConquestController.Analysis
         /// <returns></returns>
         private static bool ExtraProcessingRequired<TExtra>(AnalysisInput input)
         {
-            if (typeof(TExtra) == typeof(UnitOptionModel))
+            if (typeof(TExtra) == typeof(BaseOption))
             {
                 if (input.Model.Options.Any()) return true;
             }
@@ -206,7 +206,7 @@ namespace ConquestController.Analysis
         /// <param name="q"></param>
         private static void ExtraBuildQueue<TExtra>(AnalysisInput input, Queue<object> q)
         {
-            if (typeof(TExtra) == typeof(UnitOptionModel))
+            if (typeof(TExtra) == typeof(BaseOption))
             {
                 //compiler warning:  UnitOptionModel is a type of IConquestGameElement and if typeof TExtra is this it will always be ok
                 foreach (var opt in input.Model.Options)
@@ -237,7 +237,7 @@ namespace ConquestController.Analysis
         /// <returns></returns>
         private static AnalysisInput BuildInput(AnalysisInput input, object extra)
         {
-            if (extra.GetType() == typeof(UnitOptionModel))
+            if (extra.GetType() == typeof(BaseOption))
                 return BuildOptionInput(input, extra);
             if (extra.GetType() == typeof(SpellModel))
                 return BuildSpellInput(input, extra);
@@ -247,9 +247,9 @@ namespace ConquestController.Analysis
 
         private static string GetOptionName(object option)
         {
-            if (option.GetType() == typeof(UnitOptionModel))
+            if (option.GetType() == typeof(BaseOption))
             {
-                var opt = option as UnitOptionModel;
+                var opt = option as BaseOption;
                 return opt.Name;
             }
 
@@ -265,7 +265,7 @@ namespace ConquestController.Analysis
         private static AnalysisInput BuildOptionInput(AnalysisInput input, object extra)
         {
             var optionModel = (IConquestGamePiece)input.Model.Clone();
-            if (!(extra is UnitOptionModel option)) throw new InvalidOperationException("Object sent to BuildOptionInput is not an option model");
+            if (!(extra is BaseOption option)) throw new InvalidOperationException("Object sent to BuildOptionInput is not an option model");
 
             var aInput = new AnalysisInput()
             {
@@ -273,7 +273,7 @@ namespace ConquestController.Analysis
                 AnalysisStandCount = input.AnalysisStandCount,
                 ApplyFullyDeadly = input.ApplyFullyDeadly,
                 FrontageCount = input.FrontageCount,
-                Option = option
+                BaseOption = option
             };
 
             return aInput;

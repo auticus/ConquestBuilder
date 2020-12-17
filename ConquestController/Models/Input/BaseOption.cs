@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class UnitOptionModel : IConquestBase, IOption
+    public class BaseOption : IConquestBase, IOption
     { 
         public string Faction { get; set; }
         public string Unit { get; set; }
@@ -10,6 +10,7 @@
         public int SelfOnly { get; set; }
         public int ArmyLimit { get; set; }
         public string Notes { get; set; }
+        public string Perk { get; set; }
         public string Category { get; set; }
         public int WarlordOnly { get; set; }
 
@@ -24,7 +25,7 @@
         /// <returns></returns>
         public object Clone()
         {
-            return new UnitOptionModel
+            return new BaseOption
             {
                 ArmyLimit = this.ArmyLimit,
                 Category = this.Category,

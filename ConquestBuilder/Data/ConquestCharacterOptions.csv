@@ -1,31 +1,31 @@
-Faction,Unit,Name,Category,Points,Tag,SelfOnly,ArmyLimit,IsRegimentUpgrade,Notes
-100k,Imperial Officer,Bastion,1,15,IsBastion,0,0,0,[]
-100k,Imperial Officer,Double Time,1,15,[],0,0,0,[]
-100k,Imperial Officer,Fire and Advance,1,15,[],0,0,0,[]
-100k,Imperial Officer,Fury,1,15,IsFury,0,0,0,[]
-100k,Imperial Officer,Redress Ranks,1,15,[],0,0,0,[]
-100k,Noble Lord - Infantry,Arms Master,1,15,Cleave2,1,0,0,Grants Cleave 2 to the character
-100k,Noble Lord - Infantry,Relentless,1,10,IsFlurry,1,0,0,Grants Flurry to the character
-100k,Noble Lord - Infantry,Jouster,1,5,BrutalImpact2,1,0,0,Grants Brutal Impact 2 to the character
-100k,Noble Lord - Infantry,Powerful Physique,1,5,Cleave1,1,0,0,Grants Cleave 1 to the character
-100k,Noble Lord - Infantry,Duelist,1,5,Parry,1,0,0,Grants Parry to the character
-100k,Noble Lord - Cavalry,Arms Master,1,15,Cleave2,1,0,0,Grants Cleave 2 to the character
-100k,Noble Lord - Cavalry,Relentless,1,10,IsFlurry,1,0,0,Grants Flurry to the character
-100k,Noble Lord - Cavalry,Jouster,1,5,BrutalImpact2,1,0,0,Grants Brutal Impact 2 to the character
-100k,Noble Lord - Cavalry,Powerful Physique,1,5,Cleave1,1,0,0,Grants Cleave 1 to the character
-100k,Noble Lord - Cavalry,Duelist,1,5,Parry,1,0,0,Grants Parry to the character
-Spires,High Clone Executor,Bastion,1,30,IsBastion,0,0,0,[]
-Spires,High Clone Executor,Double Time,1,15,[],0,0,0,[]
-Spires,High Clone Executor,Fire and Advance,1,15,[],0,0,0,[]
-Spires,High Clone Executor,Fury,1,10,IsFury,0,0,0,[]
-Dweghom,Hold Raegh,Mnemancer Apprentice,1,40,IsFearless|R,0,1,1,Grants Fearless and boosts Resolve by 1
-Nords,Blooded,Eagle,1,35,[],0,0,0,[]
-Nords,Blooded,Crow,1,15,V|V,1,0,0,Adds +2 to Volley
-Nords,Blooded,Dragon,1,15,C,1,0,0,Adds +1 to Clash
-Nords,Blooded,Bear,1,10,A,1,0,0,Adds +1 to Attack
-Nords,Blooded,Wolf,1,10,M,1,0,0,Adds +1 to Movement
-Nords,Jarl,Eagle,1,35,[],0,0,0,[]
-Nords,Jarl,Crow,1,15,V|V,1,0,0,Adds +2 to Volley
-Nords,Jarl,Dragon,1,15,C,1,0,0,Adds +1 to Clash
-Nords,Jarl,Bear,1,10,A,1,0,0,Adds +1 to Attack
-Nords,Jarl,Wolf,1,10,M,1,0,0,Adds +1 to Movement
+Faction,Unit,Name,Category,Points,Tag,SelfOnly,ArmyLimit,IsRegimentUpgrade,Notes,Perk
+100k,Imperial Officer,Bastion,1,15,IsBastion,0,0,0,[],Tier2TacticalRetinue
+100k,Imperial Officer,Double Time,1,15,ExtraMove,0,0,0,[],Tier2TacticalRetinue
+100k,Imperial Officer,Fire and Advance,1,15,[],0,0,0,[],Tier2TacticalRetinue
+100k,Imperial Officer,Fury,1,15,IsFury,0,0,0,[],Tier2TacticalRetinue
+100k,Imperial Officer,Redress Ranks,1,15,[],0,0,0,[],Tier2TacticalRetinue
+100k,Noble Lord - Infantry,Arms Master,1,15,Cleave2,1,0,0,Grants Cleave 2 to the character,[]
+100k,Noble Lord - Infantry,Relentless,1,10,IsFlurry,1,0,0,Grants Flurry to the character,[]
+100k,Noble Lord - Infantry,Jouster,1,5,BrutalImpact2,1,0,0,Grants Brutal Impact 2 to the character,[]
+100k,Noble Lord - Infantry,Powerful Physique,1,5,Cleave1,1,0,0,Grants Cleave 1 to the character,[]
+100k,Noble Lord - Infantry,Duelist,1,5,Parry,1,0,0,Grants Parry to the character,[]
+100k,Noble Lord - Cavalry,Arms Master,1,15,Cleave2,1,0,0,Grants Cleave 2 to the character,[]
+100k,Noble Lord - Cavalry,Relentless,1,10,IsFlurry,1,0,0,Grants Flurry to the character,[]
+100k,Noble Lord - Cavalry,Jouster,1,5,BrutalImpact2,1,0,0,Grants Brutal Impact 2 to the character,[]
+100k,Noble Lord - Cavalry,Powerful Physique,1,5,Cleave1,1,0,0,Grants Cleave 1 to the character,[]
+100k,Noble Lord - Cavalry,Duelist,1,5,Parry,1,0,0,Grants Parry to the character,[]
+Spires,High Clone Executor,Bastion,1,30,IsBastion,0,0,0,[],Tier2TacticalRetinue
+Spires,High Clone Executor,Double Time,1,15,ExtraMove,0,0,0,[],Tier2TacticalRetinue
+Spires,High Clone Executor,Fire and Advance,1,15,[],0,0,0,[],Tier2TacticalRetinue
+Spires,High Clone Executor,Fury,1,10,IsFury,0,0,0,[],Tier2TacticalRetinue
+Dweghom,Hold Raegh,Mnemancer Apprentice,1,40,IsFearless|R,0,1,1,Grants Fearless and boosts Resolve by 1,[]
+Nords,Blooded,Eagle,1,35,[],0,0,0,[],[]
+Nords,Blooded,Crow,1,15,V|V,1,0,0,Adds +2 to Volley,[]
+Nords,Blooded,Dragon,1,15,C,1,0,0,Adds +1 to Clash,[]
+Nords,Blooded,Bear,1,10,A,1,0,0,Adds +1 to Attack,[]
+Nords,Blooded,Wolf,1,10,M,1,0,0,Adds +1 to Movement,[]
+Nords,Jarl,Eagle,1,35,[],0,0,0,[],[]
+Nords,Jarl,Crow,1,15,V|V,1,0,0,Adds +2 to Volley,[]
+Nords,Jarl,Dragon,1,15,C,1,0,0,Adds +1 to Clash,[]
+Nords,Jarl,Bear,1,10,A,1,0,0,Adds +1 to Attack,[]
+Nords,Jarl,Wolf,1,10,M,1,0,0,Adds +1 to Movement,[]

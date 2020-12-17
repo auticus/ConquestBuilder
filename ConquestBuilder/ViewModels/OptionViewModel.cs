@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Xaml;
 using ConquestController.Analysis.Components;
 using ConquestController.Data;
 using ConquestController.Models;
@@ -13,15 +11,17 @@ namespace ConquestBuilder.ViewModels
 {
     public class OptionViewModel : BaseViewModel
     {
+        //todo need to create a new Perk data collection of all options that have a perk string, and then those need fed into here and added/removed as retinue is selected
         private IConquestGamePiece _element;
-        private readonly IEnumerable<IOption> _magicItems;
-        private readonly IEnumerable<ITieredOption> _retinues;
+        private readonly IEnumerable<IBaseOption> _magicItems;
+        private readonly IEnumerable<ITieredBaseOption> _retinues;
+        private readonly IEnumerable<IOption> _perks;
         private readonly Guid _characterID;
 
         /// <summary>
         /// string is the name of the tag from the mastery model, the value is the retinue its tied to that needs to be set on to choose the mastery
         /// </summary>
-        private Dictionary<string, ITieredOption> _retinueRestrictionDictionary;
+        private Dictionary<string, ITieredBaseOption> _retinueRestrictionDictionary;
 
         /// <summary>
         /// Lets us know all of the masteries that could be filtered out based on a retinue selection
@@ -54,24 +54,22 @@ namespace ConquestBuilder.ViewModels
         /// <param name="element">the element having the options applied to it</param>
         /// <param name="magicItems">Magic Items to display</param>
         /// <param name="retinues">Filtered retinues by the faction</param>
-        public OptionViewModel(IConquestGamePiece element, IEnumerable<IOption> magicItems, IEnumerable<ITieredOption> retinues, Guid characterID)
+        public OptionViewModel(IConquestGamePiece element, IEnumerable<IBaseOption> magicItems, IEnumerable<ITieredBaseOption> retinues, IEnumerable<IOption> perks, Guid characterID)
         {
             Element = element;
             _magicItems = magicItems;
             _retinues = retinues;
             _characterID = characterID;
+            _perks = perks;
 
             ActiveMasteryState = new List<Tuple<IMastery,bool>>();
-            _retinueRestrictionDictionary = new Dictionary<string, ITieredOption>();
+            _retinueRestrictionDictionary = new Dictionary<string, ITieredBaseOption>();
             _retinueRestrictedMasteries = new Dictionary<IMastery, ListViewOption>();
             InitializeData();
         }
 
         private void InitializeData()
         {
-            //todo: good times ahead.  For masteries that depend on retinues, when the retinues are selected that will dynamically generate mastery items here
-            //either that or we can disable them and reenable them if restrictions are lifted.  That actually sounds more sane
-
             Options = new ObservableCollection<ListViewOption>();
             _retinueRestrictionDictionary = Retinue.GetRetinueRestrictionDictionary(_retinues);
             AddOptions();
@@ -81,6 +79,7 @@ namespace ConquestBuilder.ViewModels
                 AddMagicItems(element);
                 AddRetinues(element);
                 AddMasteries(element);
+                AddPerks(element);
             }
             
             SetInitialCheckedState();
@@ -92,7 +91,7 @@ namespace ConquestBuilder.ViewModels
             {
                 foreach (var lvo in Options.Where(p=>p.Category == OptionCategory.Option))
                 {
-                    var lvOption = (IOption) lvo.Model;
+                    var lvOption = (IBaseOption) lvo.Model;
                     if (option.Name == lvOption.Name)
                     {
                         lvo.IsChecked = true;
@@ -117,7 +116,7 @@ namespace ConquestBuilder.ViewModels
             {
                 foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Item))
                 {
-                    var lvOption = (IOption)lvo.Model;
+                    var lvOption = (IBaseOption)lvo.Model;
                     if (item.Name == lvOption.Name)
                     {
                         lvo.IsChecked = true;
@@ -145,8 +144,21 @@ namespace ConquestBuilder.ViewModels
             {
                 foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Retinue))
                 {
-                    var lvOption = (ITieredOption) lvo.Model;
+                    var lvOption = (ITieredBaseOption) lvo.Model;
                     if (retinue.Name == lvOption.Name)
+                    {
+                        lvo.IsChecked = true;
+                        break;
+                    }
+                }
+            }
+
+            foreach (var perk in element.ActivePerks)
+            {
+                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Perk))
+                {
+                    var lvOption = (IOption)lvo.Model;
+                    if (perk.Name == lvOption.Name)
                     {
                         lvo.IsChecked = true;
                         break;
@@ -304,9 +316,6 @@ namespace ConquestBuilder.ViewModels
             //Restricted - only go to max level 2 , AND they cost double
             //Must choose all tiers below the chosen.  Ex: choose tier 3, you also choose tier 2 and 1
 
-            //todo: tac level 2 retinues give bonus items (look for Tag == "Perk"
-            //100k - select additional battlefield drill officer p.231 - spires tactic High Clone Executor 252, dweghom additional relic, nords additional aspect 284
-
             var availableRetinues =
                 element.RetinueMetaData.RetinueAvailabilities.Where(p =>
                     p.Value != RetinueAvailability.Availability.NotAvailable);
@@ -320,7 +329,7 @@ namespace ConquestBuilder.ViewModels
                 //this will either be available or restricted
                 var restrictionClass = availableRetinues.First(p => p.Key == retinue.Category);
 
-                var retinueCopy = (ITieredOption)retinue.Clone();
+                var retinueCopy = (ITieredBaseOption)retinue.Clone();
 
                 if (restrictionClass.Value == RetinueAvailability.Availability.Restricted &&
                     retinueCopy.Tier > 2) continue; //restricted items cannot exceed 2nd tier
@@ -342,6 +351,60 @@ namespace ConquestBuilder.ViewModels
                 };
                 Options.Add(option);
             }
+        }
+
+        /// <summary>
+        /// Checks to see if any active retinues enabled any perks and if so, adds the perks to the option list based on the faction of the Element
+        /// </summary>
+        /// <param name="element"></param>
+        private void AddPerks(IConquestCharacter element)
+        {
+            //for right now there is only one retinue that can unlock perks and its just a static set of perks
+            var perkRetinueActive = Options.Where(p => p.Category == OptionCategory.Retinue && p.IsChecked)
+                .Select(option => (ITieredBaseOption) option.Model)
+                .Any(opt => opt.Tag.Split("|").Contains("Perk"));
+
+            if (!perkRetinueActive) return;
+
+            if (Options.Any(p => p.OptionGrouping == "Perks")) return;  //we already added perks we aren't doing it again
+
+            foreach (var perk in _perks.Where(p => p.Faction == element.Faction))
+            {
+                var perkCopy = (IOption)perk.Clone();
+
+                var option = new ListViewOption()
+                {
+                    Category = OptionCategory.Perk,
+                    Model = perkCopy,
+                    Text = $"{perk} - {perk.Points} pts",
+                    CheckChanged = ListViewItem_CheckChanged,
+                    OptionGrouping = $"Perks",
+                    GroupCanSelectAll = false,
+                    MaxAllowableSelectableForGroup = 0,
+                    Tooltip = perkCopy.Notes,
+                    TieredSelection = false
+                };
+                Options.Add(option);
+            }
+        }
+
+        /// <summary>
+        /// Clears all Perks and actively selected perks from the element
+        /// </summary>
+        /// <param name="element"></param>
+        private void RemovePerks(IConquestCharacter element)
+        {
+            element.ActivePerks.Clear();
+
+            var clearList = new List<ListViewOption>();
+
+            foreach (var option in Options.Where(p => p.Category == OptionCategory.Perk))
+            {
+                clearList.Add(option);
+            }
+
+            foreach(var option in clearList)
+                Options.Remove(option);
         }
 
         private int GetNextSpammedElementPoints(IMastery mastery)
@@ -381,7 +444,7 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private ListViewOption CreateHardCodedOption(UnitOptionModel model)
+        private ListViewOption CreateHardCodedOption(BaseOption model)
         {
             return new ListViewOption()
             {
@@ -434,32 +497,41 @@ namespace ConquestBuilder.ViewModels
         /// <param name="selected"></param>
         private void HandleRetinueChange(ListViewOption element, bool selected)
         {
-            if (element.Category == OptionCategory.Retinue)
-            {
-                var retinue = (ITieredOption) element.Model;
-                var tag = _retinueRestrictionDictionary.FirstOrDefault(p => p.Value.Tier == retinue.Tier && p.Value.Category == retinue.Category ).Key;
-                if (tag == null) return;
+            if (element.Category != OptionCategory.Retinue) return;
+            
+            var retinue = (ITieredBaseOption) element.Model;
+            var tag = _retinueRestrictionDictionary.FirstOrDefault(p => p.Value.Tier == retinue.Tier && p.Value.Category == retinue.Category ).Key;
+            if (tag == null) return;
 
-                if (selected)
+            if (selected)
+            {
+                var masteries = _retinueRestrictedMasteries.Where(p => p.Key.Restrictions.Split("|").Contains(tag));
+                foreach (var mastery in masteries)
                 {
-                    var masteries = _retinueRestrictedMasteries.Where(p => p.Key.Restrictions.Split("|").Contains(tag));
-                    foreach (var mastery in masteries)
+                    Options.Add(mastery.Value);
+                }
+
+                if (retinue.Tag.Split("|").Contains("Perk"))
+                {
+                    AddPerks(Element as IConquestCharacter);
+                }
+            }
+            else
+            {
+                foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Mastery))
+                {
+                    var mastery = (IMastery) lvo.Model;
+                    if (mastery.Restrictions.Split("|").Contains(tag))
                     {
-                        Options.Add(mastery.Value);
+                        Options.Remove(lvo);
+                        DeactivateMastery(mastery);
+                        break;
                     }
                 }
-                else
+
+                if (retinue.Tag.Split("|").Contains("Perk"))
                 {
-                    foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Mastery))
-                    {
-                        var mastery = (IMastery) lvo.Model;
-                        if (mastery.Restrictions.Split("|").Contains(tag))
-                        {
-                            Options.Remove(lvo);
-                            DeactivateMastery(mastery);
-                            break;
-                        }
-                    }
+                    RemovePerks(Element as IConquestCharacter);
                 }
             }
         }
@@ -553,6 +625,8 @@ namespace ConquestBuilder.ViewModels
         /// <param name="mastery"></param>
         private void DeactivateMastery(IMastery mastery)
         {
+            if (Roster.MasterySpam.ContainsKey(mastery.Name) == false) return;
+            
             var spamGuidList = Roster.MasterySpam[mastery.Name];
             spamGuidList.Remove(_characterID);
 
@@ -571,12 +645,12 @@ namespace ConquestBuilder.ViewModels
             if (element.IsChecked == false) return;
 
             //if tier 3 is selected, then make sure tier 1 and 2 are selected - etc
-            var item = (ITieredOption)element.Model;
+            var item = (ITieredBaseOption)element.Model;
 
             var tierGroupedItems = Options.Where(p => p.OptionGrouping == element.OptionGrouping);
             foreach (var tgi in tierGroupedItems)
             {
-                var tieredItem = (ITieredOption) tgi.Model;
+                var tieredItem = (ITieredBaseOption) tgi.Model;
                 if (tieredItem.Tier < item.Tier && tgi.IsChecked == false) 
                     tgi.IsChecked = true;
             }
@@ -587,11 +661,11 @@ namespace ConquestBuilder.ViewModels
             //if tiered items 1 & 2 are selected, and i try to deactivate #1, that should not be allowed because an active checked item of a greater tier is selected
             if (element.IsChecked) return;
 
-            var item = (ITieredOption) element.Model;
+            var item = (ITieredBaseOption) element.Model;
             var tierGroupedItems = Options.Where(p => p.OptionGrouping == element.OptionGrouping);
             foreach (var tgi in tierGroupedItems)
             {
-                var tieredItem = (ITieredOption)tgi.Model;
+                var tieredItem = (ITieredBaseOption)tgi.Model;
                 if (tieredItem.Tier <= item.Tier) continue;
 
                 if (tgi.IsChecked)

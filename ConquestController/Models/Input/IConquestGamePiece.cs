@@ -11,7 +11,7 @@ namespace ConquestController.Models.Input
     {
         string Image { get; set; }
         List<IConquestBase> Options { get; }
-        ObservableCollection<IOption> ActiveOptions { get; }
+        ObservableCollection<IBaseOption> ActiveOptions { get; }
 
         int AdditionalPoints { get; set; }
         int LeaderPoints { get; set; }

@@ -44,12 +44,12 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private List<IOption> FilteredMagicItems
+        private List<IBaseOption> FilteredMagicItems
         {
             get
             {
                 return _data.Items.Where(p => p.Faction == Filter).OrderBy(p => p.Category).ThenBy(p => p.Name)
-                    .Cast<IOption>().ToList();
+                    .Cast<IBaseOption>().ToList();
             }
         }
         #endregion Private Fields
@@ -857,7 +857,11 @@ namespace ConquestBuilder.ViewModels
         {
             var selectedGuid = SelectedElement.ID;
 
-            var optionVM = new OptionViewModel(SelectedElement, FilteredMagicItems, _data.Retinues.Where(p=>p.Faction == "ALL" || p.Faction == SelectedElement.Faction), selectedGuid);
+            var optionVM = new OptionViewModel(SelectedElement, 
+                FilteredMagicItems, 
+                _data.Retinues.Where(p=>p.Faction == "ALL" || p.Faction == SelectedElement.Faction), 
+                _data.Perks,
+                selectedGuid);
             var window = new OptionsWindow(_view, optionVM);
 
             if (window.ShowDialog() == true)
@@ -871,6 +875,7 @@ namespace ConquestBuilder.ViewModels
 
                 //redraw the tree
                 RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs(){RosterElement = SelectedRosterCharacter, SelectedElementID = selectedGuid});
+                Roster.RefreshPoints();
             }
         }
 
@@ -894,7 +899,7 @@ namespace ConquestBuilder.ViewModels
                 switch (option.Category)
                 {
                     case OptionCategory.Option:
-                        element.ActiveOptions.Add((IOption)option.Model);
+                        element.ActiveOptions.Add((IBaseOption)option.Model);
                         break;
                     case OptionCategory.Item:
                     case OptionCategory.Mastery:
@@ -910,22 +915,26 @@ namespace ConquestBuilder.ViewModels
             element.ActiveItems.Clear();
             element.ActiveMasteries.Clear();
             element.ActiveRetinues.Clear();
+            element.ActivePerks.Clear();
 
             foreach (var option in vm.Options.Where(p => p.IsChecked))
             {
                 switch (option.Category)
                 {
                     case OptionCategory.Option:
-                        element.ActiveOptions.Add((IOption)option.Model);
+                        element.ActiveOptions.Add((IBaseOption)option.Model);
                         break;
                     case OptionCategory.Item:
-                        element.ActiveItems.Add((IOption)option.Model);
+                        element.ActiveItems.Add((IBaseOption)option.Model);
                         break;
                     case OptionCategory.Mastery:
                         element.ActiveMasteries.Add((IMastery)option.Model);
                         break;
                     case OptionCategory.Retinue:
-                        element.ActiveRetinues.Add((ITieredOption)option.Model);
+                        element.ActiveRetinues.Add((ITieredBaseOption)option.Model);
+                        break;
+                    case OptionCategory.Perk:
+                        element.ActivePerks.Add((IOption)option.Model);
                         break;
                     default:
                         throw new InvalidOperationException($"The category '{option.Category}' was not accounted for in ArmyBuilderViewModel::SynchronizeElement");

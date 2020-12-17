@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public interface ITieredOption: IOption
+    public interface ITieredBaseOption: IBaseOption
     {
         int Tier { get; set; }
     }

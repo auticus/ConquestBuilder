@@ -10,10 +10,11 @@ namespace ConquestController.Models.Input
         protected ConquestGameElement()
         {
             Options = new List<IConquestBase>();
-            ActiveOptions = new ObservableCollection<IOption>();
-            ActiveItems = new ObservableCollection<IOption>();
+            ActiveOptions = new ObservableCollection<IBaseOption>();
+            ActiveItems = new ObservableCollection<IBaseOption>();
             ActiveMasteries = new ObservableCollection<IMastery>();
-            ActiveRetinues = new ObservableCollection<ITieredOption>();
+            ActiveRetinues = new ObservableCollection<ITieredBaseOption>();
+            ActivePerks = new ObservableCollection<IOption>();
             ID = Guid.NewGuid();
 
             ActiveOptions.CollectionChanged += (sender, args) =>
@@ -32,6 +33,11 @@ namespace ConquestController.Models.Input
             };
 
             ActiveRetinues.CollectionChanged += (sender, EventArgs) =>
+            {
+                PointsChanged?.Invoke(this, EventArgs);
+            };
+
+            ActivePerks.CollectionChanged += (sender, EventArgs) =>
             {
                 PointsChanged?.Invoke(this, EventArgs);
             };
@@ -129,7 +135,8 @@ namespace ConquestController.Models.Input
             Points + ActiveOptions.Sum(p => p.Points)
                    + ActiveItems.Sum(p => p.Points)
                    + ActiveMasteries.Sum(p => p.Points)
-                   + ActiveRetinues.Sum(p => p.Points);
+                   + ActiveRetinues.Sum(p => p.Points)
+                   + ActivePerks.Sum(p => p.Points);
 
         /// <summary>
         /// Character options / upgrade or regiment options / upgrades like Veterans, Armsmaster, etc.
@@ -139,12 +146,13 @@ namespace ConquestController.Models.Input
         /// <summary>
         /// For a roster element, the actively selected options
         /// </summary>
-        public ObservableCollection<IOption> ActiveOptions { get; set; }
+        public ObservableCollection<IBaseOption> ActiveOptions { get; set; }
 
-        public ObservableCollection<IOption> ActiveItems { get; set; }
+        public ObservableCollection<IBaseOption> ActiveItems { get; set; }
         public ObservableCollection<IMastery> ActiveMasteries { get; set; }
 
-        public ObservableCollection<ITieredOption> ActiveRetinues { get; set; }
+        public ObservableCollection<ITieredBaseOption> ActiveRetinues { get; set; }
+        public ObservableCollection<IOption> ActivePerks { get; set; }
 
         public int MaxAllowableItems { get; set; }
         public int MaxAllowableMasteries { get; set; }

@@ -16,7 +16,7 @@ namespace ConquestController.Models.Input
         IEnumerable<string> RestrictedChoices { get; set; }
 
         int MaxAllowableItems { get; set; }
-        ObservableCollection<IOption> ActiveItems { get; }
+        ObservableCollection<IBaseOption> ActiveItems { get; }
 
         int MaxAllowableMasteries { get; set; }
         
@@ -30,7 +30,8 @@ namespace ConquestController.Models.Input
         /// </summary>
         ObservableCollection<IMastery> MasteryChoices { get; set; }
         ObservableCollection<IMastery> ActiveMasteries { get; }
-        ObservableCollection<ITieredOption> ActiveRetinues { get; }
+        ObservableCollection<ITieredBaseOption> ActiveRetinues { get; }
+        ObservableCollection<IOption> ActivePerks { get; }
 
         /// <summary>
         /// Data input field

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using ConquestController.Analysis.Components;
@@ -62,25 +63,28 @@ namespace ConquestController.Analysis
         public static IEnumerable<IConquestCharacter> GetAllCharacters(string inputFilePath, 
             string inputOptionsFilePath, 
             IEnumerable<SpellModel> spells, 
-            IEnumerable<IOption> masteries,
-            IEnumerable<ITieredOption> retinues)
+            IEnumerable<IBaseOption> masteries,
+            IEnumerable<ITieredBaseOption> retinues,
+            out IList<IOption> perks)
         {
             //assign characters
             var characters = DataRepository.GetInputFromFileToList<CharacterGameElementModel>(inputFilePath);
 
             //assign mainstay and restricted choices
-            AssignCharacterExtras(characters, spells, masteries, retinues, inputOptionsFilePath);
+            AssignCharacterExtras(characters, spells, masteries, retinues, inputOptionsFilePath, out perks);
 
             return characters;
         }
         private static void AssignCharacterExtras(IEnumerable<IConquestCharacter> characters, 
             IEnumerable<SpellModel> spells, 
-            IEnumerable<IOption> masteries,
-            IEnumerable<ITieredOption> retinues,
-            string inputOptionsFilePath)
+            IEnumerable<IBaseOption> masteries,
+            IEnumerable<ITieredBaseOption> retinues,
+            string inputOptionsFilePath,
+            out IList<IOption> perks)
         {
             var spellModels = spells.ToList();
             var factionRetinues = new Dictionary<string, IEnumerable<string>>();
+            perks = new List<IOption>();
 
             foreach (var character in characters)
             {
@@ -89,6 +93,15 @@ namespace ConquestController.Analysis
                 DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices as IList<string>, character.Restricted);
                 DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestGamePiece>(){character}, inputOptionsFilePath);
                 
+                //harvest out the perks from the options to put into the perks collection
+                foreach (var option in character.Options)
+                {
+                    if (option is IOption opt && !string.IsNullOrEmpty(opt.Perk))
+                    {
+                        perks.Add(opt);
+                    }
+                }
+
                 //assign spell schools and individual spells to the character
                 if (character is IConquestSpellcaster spellcaster)
                 {
@@ -97,7 +110,7 @@ namespace ConquestController.Analysis
 
                 //masteries chosen by retinues cannot be set here as there is no way of knowing what retinue the character has at this point
                 var filteredMasteries = Mastery.GetFilteredMasteries(character, masteries.Cast<IMastery>().ToList());
-                var masteryList = character.MasteryChoices.Cast<IOption>().ToList();
+                var masteryList = character.MasteryChoices.Cast<IBaseOption>().ToList();
                 DataRepository.AssignDelimitedPropertyToOptionList(masteryList,
                         filteredMasteries, 
                             character.Masteries);
@@ -119,7 +132,7 @@ namespace ConquestController.Analysis
             }
         }
 
-        private static IEnumerable<string> BuildFactionRetinueList(string faction, IEnumerable<ITieredOption> retinues)
+        private static IEnumerable<string> BuildFactionRetinueList(string faction, IEnumerable<ITieredBaseOption> retinues)
         {
             return retinues.Where(p => p.Faction == "ALL" || p.Faction == faction).Select(p => p.Category).Distinct().ToList();
         }

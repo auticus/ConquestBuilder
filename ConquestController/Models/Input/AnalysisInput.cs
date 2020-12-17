@@ -6,7 +6,7 @@ namespace ConquestController.Models.Input
     {
         public IConquestGamePiece Model { get; set; }
         public IConquestAnalysisOutput BaselineOutput { get; set; }
-        public IOption Option { get; set; }
+        public IBaseOption BaseOption { get; set; }
         public SpellModel Spell { get; set; }
         public int AnalysisStandCount { get; set; }
         public int FrontageCount { get; set; }

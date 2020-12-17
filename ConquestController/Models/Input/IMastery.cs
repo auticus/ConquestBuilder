@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public interface IMastery: IOption
+    public interface IMastery: IBaseOption
     {
         /// <summary>
         /// What it originally cost at base value

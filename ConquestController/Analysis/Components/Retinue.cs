@@ -9,9 +9,9 @@ namespace ConquestController.Analysis.Components
         /// <summary>
         /// string is the name of the tag from the mastery model, the value is the retinue its tied to that needs to be set on to choose the mastery
         /// </summary>
-        public static Dictionary<string, ITieredOption> GetRetinueRestrictionDictionary(IEnumerable<ITieredOption> retinues)
+        public static Dictionary<string, ITieredBaseOption> GetRetinueRestrictionDictionary(IEnumerable<ITieredBaseOption> retinues)
         {
-            var dictionary = new Dictionary<string, ITieredOption>
+            var dictionary = new Dictionary<string, ITieredBaseOption>
             {
                 {"Tier1TacticalRetinue", retinues.First(p => p.Category == "Tactical" && p.Tier == 1)},
                 {"Tier2TacticalRetinue", retinues.First(p => p.Category == "Tactical" && p.Tier == 2)},

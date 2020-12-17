@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents magic items, heirlooms, etc
     /// </summary>
-    public class ItemModel : IOption
+    public class ItemModel : IBaseOption
     {
         public string Name { get; set; }
         public string Tag { get; set; }

@@ -1,16 +1,7 @@
-﻿using System;
-
-namespace ConquestController.Models.Input
+﻿namespace ConquestController.Models.Input
 {
-    public interface IOption : ICloneable
+    public interface IOption: IBaseOption
     {
-        string Faction { get; set; }
-        string Name { get; set; }
-        string Tag { get; set; }
-        int Points { get; set; }
-        int SelfOnly { get; set; }
-        int WarlordOnly { get; set; }
-        string Notes { get; set; }
-        string Category { get; set; }
+        public string Perk { get; set; }
     }
 }

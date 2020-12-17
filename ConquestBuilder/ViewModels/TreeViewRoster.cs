@@ -20,7 +20,8 @@ namespace ConquestBuilder.ViewModels
         Option,
         Item,
         Mastery,
-        Retinue
+        Retinue,
+        Perk
     }
 
     public class TreeViewRoster

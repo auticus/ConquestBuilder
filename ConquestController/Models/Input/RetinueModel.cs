@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class RetinueModel : ITieredOption
+    public class RetinueModel : ITieredBaseOption
     {
         public string Name { get; set; }
         public string Tag { get; set; }
@@ -38,7 +38,7 @@
             };
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (obj == null) return false;
             if ((obj is RetinueModel) == false) return false;
@@ -50,6 +50,11 @@
                     retinue.Points == this.Points &&
                     retinue.Name == this.Name &&
                     retinue.Tier == this.Tier);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }
