@@ -17,7 +17,7 @@ namespace ConquestController.Analysis
         /// <param name="models"></param>
         /// <param name="spells"></param>
         /// <returns></returns>
-        public IList<IConquestAnalysisOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<SpellModel> spells) where T: IConquestGamePiece
+        public IList<IConquestAnalysisOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<ISpell> spells) where T: IConquestGamePiece
         {
             //regiments we base on 3, characters on 1
             var standCount = typeof(T) == typeof(CharacterGameElementModel) ? 1 : 3;
@@ -56,7 +56,7 @@ namespace ConquestController.Analysis
         /// <param name="applyFullyDeadly"></param>
         /// <returns>A dictionary containing a key value that is the output matched by the model that it is derived from as the value</returns>
         private static IDictionary<IConquestAnalysisOutput, IConquestGamePiece> InitializeBroadAnalysis<T>(IEnumerable<T> models, 
-            IEnumerable<SpellModel> spells, 
+            IEnumerable<ISpell> spells, 
             int analysisStandCount, 
             int frontageCount, 
             bool applyFullyDeadly)
@@ -147,7 +147,7 @@ namespace ConquestController.Analysis
                 //analyze spells
                 if (output.Value.CanCastSpells())
                 {
-                    AnalyzeModelExtras<SpellModel>(input);
+                    AnalyzeModelExtras<ISpell>(input);
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace ConquestController.Analysis
                 if (input.Model.Options.Any()) return true;
             }
 
-            if (typeof(TExtra) == typeof(SpellModel))
+            if (typeof(TExtra) == typeof(ISpell))
             {
                 if (!(input.Model is IConquestSpellcaster spellcaster)) return false;
                 if (spellcaster.Spells.Any()) return true;
@@ -217,7 +217,7 @@ namespace ConquestController.Analysis
                 return;
             }
 
-            if (typeof(TExtra) == typeof(SpellModel))
+            if (typeof(TExtra) == typeof(ISpell))
             {
                 if (!(input.Model is IConquestSpellcaster spellcaster)) return;
 
@@ -253,9 +253,9 @@ namespace ConquestController.Analysis
                 return opt.Name;
             }
 
-            if (option.GetType() == typeof(SpellModel))
+            if (option.GetType() == typeof(ISpell))
             {
-                var opt = option as SpellModel;
+                var opt = option as ISpell;
                 return opt.Name;
             }
 
@@ -282,7 +282,7 @@ namespace ConquestController.Analysis
         private static AnalysisInput BuildSpellInput(AnalysisInput input, object extra)
         {
             var optionModel = (IConquestGamePiece)input.Model.Clone();
-            if (!(extra is SpellModel option))
+            if (!(extra is ISpell option))
                 throw new InvalidOperationException("Object sent to BuildSpellInput is not a spell model");
 
             var aInput = new AnalysisInput()

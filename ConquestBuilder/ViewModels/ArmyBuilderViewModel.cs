@@ -861,6 +861,7 @@ namespace ConquestBuilder.ViewModels
                 FilteredMagicItems, 
                 _data.Retinues.Where(p=>p.Faction == "ALL" || p.Faction == SelectedElement.Faction), 
                 _data.Perks,
+                _data.Spells,
                 selectedGuid);
             var window = new OptionsWindow(_view, optionVM);
 
@@ -938,6 +939,7 @@ namespace ConquestBuilder.ViewModels
                         element.ActivePerks.Add((IPerkOption)option.Model);
                         break;
                     case OptionCategory.Spell:
+                    case OptionCategory.LearnedInOccultSpell:
                         element.ActiveSpells.Add((IBaseOption)option.Model);
                         break;
                     default:

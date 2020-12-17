@@ -37,14 +37,14 @@ namespace ConquestController.Models.Input
 
         public ObservableCollection<IMastery> MasteryChoices { get; set; }
         public List<string> Schools { get; set; }
-        public List<SpellModel> Spells { get; set; }
+        public List<ISpell> Spells { get; set; }
 
         public CharacterGameElementModel()
         {
             MainstayChoices = new List<string>();
             RestrictedChoices = new List<string>();
             Schools = new List<string>();
-            Spells = new List<SpellModel>();
+            Spells = new List<ISpell>();
             MasteryChoices = new ObservableCollection<IMastery>();
             ActiveRetinues = new ObservableCollection<ITieredBaseOption>();
             ActivePerks = new ObservableCollection<IPerkOption>();

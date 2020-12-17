@@ -26,7 +26,7 @@ namespace ConquestBuilder.Models
 
         public IList<IConquestCharacter> Characters { get; private set; }
         public IList<IConquestGamePiece> Units { get; private set; }
-        public IList<SpellModel> Spells { get; private set; }
+        public IList<ISpell> Spells { get; private set; }
         public IList<ITieredBaseOption> Retinues { get; private set; }
         public IList<IMastery> Masteries { get; private set; }
         public IList<IPerkOption> Items { get; private set; }
@@ -116,7 +116,7 @@ namespace ConquestBuilder.Models
                 var characterInputFilePath = _appPath + "\\" + _characterInputFile;
                 var characterOptionFilePath = _appPath + "\\" + _characterOptionFile;
 
-                Spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile).Cast<SpellModel>().ToList(); //todo interface this
+                Spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile).Cast<ISpell>().ToList(); //todo interface this
                 Retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile).Cast<ITieredBaseOption>().ToList();
                 Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile).Cast<IMastery>().ToList();
                 Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile).Cast<IPerkOption>().ToList();

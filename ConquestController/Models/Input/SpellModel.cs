@@ -1,6 +1,6 @@
 ﻿namespace ConquestController.Models.Input
 {
-    public class SpellModel : IBaseOption
+    public class SpellModel : ISpell
     {
         public string Name { get; set; }
         public string Tag { get; set; }
@@ -15,6 +15,7 @@
         public string EffectCausedPer { get; set; }
         public int WarlordOnly { get; set; }
         public string Notes { get; set; }
+        public bool LearnedInTheOccult { get; set; }
 
         /// <summary>
         /// Returns a SpellModel
@@ -36,7 +37,8 @@
                 Range = this.Range,
                 Tag = this.Tag,
                 SelfOnly = this.SelfOnly,
-                WarlordOnly = this.WarlordOnly
+                WarlordOnly = this.WarlordOnly,
+                LearnedInTheOccult = this.LearnedInTheOccult
             };
         }
 

@@ -8,7 +8,7 @@ namespace ConquestController.Models.Input
 
         string SpellSchools { get; set; } //mapped to Schools, comes from input file
         List<string> Schools { get; set; }
-        List<SpellModel> Spells { get; set; }
+        List<ISpell> Spells { get; set; }
         int MaxSpells { get; set; }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using ConquestController.Analysis.Components;
 using ConquestController.Data;
@@ -18,6 +16,7 @@ namespace ConquestBuilder.ViewModels
         private readonly IEnumerable<IBaseOption> _magicItems;
         private readonly IEnumerable<ITieredBaseOption> _retinues;
         private readonly IEnumerable<IPerkOption> _perks;
+        private readonly IEnumerable<ISpell> _spells;
         private readonly Guid _characterID;
 
         /// <summary>
@@ -56,13 +55,19 @@ namespace ConquestBuilder.ViewModels
         /// <param name="element">the element having the options applied to it</param>
         /// <param name="magicItems">Magic Items to display</param>
         /// <param name="retinues">Filtered retinues by the faction</param>
-        public OptionViewModel(IConquestGamePiece element, IEnumerable<IBaseOption> magicItems, IEnumerable<ITieredBaseOption> retinues, IEnumerable<IPerkOption> perks, Guid characterID)
+        public OptionViewModel(IConquestGamePiece element, 
+            IEnumerable<IBaseOption> magicItems, 
+            IEnumerable<ITieredBaseOption> retinues, 
+            IEnumerable<IPerkOption> perks, 
+            IEnumerable<ISpell> spells,
+            Guid characterID)
         {
             Element = element;
             _magicItems = magicItems;
             _retinues = retinues;
             _characterID = characterID;
             _perks = perks;
+            _spells = spells;
 
             ActiveMasteryState = new List<Tuple<IMastery,bool>>();
             _retinueRestrictionDictionary = new Dictionary<string, ITieredBaseOption>();
@@ -83,6 +88,7 @@ namespace ConquestBuilder.ViewModels
                 AddMasteries(element);
                 AddPerks(element);
                 AddSpells(element);
+                AddLearnedInTheOccult(element);
             }
             
             SetInitialCheckedState();
@@ -121,7 +127,8 @@ namespace ConquestBuilder.ViewModels
                 new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveMasteries, OptionCategory.Mastery),
                 new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveRetinues, OptionCategory.Retinue),
                 new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActivePerks, OptionCategory.Perk),
-                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveSpells, OptionCategory.Spell)
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveSpells, OptionCategory.Spell),
+                new Tuple<IEnumerable<IBaseOption>, OptionCategory>(element.ActiveSpells, OptionCategory.LearnedInOccultSpell)
             };
 
             foreach (var list in lists)
@@ -411,6 +418,63 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
+        /// <summary>
+        /// Checks to see if any active masteries allow for adding bonus spells and adds them as needed
+        /// </summary>
+        /// <param name="element"></param>
+        private void AddLearnedInTheOccult(IConquestCharacter element)
+        {
+            if (!(element is IConquestSpellcaster caster)) return;
+
+            //for right now there is only one retinue that can unlock perks and its just a static set of perks
+            //it allows for some factions to add a set of options to choose from.  These will be marked in the option data as the name of the retinue in the Perk property (or if none, it stays blank)
+            var learnedInOccultActive = Options.Where(p => p.Category == OptionCategory.Mastery && p.IsChecked)
+                .Select(option => (IMastery)option.Model)
+                .Any(opt => opt.Tag.Split("|").Contains("AnyFactionSpell"));
+
+            if (!learnedInOccultActive) return;
+
+            if (Options.Any(p => p.Category == OptionCategory.LearnedInOccultSpell)) return;  //we already added perks we aren't doing it again
+
+            foreach (var spell in _spells.Where(p=>p.Faction == element.Faction))
+            {
+                var spellCopy = (ISpell)spell.Clone();
+
+                //if this isn't already part of the character's spells, add it - otherwise move on
+                var found = caster.Spells.Any(existing => spellCopy.Name == existing.Name && spellCopy.Category == existing.Category);
+
+                if (found) continue;
+
+                var option = new ListViewOption()
+                {
+                    Category = OptionCategory.LearnedInOccultSpell,
+                    Model = spellCopy,
+                    Text = $"[{spellCopy.Category}] {spellCopy.Name} - {spellCopy.Points} pts",
+                    CheckChanged = ListViewItem_CheckChanged,
+                    OptionGrouping = $"Learned in the Occult",
+                    GroupCanSelectAll = false,
+                    MaxAllowableSelectableForGroup = 1,
+                    Tooltip = spellCopy.Notes,
+                    TieredSelection = false
+                };
+                Options.Add(option);
+            }
+        }
+
+        private void RemoveLearnedInTheOccult(IConquestCharacter element)
+        {
+            var eligible = element.ActiveSpells.Cast<ISpell>().Where(p => p.LearnedInTheOccult);
+            foreach (var spell in eligible)
+            {
+                element.ActiveSpells.Remove(spell);
+            }
+
+            var clearList = Options.Where(p => p.Category == OptionCategory.LearnedInOccultSpell).ToList();
+
+            foreach (var option in clearList)
+                Options.Remove(option);
+        }
+
         private int GetNextSpammedElementPoints(IMastery mastery)
         {
             int elements = 0;
@@ -621,6 +685,9 @@ namespace ConquestBuilder.ViewModels
 
                 ActiveMasteryState.Add(new Tuple<IMastery, bool>(mastery, true));
             }
+
+            if (mastery.Tag.Split("|").Contains("AnyFactionSpell"))
+                AddLearnedInTheOccult((IConquestCharacter)Element);
         }
 
         /// <summary>
@@ -642,6 +709,9 @@ namespace ConquestBuilder.ViewModels
 
                 ActiveMasteryState.Add(new Tuple<IMastery, bool>(mastery, false));
             }
+
+            if (mastery.Tag.Split("|").Contains("AnyFactionSpell"))
+                RemoveLearnedInTheOccult((IConquestCharacter)Element);
         }
 
         private void ActivateSubservientTiers(ListViewOption element)

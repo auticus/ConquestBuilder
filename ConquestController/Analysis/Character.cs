@@ -62,7 +62,7 @@ namespace ConquestController.Analysis
         /// <returns></returns>
         public static IEnumerable<IConquestCharacter> GetAllCharacters(string inputFilePath, 
             string inputOptionsFilePath, 
-            IEnumerable<SpellModel> spells, 
+            IEnumerable<ISpell> spells, 
             IEnumerable<IBaseOption> masteries,
             IEnumerable<ITieredBaseOption> retinues,
             IEnumerable<IPerkOption> items,
@@ -77,7 +77,7 @@ namespace ConquestController.Analysis
             return characters;
         }
         private static void AssignCharacterExtras(IEnumerable<IConquestCharacter> characters, 
-            IEnumerable<SpellModel> spells, 
+            IEnumerable<ISpell> spells, 
             IEnumerable<IBaseOption> masteries,
             IEnumerable<ITieredBaseOption> retinues,
             IEnumerable<IPerkOption> items,
@@ -150,7 +150,7 @@ namespace ConquestController.Analysis
             return retinues.Where(p => p.Faction == "ALL" || p.Faction == faction).Select(p => p.Category).Distinct().ToList();
         }
 
-        private static void AssignSpells(IConquestSpellcaster caster, List<SpellModel> spellModels)
+        private static void AssignSpells(IConquestSpellcaster caster, List<ISpell> spellModels)
         {
             //assign spell schools and individual spells to the character
             DataRepository.AssignDelimitedPropertyToList(caster.Schools, caster.SpellSchools);
