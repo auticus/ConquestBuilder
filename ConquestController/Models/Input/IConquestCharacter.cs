@@ -31,7 +31,7 @@ namespace ConquestController.Models.Input
         ObservableCollection<IMastery> MasteryChoices { get; set; }
         ObservableCollection<IMastery> ActiveMasteries { get; }
         ObservableCollection<ITieredBaseOption> ActiveRetinues { get; }
-        ObservableCollection<IOption> ActivePerks { get; }
+        ObservableCollection<IPerkOption> ActivePerks { get; }
 
         /// <summary>
         /// Data input field

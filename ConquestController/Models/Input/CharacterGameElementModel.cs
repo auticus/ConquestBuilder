@@ -47,7 +47,7 @@ namespace ConquestController.Models.Input
             Spells = new List<SpellModel>();
             MasteryChoices = new ObservableCollection<IMastery>();
             ActiveRetinues = new ObservableCollection<ITieredBaseOption>();
-            ActivePerks = new ObservableCollection<IOption>();
+            ActivePerks = new ObservableCollection<IPerkOption>();
             RetinueMetaData = new RetinueAvailability();
 
             MaxAllowableItems = 1;

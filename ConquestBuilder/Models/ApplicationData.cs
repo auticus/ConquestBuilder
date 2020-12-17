@@ -29,8 +29,8 @@ namespace ConquestBuilder.Models
         public IList<SpellModel> Spells { get; private set; }
         public IList<ITieredBaseOption> Retinues { get; private set; }
         public IList<IMastery> Masteries { get; private set; }
-        public IList<IBaseOption> Items { get; private set; }
-        public IList<IOption> Perks { get; private set; }
+        public IList<IPerkOption> Items { get; private set; }
+        public IList<IPerkOption> Perks { get; private set; }
         
         public IList<IConquestAnalysisOutput> UnitOutput { get; private set; }
         public IList<IConquestAnalysisOutput> CharacterOutput { get; private set; }
@@ -119,10 +119,10 @@ namespace ConquestBuilder.Models
                 Spells = DataRepository.GetInputFromFileToList<SpellModel>(_appPath + "\\" + _spellFile).Cast<SpellModel>().ToList(); //todo interface this
                 Retinues = DataRepository.GetInputFromFileToList<RetinueModel>(_appPath + "\\" + _retinueFile).Cast<ITieredBaseOption>().ToList();
                 Masteries = DataRepository.GetInputFromFileToList<MasteryModel>(_appPath + "\\" + _masteriesFile).Cast<IMastery>().ToList();
-                Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile).Cast<IBaseOption>().ToList();
+                Items = DataRepository.GetInputFromFileToList<ItemModel>(_appPath + "\\" + _itemsFile).Cast<IPerkOption>().ToList();
 
-                IList<IOption> perks;
-                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries, Retinues, out perks).ToList();
+                IList<IPerkOption> perks;
+                Characters = Character.GetAllCharacters(characterInputFilePath, characterOptionFilePath, Spells, Masteries, Retinues, Items, out perks).ToList();
 
                 Perks = perks;
             }

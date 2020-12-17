@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents magic items, heirlooms, etc
     /// </summary>
-    public class ItemModel : IBaseOption
+    public class ItemModel : IPerkOption
     {
         public string Name { get; set; }
         public string Tag { get; set; }
@@ -15,6 +15,7 @@
         public string Category { get; set; }
         public string Notes { get; set; }
         public string Restrictions { get; set; }
+        public string Perk { get; set; }
 
         /// <summary>
         /// Returns an ItemModel

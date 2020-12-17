@@ -65,13 +65,14 @@ namespace ConquestController.Analysis
             IEnumerable<SpellModel> spells, 
             IEnumerable<IBaseOption> masteries,
             IEnumerable<ITieredBaseOption> retinues,
-            out IList<IOption> perks)
+            IEnumerable<IPerkOption> items,
+            out IList<IPerkOption> perks)
         {
             //assign characters
             var characters = DataRepository.GetInputFromFileToList<CharacterGameElementModel>(inputFilePath);
 
             //assign mainstay and restricted choices
-            AssignCharacterExtras(characters, spells, masteries, retinues, inputOptionsFilePath, out perks);
+            AssignCharacterExtras(characters, spells, masteries, retinues, items, inputOptionsFilePath, out perks);
 
             return characters;
         }
@@ -79,12 +80,15 @@ namespace ConquestController.Analysis
             IEnumerable<SpellModel> spells, 
             IEnumerable<IBaseOption> masteries,
             IEnumerable<ITieredBaseOption> retinues,
+            IEnumerable<IPerkOption> items,
             string inputOptionsFilePath,
-            out IList<IOption> perks)
+            out IList<IPerkOption> perks)
         {
             var spellModels = spells.ToList();
             var factionRetinues = new Dictionary<string, IEnumerable<string>>();
-            perks = new List<IOption>();
+            perks = new List<IPerkOption>();
+
+            var factionsProcessed = new List<string>();
 
             foreach (var character in characters)
             {
@@ -93,19 +97,19 @@ namespace ConquestController.Analysis
                 DataRepository.AssignDelimitedPropertyToList(character.RestrictedChoices as IList<string>, character.Restricted);
                 DataRepository.AssignUnitOptionsToModelsFromFile(new List<IConquestGamePiece>(){character}, inputOptionsFilePath);
                 
-                //harvest out the perks from the options to put into the perks collection
-                foreach (var option in character.Options)
-                {
-                    if (option is IOption opt && !string.IsNullOrEmpty(opt.Perk))
-                    {
-                        perks.Add(opt);
-                    }
-                }
-
                 //assign spell schools and individual spells to the character
                 if (character is IConquestSpellcaster spellcaster)
                 {
                     AssignSpells(spellcaster, spellModels);
+                }
+
+                //harvest out the perks from the options to put into the perks collection
+                foreach (var option in character.Options)
+                {
+                    if (option is IPerkOption opt && !string.IsNullOrEmpty(opt.Perk))
+                    {
+                        perks.Add(opt);
+                    }
                 }
 
                 //masteries chosen by retinues cannot be set here as there is no way of knowing what retinue the character has at this point
@@ -129,6 +133,15 @@ namespace ConquestController.Analysis
                 //need array of categories and the array of data (Tactical|Combat|Magic)
                 //IMPORTANT if that order gets changed, your data will be messed up... the categories should always be Tactical|Combat|Magic|Misc faction specific!!!
                 DataRepository.AssignRetinueAvailabilities(character.RetinueMetaData, factionRetinues[character.Faction].ToArray(),character.Retinue.Split("|"));
+
+                //one time faction processing here
+                if (!factionsProcessed.Any(p => p == character.Faction)) //no resharper I'm not going to refactor this to say All != 
+                {
+                    foreach (var item in items.Where(p => p.Faction == character.Faction && !string.IsNullOrEmpty(p.Perk)))
+                        perks.Add(item);
+
+                    factionsProcessed.Add(character.Faction);
+                }
             }
         }
 

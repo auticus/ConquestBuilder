@@ -15,7 +15,7 @@ namespace ConquestBuilder.ViewModels
         private IConquestGamePiece _element;
         private readonly IEnumerable<IBaseOption> _magicItems;
         private readonly IEnumerable<ITieredBaseOption> _retinues;
-        private readonly IEnumerable<IOption> _perks;
+        private readonly IEnumerable<IPerkOption> _perks;
         private readonly Guid _characterID;
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace ConquestBuilder.ViewModels
         /// <param name="element">the element having the options applied to it</param>
         /// <param name="magicItems">Magic Items to display</param>
         /// <param name="retinues">Filtered retinues by the faction</param>
-        public OptionViewModel(IConquestGamePiece element, IEnumerable<IBaseOption> magicItems, IEnumerable<ITieredBaseOption> retinues, IEnumerable<IOption> perks, Guid characterID)
+        public OptionViewModel(IConquestGamePiece element, IEnumerable<IBaseOption> magicItems, IEnumerable<ITieredBaseOption> retinues, IEnumerable<IPerkOption> perks, Guid characterID)
         {
             Element = element;
             _magicItems = magicItems;
@@ -157,7 +157,7 @@ namespace ConquestBuilder.ViewModels
             {
                 foreach (var lvo in Options.Where(p => p.Category == OptionCategory.Perk))
                 {
-                    var lvOption = (IOption)lvo.Model;
+                    var lvOption = (IPerkOption)lvo.Model;
                     if (perk.Name == lvOption.Name)
                     {
                         lvo.IsChecked = true;
@@ -172,7 +172,7 @@ namespace ConquestBuilder.ViewModels
             AddHardCodedOptions();
 
             //the 0 element or grouping is multi select, the rest of the groupings are single-select
-            foreach (var item in Element.Options.Cast<IOption>())
+            foreach (var item in Element.Options.Cast<IPerkOption>())
             {
                 var option = new ListViewOption()
                 {
@@ -360,6 +360,7 @@ namespace ConquestBuilder.ViewModels
         private void AddPerks(IConquestCharacter element)
         {
             //for right now there is only one retinue that can unlock perks and its just a static set of perks
+            //it allows for some factions to add a set of options to choose from.  These will be marked in the option data as the name of the retinue in the Perk property (or if none, it stays blank)
             var perkRetinueActive = Options.Where(p => p.Category == OptionCategory.Retinue && p.IsChecked)
                 .Select(option => (ITieredBaseOption) option.Model)
                 .Any(opt => opt.Tag.Split("|").Contains("Perk"));
@@ -370,7 +371,7 @@ namespace ConquestBuilder.ViewModels
 
             foreach (var perk in _perks.Where(p => p.Faction == element.Faction))
             {
-                var perkCopy = (IOption)perk.Clone();
+                var perkCopy = (IPerkOption)perk.Clone();
 
                 var option = new ListViewOption()
                 {

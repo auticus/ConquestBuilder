@@ -934,7 +934,7 @@ namespace ConquestBuilder.ViewModels
                         element.ActiveRetinues.Add((ITieredBaseOption)option.Model);
                         break;
                     case OptionCategory.Perk:
-                        element.ActivePerks.Add((IOption)option.Model);
+                        element.ActivePerks.Add((IPerkOption)option.Model);
                         break;
                     default:
                         throw new InvalidOperationException($"The category '{option.Category}' was not accounted for in ArmyBuilderViewModel::SynchronizeElement");

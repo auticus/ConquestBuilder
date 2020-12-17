@@ -14,7 +14,7 @@ namespace ConquestController.Models.Input
             ActiveItems = new ObservableCollection<IBaseOption>();
             ActiveMasteries = new ObservableCollection<IMastery>();
             ActiveRetinues = new ObservableCollection<ITieredBaseOption>();
-            ActivePerks = new ObservableCollection<IOption>();
+            ActivePerks = new ObservableCollection<IPerkOption>();
             ID = Guid.NewGuid();
 
             ActiveOptions.CollectionChanged += (sender, args) =>
@@ -152,7 +152,7 @@ namespace ConquestController.Models.Input
         public ObservableCollection<IMastery> ActiveMasteries { get; set; }
 
         public ObservableCollection<ITieredBaseOption> ActiveRetinues { get; set; }
-        public ObservableCollection<IOption> ActivePerks { get; set; }
+        public ObservableCollection<IPerkOption> ActivePerks { get; set; }
 
         public int MaxAllowableItems { get; set; }
         public int MaxAllowableMasteries { get; set; }
