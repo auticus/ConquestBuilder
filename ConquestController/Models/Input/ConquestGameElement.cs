@@ -52,7 +52,15 @@ namespace ConquestController.Models.Input
 
         public Guid ID { get; set; }
         public string Faction { get; set; }
+
+        /// <summary>
+        /// The stock rule name for this element 
+        /// </summary>
         public string Unit { get; set; }
+
+        /// <summary>
+        /// The user defined name for this element
+        /// </summary>
         public string UserName { get; set; }
         public string Weight { get; set; }
         public virtual string ModelType { get; set; }

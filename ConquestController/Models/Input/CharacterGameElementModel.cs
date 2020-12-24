@@ -127,7 +127,7 @@ namespace ConquestController.Models.Input
                 Notes = Notes,
                 IsTorrential = IsTorrential,
                 ModelType = ModelType,
-                UserName = Unit,
+                UserName = this.Unit,
                 MasteryChoices = MasteryChoices.CopyCollection(),
                 ActiveRetinues = ActiveRetinues.CopyCollection(),
                 Spells = Spells.CopyList(),

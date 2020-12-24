@@ -2,7 +2,7 @@ Faction,Restrictions,Name,Category,Points,Tag,Notes
 ALL,Light|Medium,Disciplined,Tactical,40,[],Once per game the character and any regiment they have joined may perform a clean withdrawal without rolling a die or suffering any wounds
 ALL,Tier3TacticalRetinue,Knowledged,Tactical,35,[],The character may replace their supremacy ability with any other supremacy ability in the list
 ALL,[],Calm Strategist,Tactical,25,[],Once per game the character may refuse a duel without suffering any penalty
-ALL,Tier2TacticalRetinue,Eccentric,Tactical,20,AllRestricted,The character must select 2 Core Regiments and only 1 Restricted regiment but they may select any regiment in the list as their Restricted option
+ALL,Tier2TacticalRetinue,Eccentric,Tactical,20,Eccentric,The character must select 2 Core Regiments and only 1 Restricted regiment but they may select any regiment in the list as their Restricted option
 ALL,[],Long Lineage,Tactical,15,[],May take an extra heirloom/trove find/relic/mutation
 ALL,[],Expose Weakness,Combat,20,[],At the beginning of a duel action where this character is involved - choose one of your opponents items or retinue bonuses or masteries and it has no effect during this duel
 ALL,[],Marksmanship,Combat,15,[],The character gains Barrage +2.  If they do not have barrage they gain Barrage(2)(24 inches)

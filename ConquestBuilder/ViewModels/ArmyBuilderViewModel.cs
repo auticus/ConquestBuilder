@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -26,6 +27,7 @@ namespace ConquestBuilder.ViewModels
         private const string THUMB_PATH = "..\\Images\\Thumbs\\";
         private LastItemSelected _lastItemSelected = LastItemSelected.Character; //for logic where we need to act on the last selected item 
         private const int MAX_NUMBER_REGIMENTS_ALLOWED = 4;
+        private Dictionary<IConquestCharacter, IEnumerable<string>> _originalCharacterRestrictedTemplate; //for loading the original restricted templates if they change
 
         private Window _view; //the window
         
@@ -418,6 +420,7 @@ namespace ConquestBuilder.ViewModels
         {
             _data = data;
             _roster = new Roster();
+            _originalCharacterRestrictedTemplate = new Dictionary<IConquestCharacter, IEnumerable<string>>();
             InitializeCommands();
         }
 
@@ -500,13 +503,97 @@ namespace ConquestBuilder.ViewModels
         {
             if (!(tag is UnitButton unit)) throw new InvalidOperationException("Item passed back was not the expected type");
 
-            var character = unit.Tag as CharacterGameElementModel;
+            var character = unit.Tag as IConquestCharacter;
             SelectedPortraitCharacter = character ?? throw new InvalidOperationException("Item tag was not correct type");
             LoadUnits(MainstayButtons, character.MainstayChoices, "MainstayButtons");
-            LoadUnits(RestrictedButtons, character.RestrictedChoices, "RestrictedButtons");
+            LoadRestrictedUnits(character);
 
             LoadStatGrid(SelectedPortraitCharacter);
             _lastItemSelected = LastItemSelected.Character;
+        }
+
+        /// <summary>
+        /// Loads the characters restrictions or all restrictions if the character contains a mastery that unlocks all restrictions across the faction
+        /// </summary>
+        /// <param name="character"></param>
+        private void LoadRestrictedUnits(IConquestCharacter character)
+        {
+            var restrictedChoices = GetAvailableRestrictedRegiments(character);
+
+            //reconcile the character's choices
+            character.RestrictedChoices = restrictedChoices;
+            LoadUnits(RestrictedButtons, restrictedChoices, "RestrictedButtons");
+        }
+
+        private IEnumerable<string> GetAvailableRestrictedRegiments(IConquestCharacter character)
+        {
+            //Eccentric is the tag that means they get access to all restricted regiments
+            if (character.ActiveMasteries.Any(mastery => mastery.Tag.Split("|").Any(p => p == "Eccentric")))
+            {
+                var restrictedChoices = new List<string>();
+                restrictedChoices.AddRange(character.RestrictedChoices);
+
+                //if this has not been templated yet, template it so it can be restored later
+                if (_originalCharacterRestrictedTemplate.ContainsKey(character) == false)
+                {
+                    var copyList = new List<string>();
+                    copyList.AddRange(character.RestrictedChoices);
+                    _originalCharacterRestrictedTemplate.Add(character, copyList);
+                }
+
+                foreach (var dude in _data.Characters.Where(ch => ch.Faction == Filter))
+                {
+                    foreach (var choice in dude.RestrictedChoices)
+                    {
+                        if (restrictedChoices.Any(p=>p == choice) == false)
+                            restrictedChoices.Add(choice);
+                    }
+                }
+
+                ReconcileRestrictedChoicesForCharacter(character, restrictedChoices);
+                return restrictedChoices;
+            }
+            else
+            {
+                //reset the character's template to the default if necessary
+                if (_originalCharacterRestrictedTemplate.ContainsKey(character)) //if this is there that means we modified it, otherwise it was never modified
+                {
+                    var template = _originalCharacterRestrictedTemplate[character];
+                    var restrictedChoices = character.RestrictedChoices as List<string>;
+                    restrictedChoices?.Clear();
+                    restrictedChoices?.AddRange(template);
+                }
+            }
+
+            ReconcileRestrictedChoicesForCharacter(character, character.RestrictedChoices);
+            return character.RestrictedChoices;
+        }
+
+        /// <summary>
+        /// Remove any restricted choices from the character that are no longer valid
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="availableRestrictedChoices"></param>
+        private void ReconcileRestrictedChoicesForCharacter(IConquestCharacter character, IEnumerable<string> availableRestrictedChoices)
+        {
+            var rosterCharacter = Roster.RosterCharacters.FirstOrDefault(p => p.Character.ID == character.ID);
+            if (rosterCharacter == null) return;
+
+            var removeList = new List<IConquestGamePiece>();
+
+            foreach (var unit in rosterCharacter.RestrictedRegiments)
+            {
+                if (availableRestrictedChoices.Any(p => p == unit.Unit) == false)
+                {
+                    removeList.Add(unit);
+                }
+            }
+
+            //if the character has any actual regiments selected, remove them if applicable
+            foreach (var unit in removeList)
+            {
+                rosterCharacter.RestrictedRegiments.Remove(unit);
+            }
         }
 
         private void OnMainstaySelected(object tag)
@@ -784,6 +871,12 @@ namespace ConquestBuilder.ViewModels
             _lastItemSelected = LastItemSelected.Regiment;
         }
 
+        /// <summary>
+        /// Loads the respective units that are available to select into their button columns
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="units"></param>
+        /// <param name="collectionName"></param>
         private void LoadUnits(ObservableCollection<UnitButton> collection, IEnumerable<string> units, string collectionName)
         {
             collection.Clear();
@@ -874,8 +967,14 @@ namespace ConquestBuilder.ViewModels
                 foreach (var mastery in optionVM.ActiveMasteryState.Where(p => p.Item2 == false))
                     HandleMasteryDeletion(mastery.Item1);
 
+                //now readjust the restricted choices because some options may have opened them up more (or closed them)
+                if (SelectedElement is IConquestCharacter ele)
+                    LoadRestrictedUnits(ele);
+
                 //redraw the tree
                 RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs(){RosterElement = SelectedRosterCharacter, SelectedElementID = selectedGuid});
+
+                //the very last thing should be refreshing points
                 Roster.RefreshPoints();
             }
         }
@@ -889,9 +988,9 @@ namespace ConquestBuilder.ViewModels
         {
             element.ActiveOptions.Clear();
 
-            if (element is IConquestCharacter)
+            if (element is IConquestCharacter character)
             {
-                SynchronizeCharacterElement(vm, (IConquestCharacter)element);
+                SynchronizeCharacterElement(vm, character);
                 return;
             }
             
