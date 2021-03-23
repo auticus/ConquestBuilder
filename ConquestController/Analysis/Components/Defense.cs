@@ -27,7 +27,18 @@ namespace ConquestController.Analysis.Components
             if (model.D_Volley) //+1 defense vs volleys, so break the defense buffed in half and add that to the base defense
                 return CalculateDefenseBuffedForHalfAttacks(model, defenseModificationValues, standCount, noShields);
 
-            return CalculateDefense(model, defenseModificationValues, standCount, noShields);
+            var defense = CalculateDefense(model, defenseModificationValues, standCount, noShields);
+
+            //regeneration is very tricky.  If you throw high quality attacks at the unit and a lot of them they will go down quick, but if you throw not very many attacks
+            //they can hang out literally all game.  This is hard to nail a solid value down with.
+            //not to mention deadly shot/blow will also be their bane 
+            if (model.IsRegen == 1)
+            {
+                defense[0] *= 1.5;
+                defense[1] *= 1.5;
+            }
+
+            return defense;
         }
 
         /// <summary>

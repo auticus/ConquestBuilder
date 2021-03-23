@@ -18,6 +18,7 @@ namespace ConquestController.Analysis.Components
         public static double CalculateOutput(IConquestGamePiece model, List<int> defenseValues, bool supportOnly = false, bool applyFullDeadly = false)
         {
             var shotsFired = supportOnly ? 1 : model.Models * model.Barrage;
+            var preciseHits = shotsFired * Probabilities[1]; //1 being the 1 on the D6 or 16.7%
 
             var shotsHitProbability = Probabilities[model.Volley];
             var shotsHitProbabilityAim = Probabilities[model.Volley + 1];
@@ -37,6 +38,7 @@ namespace ConquestController.Analysis.Components
                 if (model.Reroll6_Volley)
                 {
                     var rerollableHits = shotsFired * Probabilities[1]; //1 in 6 of the overall shots fired would be a six and can be rerolled
+                    preciseHits += rerollableHits * Probabilities[1]; //now add those to the preciseHits since some of those could be 1s as well
 
                     var rerolledHits = rerollableHits * shotsHitProbability;
                     var rerolledAimedHits = rerollableHits * shotsHitProbabilityAim;
@@ -56,9 +58,11 @@ namespace ConquestController.Analysis.Components
 
                     hits += (misses * shotsHitProbability);
                     aimedHits += (aimedMisses * shotsHitProbabilityAim);
+
+                    preciseHits += misses * shotsHitProbability * Probabilities[1]; //now add those juicy sweet re rolls to preciseHits because some of those can be 1s
                 }
 
-                if (model.IsTorrential)
+                if (model.IsTorrential == 1)
                 {
                     //Torrential means for every hit, the unit gets an additional dice to try and hit (which does not generate another hit regardless)
                     //it stands to reason that if you have 50% hits that 50% of those would be hits with torrential
@@ -71,15 +75,19 @@ namespace ConquestController.Analysis.Components
 
                     hits += torrentialHits;
                     aimedHits += aimedTorrentialHits;
+                    preciseHits += hits * Probabilities[1]; //if i hit 3.33 out of 10 times, i'm rolling 3.33 more dice so 16.7% of those are 1s, so add that to my precise hits
                 }
 
-                var obscureDivider = model.NoObscure ? 1.0 : 2.0;
+                var obscureDivider = model.NoRangeObscure == 1 ? 1.5 : 2.0; //we cut the obscurement penalty down by half in this case
+                obscureDivider = model.NoObscure ? 1.0 : obscureDivider; //this model can never be obscured so we eliminate it altogether
 
-                rangedOutput.ObscureHits = CalculateActualRangedHits((hits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
-                rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
+                if (model.IsPrecise == 0) preciseHits = 0;
 
-                rangedOutput.FullHits = CalculateActualRangedHits(hits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
-                rangedOutput.FullAimedHits = CalculateActualRangedHits(aimedHits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly);
+                rangedOutput.ObscureHits = CalculateActualRangedHits((hits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+
+                rangedOutput.FullHits = CalculateActualRangedHits(hits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                rangedOutput.FullAimedHits = CalculateActualRangedHits(aimedHits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
 
                 outputsByDefense.Add(rangedOutput);
 
@@ -93,16 +101,36 @@ namespace ConquestController.Analysis.Components
             return score;
         }
 
-        private static double CalculateActualRangedHits(double hits, double defenseProbability, bool isDeadly, bool applyFullDeadly)
+        private static double CalculateActualRangedHits(double hits, double defenseProbability, bool isDeadly, bool applyFullDeadly, double preciseHits)
         {
             var deadlyDmg = 1.0d;
             if (isDeadly && applyFullDeadly) deadlyDmg = DeadlyShotBladesDmg;
             if (isDeadly && !applyFullDeadly) deadlyDmg = HalvedDeadlyShotBladesDmg;
 
-            var returnVal = hits - (hits * defenseProbability);
+            double returnVal = 0;
+            returnVal = preciseHits > 0 ? CalculatePreciseHits(hits, preciseHits, defenseProbability) 
+                                    : CalculateHits(hits, defenseProbability);
+
             if (isDeadly) returnVal *= deadlyDmg;
 
             return returnVal;
+        }
+
+        private static double CalculateHits(double hits, double defenseProbability)
+        {
+            return hits - (hits * defenseProbability);
+        }
+
+        private static double CalculatePreciseHits(double hits, double preciseHits, double defenseProbability)
+        {
+            //Precise hits - a roll of a 1 is Defense of 0 or a probability of 0 (so preciseHits are all of the hits that were a "1")
+            //so 0.167 of the total attacks came in with a defenseProbability of 0
+            
+            //scenario - 10 shots volley 2 vs defense 2.  Expect hits = 3.33, preciseHits = 1.67, and defenseProbability = 0.33
+            //return value would be 2.7822 (instead of the 2.2311 without precise shot)
+
+            var savableHits = hits - preciseHits;
+            return savableHits - (savableHits * defenseProbability) + preciseHits;
         }
 
         private static double ApplyRangeModifiersToScore(double score, int range, bool isArcOfFire)

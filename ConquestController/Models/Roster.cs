@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using ConquestController.Json;
+using Newtonsoft.Json;
 
 namespace ConquestController.Models
 {
+    
     public class Roster : BaseViewModel
     {
         /// <summary>
@@ -14,6 +19,7 @@ namespace ConquestController.Models
         public static Dictionary<string, List<Guid>> MasterySpam { get; private set; }
 
         private Guid _id;
+    
         public Guid ID
         {
             get => _id;
@@ -25,6 +31,7 @@ namespace ConquestController.Models
         }
 
         private string _rosterName;
+    
         public string RosterName
         {
             get => _rosterName;
@@ -35,8 +42,20 @@ namespace ConquestController.Models
             }
         }
 
-        private int _rosterLimit;
+        private string _faction;
+    
+        public string RosterFaction
+        {
+            get => _faction;
+            set
+            {
+                _faction = value;
+                NotifyPropertyChanged("RosterFaction");
+            }
+        }
 
+        private int _rosterLimit;
+        
         public int RosterLimit
         {
             get => _rosterLimit;
@@ -48,6 +67,7 @@ namespace ConquestController.Models
         }
 
         private string _totalPoints;
+        
         public string TotalPoints
         {
             get => _totalPoints;
@@ -58,6 +78,7 @@ namespace ConquestController.Models
             }
         }
 
+        
         public ObservableCollection<RosterCharacter> RosterCharacters { get; }
 
         public Roster()
@@ -73,6 +94,32 @@ namespace ConquestController.Models
         public void RefreshPoints()
         {
             PointsChanged(this, EventArgs.Empty);
+        }
+
+        public void Save(string filePath)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore, 
+                ContractResolver = new IgnoreEventHandlerContractResolver(),
+                TypeNameHandling = TypeNameHandling.Auto //will save the interface/abstract type so that it can deserialize properly
+            };
+            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
+            Debug.WriteLine(json);
+            File.WriteAllText(filePath, json);
+        }
+
+        public static Roster Load(string filePath)
+        {
+            var json = File.ReadAllText(filePath);
+            Debug.WriteLine(json);
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+            };
+
+            var roster = JsonConvert.DeserializeObject<Roster>(json, settings);
+            return roster;
         }
 
         private void RosterCharacters_OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

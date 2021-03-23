@@ -28,7 +28,11 @@ namespace ConquestController.Models.Input
 
         bool Reroll6_Volley { get; set; }
         bool Reroll6_Defense { get; set; }
-        bool NoObscure { get; set; }
+        
+        /// <summary>
+        /// From options - means that never take an obscure penalty
+        /// </summary>
+        bool NoObscure { get; set; } 
         int IsBlessed { get; set; }
         int IsArcOfFire { get; set; }
         int IsSupport { get; set; }
@@ -45,7 +49,9 @@ namespace ConquestController.Models.Input
         int Decay { get; set; }
         int IsFearless { get; set; }
         int IsFearsome { get; set; }
-        bool IsTorrential { get; set; }
+        int IsTorrential { get; set; }
+        int IsRegen { get; set; }
+        int IsPrecise { get; set; }
         bool DoubleAttack { get; set; }
         bool BuffDefenseOrEvasion { get; set; }
         bool D_Volley { get; set; }
@@ -54,7 +60,11 @@ namespace ConquestController.Models.Input
         bool IsTorrential_Clash { get; set; }
         bool KissFarewell { get; set; }
         bool Reroll_ImpactHits { get; set; }
-        
+        int IsSmite { get; set; }
+        /// <summary>
+        /// Similar to NoObscure - this means that no obscure from RANGE can be applied
+        /// </summary>
+        int NoRangeObscure { get; set; }
         bool CanCastSpells();
         bool CanCalculateDefense();
     }

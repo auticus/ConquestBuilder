@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Runtime.Serialization;
 using ConquestController.Models.Input;
+using Newtonsoft.Json;
 
 namespace ConquestController.Models
 {
     public class RosterCharacter : BaseViewModel, IRosterCharacter
     {
-        public EventHandler PointsChanged { get; set; }
+        [JsonIgnore]
+        public EventHandler PointsChanged;
 
         private IConquestCharacter _character;
+
         public IConquestCharacter Character
         {
             get => _character;
@@ -20,9 +24,12 @@ namespace ConquestController.Models
                 PointsChanged?.Invoke(this, EventArgs.Empty);
             }
         }
+
         public ObservableCollection<IConquestGamePiece> MainstayRegiments { get; }
+
         public ObservableCollection<IConquestGamePiece> RestrictedRegiments { get; }
 
+        [JsonIgnore]
         public string CharacterHeader => $"{Character} - {Character.TotalPoints}";
 
         public RosterCharacter(IConquestBaseGameElement character)
@@ -60,7 +67,6 @@ namespace ConquestController.Models
 
         private void Element_PointsChanged(object sender, EventArgs e)
         {
-            //todo: the various input objects need to fire this event off whenever their points change
             PointsChanged?.Invoke(this, EventArgs.Empty);
         }
     }

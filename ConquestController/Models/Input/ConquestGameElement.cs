@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace ConquestController.Models.Input
 {
@@ -135,15 +136,19 @@ namespace ConquestController.Models.Input
         public bool Reroll6_Volley { get; set; } //reroll 6s on volley
         public bool Reroll6_Defense { get; set; } //reroll 6s on defense
         public bool Reroll_ImpactHits { get; set; }
-        public bool IsTorrential { get; set; } //gain the Torrential special rule
+        public int IsTorrential { get; set; } //gain the Torrential special rule
+        public int IsRegen { get; set; } //gain regeneration
+        public int IsPrecise { get; set; } //gain Precise Shot special rule
         public bool IsTorrential_Clash { get; set; } //gains torrential only with clash
         public bool KissFarewell { get; set; } //the item. Gives Barrage 3 24" Deadly Shot.  If already have Barrage, adds +3 Barrage value and Deadly Shot
-
+        public int NoRangeObscure { get; set; } //do not take the range obscure penalty
+        public int IsSmite { get; set; } //melee gets smite attacks
         /// <summary>
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes
         /// </summary>
         public int AnalysisOnly { get; set; }
 
+        [JsonIgnore]
         public int TotalPoints =>
             //take all of the total
             Points + ActiveOptions.Sum(p => p.Points)

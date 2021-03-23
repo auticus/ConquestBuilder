@@ -286,6 +286,7 @@
                     <Label Content="Roster UserName" Style="{StaticResource defaultLabel}"/>
                     <TextBox Text="{Binding Roster.RosterName}" Margin="5,0,0,0" Width="200" TextAlignment="Center" VerticalAlignment="Center"/>
                     <Label Content="{Binding Roster.TotalPoints}" Margin="10,0,0,0" Style="{StaticResource defaultLabel}"/>
+                    <Button Command="{Binding SaveRoster}" Margin="20,0,0,0" Content="Save" FontSize="18" FontWeight="Bold" Height="32" Width="50"/>
                 </WrapPanel>
 
                 <!--Row 2-->

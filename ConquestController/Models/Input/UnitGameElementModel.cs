@@ -88,6 +88,8 @@ namespace ConquestController.Models.Input
                 Decay = Decay,
                 Notes = Notes,
                 IsTorrential = IsTorrential,
+                IsRegen = IsRegen,
+                IsPrecise = IsPrecise,
                 ModelType = ModelType,
                 UserName = Unit,
                 StandCount = StandCount

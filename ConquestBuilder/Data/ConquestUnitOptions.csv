@@ -1,6 +1,6 @@
 Faction,Unit,Name,Category,Points,Tag,ArmyLimit,Notes
 100k,Militia,Servite,1,30,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
-100k,Militia,Neophyte,1,25,[],0,Whilte the Neophyte is alive the Regiment has the Devout special rule
+100k,Militia,Neophyte,1,25,[],0,While the Neophyte is alive the Regiment has the Devout special rule
 100k,Militia,Errant of the Order of the Shield,1,20,AlwaysInspire,0,While the Knight of the shield is alive the Regiments clash actions always count as inspired.  In addition any character in the regiment has +1 Attack while fighting in a duel
 100k,Militia Bowmen,Servite,1,15,M|R,0,While the servite is alive the regiment has +1 March and +1 Resolve
 100k,Militia Bowmen,Neophyte,1,15,IsDevout,0,While the Neophyte is alive the Regiment has the Devout special rule
@@ -8,7 +8,7 @@ Faction,Unit,Name,Category,Points,Tag,ArmyLimit,Notes
 100k,Men-At-Arms,Seasoned Veteran,1,30,IsBastion,0,While the Veteran is alive the Regiment has the Bastion draw event
 100k,Men-At-Arms,Neophyte,1,30,[],0,While the Neophyte is alive the Regiment has the Devout special rule
 100k,Household Guard,Armsmaster,1,45,C,0,While armsmaster and noble are alive in the regiment they receive a +1 to Clash
-100k,Gilded Legion,Seasoned Veteran,1,55,IsBastion,0,Whilte the Veteran is alive the Regiment has the Bastion draw event
+100k,Gilded Legion,Seasoned Veteran,1,55,IsBastion,0,While the Veteran is alive the Regiment has the Bastion draw event
 100k,Household Knights,Tourney Champion,1,40,[],0,While the Tourney Champion is alive the Regiment adds 2 to its charge distance
 100k,Steel Legion,Drillmaster,0,35,IsFury,0,While the Drillmaster is alive the regiment has the fury draw event
 Spires,Force Grown Drones,Catabolic Node,0,25,[],0,Bio bomb that inflicts 2D6 hits on an enemy regiment in contact with it during its first clash action.  It inflicts the highest D6 value to its own unit in hits. 

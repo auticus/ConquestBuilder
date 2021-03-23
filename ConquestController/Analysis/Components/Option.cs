@@ -219,7 +219,7 @@ namespace ConquestController.Analysis.Components
                         result = onlyImpactfulWithUnit;
                         break;
                     case "istorrential": 
-                        model.IsTorrential = true;
+                        model.IsTorrential = 1;
                         result = impactful;
                         break;
                     case "istorrential_clash":

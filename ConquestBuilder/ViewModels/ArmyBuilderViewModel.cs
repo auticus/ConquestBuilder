@@ -10,6 +10,7 @@ using ConquestBuilder.Views;
 using ConquestController.Models;
 using ConquestController.Models.Input;
 using ConquestController.Models.Output;
+using Microsoft.Win32;
 
 namespace ConquestBuilder.ViewModels
 {
@@ -27,7 +28,7 @@ namespace ConquestBuilder.ViewModels
         private const string THUMB_PATH = "..\\Images\\Thumbs\\";
         private LastItemSelected _lastItemSelected = LastItemSelected.Character; //for logic where we need to act on the last selected item 
         private const int MAX_NUMBER_REGIMENTS_ALLOWED = 4;
-        private Dictionary<IConquestCharacter, IEnumerable<string>> _originalCharacterRestrictedTemplate; //for loading the original restricted templates if they change
+        private readonly Dictionary<IConquestCharacter, IEnumerable<string>> _originalCharacterRestrictedTemplate; //for loading the original restricted templates if they change
 
         private Window _view; //the window
         
@@ -66,6 +67,7 @@ namespace ConquestBuilder.ViewModels
         public ICommand RenameElement { get; set; }
         public ICommand DecrementElement { get; set; }
         public ICommand IncrementElement { get; set; }
+        public ICommand SaveRoster { get; set; }
         #endregion Commands
 
         #region Public Properties
@@ -439,7 +441,24 @@ namespace ConquestBuilder.ViewModels
             };
 
             InitializeControls();
-            InitializeRoster();
+            InitializeRoster(army);
+            DataPanelEnabled = false;
+            _view = view;
+        }
+
+        public void SetView(Window view, Roster roster)
+        {
+            _currentArmy = roster.RosterFaction.ToLower() switch
+            {
+                "100 kingdoms" => Armies.HundredKingdoms,
+                "spires" => Armies.Spires,
+                "dweghom" => Armies.Dweghom,
+                "nords" => Armies.Nords,
+                _ => throw new InvalidOperationException($"{roster.RosterFaction} was passed but is not supported")
+            };
+
+            InitializeControls();
+            InitializeRoster(roster);
             DataPanelEnabled = false;
             _view = view;
         }
@@ -457,6 +476,7 @@ namespace ConquestBuilder.ViewModels
             RenameElement = new RelayCommand(OnRenameElement, param => this.CanExecute);
             DecrementElement = new RelayCommand(OnDecrementElement, param => this.SelectedRosterElementCanGrow);
             IncrementElement = new RelayCommand(OnIncrementElement, param => this.SelectedRosterElementCanGrow);
+            SaveRoster = new RelayCommand(OnSaveRoster, param=>this.CanExecute);
         }
 
         private void InitializeControls()
@@ -473,15 +493,22 @@ namespace ConquestBuilder.ViewModels
             }
         }
 
-        private void InitializeRoster()
+        private void InitializeRoster(string army)
         {
             Roster = new Roster
             {
-                RosterName = "New Roster", 
+                RosterName = "New Roster",
+                RosterFaction = army,
                 RosterLimit = 0, 
                 ID = Guid.NewGuid()
             };
 
+            RefreshRosterTreeView(this, new RosterChangedEventArgs());
+        }
+
+        private void InitializeRoster(Roster roster)
+        {
+            Roster = roster;
             RefreshRosterTreeView(this, new RosterChangedEventArgs());
         }
 
@@ -695,6 +722,29 @@ namespace ConquestBuilder.ViewModels
             SelectedElement.Points -= SelectedElement.AdditionalPoints;
             SelectedElement.PointsChanged?.Invoke(this, EventArgs.Empty);
             RefreshRosterTreeView?.Invoke(this, new RosterChangedEventArgs() { RosterElement = SelectedRosterCharacter, SelectedElementID = SelectedElement.ID });
+        }
+
+        private void OnSaveRoster(object canExecute)
+        {
+            var dlg = new SaveFileDialog
+            {
+                Filter = "Roster File (*.ros)|*.ros",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Title = "Save Roster"
+            };
+
+            try
+            {
+                if (dlg.ShowDialog() == true)
+                {
+                    _roster.Save(dlg.FileName);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Shit blew up saving! {e}");
+                SendMessageToView?.Invoke(this, $"An error occurred saving the roster:  {e.Message}");
+            }
         }
 
         private bool IsEligibleForStandCountChange()

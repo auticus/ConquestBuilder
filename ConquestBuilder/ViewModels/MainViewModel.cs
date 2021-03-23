@@ -3,6 +3,7 @@ using System.Windows.Input;
 using ConquestBuilder.Models;
 using ConquestBuilder.Views;
 using ConquestController.Models;
+using Microsoft.Win32;
 
 namespace ConquestBuilder.ViewModels
 {
@@ -59,7 +60,22 @@ namespace ConquestBuilder.ViewModels
         private void OnLoadFaction(object parameter)
         {
             //load previously saved army
-            //todo: implement a previously loaded roster
+            var dlg = new OpenFileDialog
+            {
+                Filter = "Roster Files (*.ros)|*.ros",
+                Title = "Open Roster",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                var roster = Roster.Load(dlg.FileName);
+
+                var view = new ArmyBuilderWindow(_armyBuilderVM);
+
+                _armyBuilderVM.SetView(view, roster);
+                view.Show();
+            }
         }
 
         /// <summary>

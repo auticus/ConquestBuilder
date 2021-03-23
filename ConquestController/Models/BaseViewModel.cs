@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace ConquestController.Models
 {
     public abstract class BaseViewModel : INotifyPropertyChanged
     {
+        [JsonIgnore]
         public bool CanExecute { get; set; } = true;
 
         #region INotifyPropertyChanged

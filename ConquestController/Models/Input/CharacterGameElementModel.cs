@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ConquestController.Extensions;
+using Newtonsoft.Json;
 
 namespace ConquestController.Models.Input
 {
@@ -126,6 +127,8 @@ namespace ConquestController.Models.Input
                 Decay = Decay,
                 Notes = Notes,
                 IsTorrential = IsTorrential,
+                IsRegen = IsRegen,
+                IsPrecise = IsPrecise,
                 ModelType = ModelType,
                 UserName = this.Unit,
                 MasteryChoices = MasteryChoices.CopyCollection(),

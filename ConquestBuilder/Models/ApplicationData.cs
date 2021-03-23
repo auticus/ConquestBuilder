@@ -88,6 +88,7 @@ namespace ConquestBuilder.Models
             LoadConfigurations();
             LoadData();
             LoadAnalysis();
+            WriteAnalysisDataToFile();
         }
         
         private void LoadConfigurations()
@@ -137,9 +138,9 @@ namespace ConquestBuilder.Models
             var analysis = new AnalysisController();
             UnitOutput = analysis.BroadAnalysis(Units, Spells);
             CharacterOutput = analysis.BroadAnalysis(Characters, Spells);
+            WriteAnalysisDataToFile();
         }
 
-        //todo: turn this back on!!
         private void WriteAnalysisDataToFile()
         {
             AnalysisFile.WriteAnalysis(_appPath + "\\" + _analysisFile, UnitOutput, includeUselessOptions: false);
