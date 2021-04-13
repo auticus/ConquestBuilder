@@ -17,44 +17,6 @@ namespace ConquestController.Analysis
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="baseOutput"></param>
-        /// <param name="gameElementModel">This method currently only works with CharacterGameElementGameElementModel as that is all that has spells</param>
-        /// <param name="allClash"></param>
-        /// <param name="allDefenses"></param>
-        /// <param name="allResolve"></param>
-        /// <param name="spells"></param>
-        /// <returns></returns>
-        public static IList<IConquestAnalysisOutput> CalculateSpellOutput(ConquestUnitOutput baseOutput, CharacterGameElementModel gameElementModel, List<int> allClash,
-            List<int> allDefenses, List<int> allResolve, IEnumerable<SpellModel> spells)
-        {
-            //loop through all spells that this gameElementModel can have applied to it
-            var output = new List<IConquestAnalysisOutput>();
-
-            if (!gameElementModel.Schools.Any()) return output;
-
-            foreach (var school in gameElementModel.Schools)
-            {
-                foreach (var spell in spells.Where(p => p.Category == school))
-                {
-                    var spellOutput = Magic.CalculateOutput(gameElementModel, spell, allClash, allDefenses, allResolve);
-
-                    if (spellOutput > 0)
-                    {
-                        var unitOutput = baseOutput.Copy();
-                        unitOutput.Unit += $" ({spell.Name})";
-                        unitOutput.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output = spellOutput;
-
-                        output.Add(unitOutput);
-                    }
-                }
-            }
-
-            return output;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="inputFilePath"></param>
         /// <param name="inputOptionsFilePath"></param>
         /// <param name="spells"></param>

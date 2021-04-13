@@ -10,5 +10,6 @@ namespace ConquestController.Models.Input
         List<string> Schools { get; set; }
         List<ISpell> Spells { get; set; }
         int MaxSpells { get; set; }
+        int WizardLevel { get; set; }
     }
 }

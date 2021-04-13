@@ -11,7 +11,7 @@ namespace ConquestController.Models.Output
         bool HasNoImpactOptionAdded { get; set; }
         bool HasOptionAdded { get; set; }
         string Unit { get; set; }
-        IList<IConquestAnalysisOutput> UpgradeOutputModifications { get; }
+        IList<IConquestAnalysisOutput> UpgradeOutputModifications { get; set; }
         Stand[] Stands { get; }
         AnalysisOutput Analysis { get; }
         AnalysisSummary Summary { get; }

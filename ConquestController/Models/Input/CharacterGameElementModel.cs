@@ -39,6 +39,7 @@ namespace ConquestController.Models.Input
         public ObservableCollection<IMastery> MasteryChoices { get; set; }
         public List<string> Schools { get; set; }
         public List<ISpell> Spells { get; set; }
+        public int WizardLevel { get; set; }
 
         public CharacterGameElementModel()
         {
@@ -58,7 +59,7 @@ namespace ConquestController.Models.Input
         }
 
         public override bool CanCalculateDefense() => false;
-        public override bool CanCastSpells() => true;  //characters have the ability to cast spells if they have the rules for it
+        public override bool CanCastSpells() => WizardLevel > 0;  
 
         public override string ToString()
         {
@@ -99,6 +100,7 @@ namespace ConquestController.Models.Input
                 IsShields = IsShields,
                 IsFury = IsFury,
                 IsFlurry = IsFlurry,
+                IsRelentless = IsRelentless,
                 IsFluid = IsFluid,
                 IsFly = IsFly,
                 IsDeadlyBlades = IsDeadlyBlades,
@@ -135,7 +137,8 @@ namespace ConquestController.Models.Input
                 ActiveRetinues = ActiveRetinues.CopyCollection(),
                 Spells = Spells.CopyList(),
                 RetinueMetaData = RetinueMetaData,
-                StandCount = StandCount
+                StandCount = StandCount,
+                WizardLevel = WizardLevel
             };
 
             foreach (var option in Options)

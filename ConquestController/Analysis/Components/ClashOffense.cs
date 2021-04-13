@@ -24,29 +24,7 @@ namespace ConquestController.Analysis.Components
             return CalculateFullAttacksOutput(model, defenseValues, resolveValues, supportOnly, applyFullyDeadly);
         }
 
-        private static double CalculateActualClashHits(double hits, double defenseProbability, bool isAuraOfDeathApplied,
-            bool isDeadly, bool applyFullDeadly, double smiteHits)
-        {
-            //if aura of death was applied then the hits had the AURA_DEATH_STANDS const added to it so we need to remove them here and not include that in the calculation
-            //of deadly blades
-            var deadlyDmg = 1.0d;
-            if (isDeadly && applyFullDeadly) deadlyDmg = DeadlyShotBladesDmg;
-            if (isDeadly && !applyFullDeadly) deadlyDmg = HalvedDeadlyShotBladesDmg;
-
-            if (isDeadly)
-            {
-                if (isAuraOfDeathApplied)
-                {
-                    hits -= AuraDeathStands;
-                    return ((hits - (hits * defenseProbability)) * deadlyDmg) + AuraDeathStands;
-                }
-                return (hits - (hits * defenseProbability)) * deadlyDmg;
-            }
-
-            //smite hits strike vs Def 0 so they just get added on
-            return hits - (hits * defenseProbability) + smiteHits;
-        }
-
+       
         /// <summary>
         /// Returns a value in an array where 0 = normal attacks, and 1 = impact hits
         /// </summary>
@@ -126,6 +104,12 @@ namespace ConquestController.Analysis.Components
             var smiteHits = model.IsSmite == 1 ? attacks * Probabilities[1] * hitProbability : 0; //1 in 6 will be precise hits
             
             var totalHits = attacks * hitProbability;
+
+            if (model.IsRelentless == 1)
+            {
+                //relentless - every hit roll of a "1" is an extra hit
+                totalHits += attacks * Probabilities[1];
+            }
             
             if (!thisIsImpactHits && (model.IsFlurry == 1 || model.IsBlessed == 1))
             {
@@ -148,7 +132,7 @@ namespace ConquestController.Analysis.Components
             }
 
             var avgResolveFailures = CalculateMeanResolveFailures(totalHits, resolveValues, model.IsTerrifying == 1);
-            var finalOutput = CalculateActualClashHits(totalHits, defenseProbability, model.IsAuraDeath == 1,
+            var finalOutput = CalculateActualHits(totalHits, defenseProbability, model.IsAuraDeath == 1,
                 model.IsDeadlyBlades == 1, applyFullyDeadly, smiteHits) + avgResolveFailures;
 
             return finalOutput;

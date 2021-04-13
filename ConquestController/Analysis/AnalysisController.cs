@@ -20,8 +20,8 @@ namespace ConquestController.Analysis
         public IList<IConquestAnalysisOutput> BroadAnalysis<T>(IEnumerable<T> models, IEnumerable<ISpell> spells) where T: IConquestGamePiece
         {
             //regiments we base on 3, characters on 1
-            var standCount = typeof(T) == typeof(CharacterGameElementModel) ? 1 : 3;
-            var frontageCount = typeof(T) == typeof(CharacterGameElementModel) ? 1 : 3;
+            var standCount = typeof(T) == typeof(IConquestCharacter) ? 1 : 3;
+            var frontageCount = typeof(T) == typeof(IConquestCharacter) ? 1 : 3;
             
             //using keyvalue pair here because we need to be able to see what input model was attached to the baseline output that was generated from it
             var outputKvp = InitializeBroadAnalysis(models, spells, analysisStandCount: standCount, frontageCount: frontageCount, 
@@ -101,11 +101,20 @@ namespace ConquestController.Analysis
             //the optionals like options, spells, etc methods will all bounce out immediately if the model passed in has none so freely just call the chain
             //process options
             Option.ProcessOption(input, output, input.BaseOption, input.Model is IConquestCharacter);
-            //todo: spells!
-            //ProcessSpell(input, output);
+
+            var allClash = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            var allResolve = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            var magicOutput = Magic.CalculateOutput(input.Model, input.Spell, allClash, allDefenses, allResolve, useSmartCasting: true);
+
+            if (magicOutput > 0)
+            {
+                output.Unit = output.Unit + $" ({input.Spell.Name})";
+                output.Points += input.Spell.Points;
+            }
 
             //begin calculations - this is the meat of this method
-            CalculateOffense(output, input.Model, input.ApplyFullyDeadly);
+            CalculateOffense(output, input.Model, input.ApplyFullyDeadly, magicOutput);
 
             if (input.Model.CanCalculateDefense()) //characterInputModel we don't calculate defense for
             {
@@ -298,7 +307,7 @@ namespace ConquestController.Analysis
         }
 
         private static void CalculateOffense(ConquestUnitOutput output, IConquestGamePiece model, 
-            bool applyFullyDeadly)
+            bool applyFullyDeadly, double magicOutput)
         {
             var allDefenses = new List<int>() { 1, 2, 3, 4, 5, 6 };
             var allResolve = new List<int>() { 1, 2, 3, 4, 5, 6 };
@@ -310,6 +319,7 @@ namespace ConquestController.Analysis
                 applyFullyDeadly);
             output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ClashOutput = clashOutputs[0];
             output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ImpactOutput = clashOutputs[1];
+            output.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output = magicOutput;
 
             //*************************calculate its partial stand data*********************************************************//
             //full output by stand (indices 1-3 which represent the full extra output constants
@@ -327,6 +337,9 @@ namespace ConquestController.Analysis
                         ConquestUnitOutput.BASE_STAND_COUNT;
                     output.Stands[i].Offense.ImpactOutput =
                         output.Stands[ConquestUnitOutput.FULL_OUTPUT].Offense.ImpactOutput /
+                        ConquestUnitOutput.BASE_STAND_COUNT;
+                    output.Stands[i].Magic.Output = 
+                        output.Stands[ConquestUnitOutput.FULL_OUTPUT].Magic.Output / 
                         ConquestUnitOutput.BASE_STAND_COUNT;
                 }
             }

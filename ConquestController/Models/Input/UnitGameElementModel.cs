@@ -61,6 +61,7 @@ namespace ConquestController.Models.Input
                 IsShields = IsShields,
                 IsFury = IsFury,
                 IsFlurry = IsFlurry,
+                IsRelentless = IsRelentless,
                 IsFluid = IsFluid,
                 IsFly = IsFly,
                 IsDeadlyBlades = IsDeadlyBlades,

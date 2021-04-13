@@ -99,6 +99,7 @@ namespace ConquestController.Models.Input
         public int IsShields { get; set; }
         public int IsFury { get; set; }
         public int IsFlurry { get; set; }
+        public int IsRelentless { get; set; }
         public int IsFluid { get; set; }
         public int IsFly { get; set; }
         public int IsDeadlyShot { get; set; }

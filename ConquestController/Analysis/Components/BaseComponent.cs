@@ -37,5 +37,28 @@ namespace ConquestController.Analysis.Components
 
             return total / resolveScores.Count;
         }
+
+        protected static double CalculateActualHits(double hits, double defenseProbability, bool isAuraOfDeathApplied,
+            bool isDeadly, bool applyFullDeadly, double smiteHits)
+        {
+            //if aura of death was applied then the hits had the AURA_DEATH_STANDS const added to it so we need to remove them here and not include that in the calculation
+            //of deadly blades
+            var deadlyDmg = 1.0d;
+            if (isDeadly && applyFullDeadly) deadlyDmg = DeadlyShotBladesDmg;
+            if (isDeadly && !applyFullDeadly) deadlyDmg = HalvedDeadlyShotBladesDmg;
+
+            if (isDeadly)
+            {
+                if (isAuraOfDeathApplied)
+                {
+                    hits -= AuraDeathStands;
+                    return ((hits - (hits * defenseProbability)) * deadlyDmg) + AuraDeathStands;
+                }
+                return (hits - (hits * defenseProbability)) * deadlyDmg;
+            }
+
+            //smite hits strike vs Def 0 so they just get added on
+            return hits - (hits * defenseProbability) + smiteHits;
+        }
     }
 }

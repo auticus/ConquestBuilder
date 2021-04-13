@@ -138,7 +138,23 @@ namespace ConquestBuilder.Models
             var analysis = new AnalysisController();
             UnitOutput = analysis.BroadAnalysis(Units, Spells);
             CharacterOutput = analysis.BroadAnalysis(Characters, Spells);
+            
+            ScrubData(UnitOutput);
+            ScrubData(CharacterOutput);
+
             WriteAnalysisDataToFile();
+        }
+
+        private void ScrubData(IList<IConquestAnalysisOutput> data)
+        {
+            foreach(var dataPoint in data)
+            {
+                var baseline = dataPoint.TotalOutput;
+                for (int i = dataPoint.UpgradeOutputModifications.Count - 1; i >= 0; i--)
+                {
+                    if (dataPoint.UpgradeOutputModifications[i].TotalOutput == baseline) dataPoint.UpgradeOutputModifications.RemoveAt(i);
+                }
+            }
         }
 
         private void WriteAnalysisDataToFile()

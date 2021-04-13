@@ -39,6 +39,7 @@ namespace ConquestController.Models.Input
         int IsFury { get; set; }
         int IsImpact { get; set; }
         int IsFlurry { get; set; }
+        int IsRelentless { get; set; }
         int IsAuraDeath { get; set; }
         int IsBastion { get; set; }
         int IsShields { get; set; }
