@@ -138,12 +138,15 @@ namespace ConquestController.Models.Input
         public bool Reroll6_Defense { get; set; } //reroll 6s on defense
         public bool Reroll_ImpactHits { get; set; }
         public int IsTorrential { get; set; } //gain the Torrential special rule
-        public int IsRegen { get; set; } //gain regeneration
+        public int IsRegen { get; set; } //gain regeneration - is a score now that says how much it regens per turn
         public int IsPrecise { get; set; } //gain Precise Shot special rule
         public bool IsTorrential_Clash { get; set; } //gains torrential only with clash
         public bool KissFarewell { get; set; } //the item. Gives Barrage 3 24" Deadly Shot.  If already have Barrage, adds +3 Barrage value and Deadly Shot
         public int NoRangeObscure { get; set; } //do not take the range obscure penalty
         public int IsSmite { get; set; } //melee gets smite attacks
+        public int IsIronDiscipline { get; set; } //no penalty for flank or rear (does not re-roll success morale and can always use shields)
+        public int IsTenacious { get; set; } //when rolling injury roll - discard one failed dice without effect - this is making your save.  so basically a failed save is ignored.
+
         /// <summary>
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes
         /// </summary>

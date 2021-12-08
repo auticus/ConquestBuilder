@@ -17,9 +17,9 @@ namespace ConquestController.Analysis.Components
             0.0, 0.1667, 0.3333, 0.5, 0.6667, 0.8333, 0.8333, 0.8333
         };
 
-        protected static double IsFluidWeight = 1.5;
-        protected static double IsFlyWeight = 2.0;
-        protected static double IsFluidFlyWeight = 2.5;
+        protected static double IsFluidWeight = 1.25;
+        protected static double IsFlyWeight = 1.5;
+        protected static double IsFluidFlyWeight = 2.0;
         protected static double RangeModifier = 0.01; //for every inch of range on a ranged weapon add 1% to its output score
         protected static double ArcOfFireMultiplier = 2.0;
 

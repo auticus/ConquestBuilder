@@ -93,7 +93,9 @@ namespace ConquestController.Models.Input
                 IsPrecise = IsPrecise,
                 ModelType = ModelType,
                 UserName = Unit,
-                StandCount = StandCount
+                StandCount = StandCount,
+                IsIronDiscipline = IsIronDiscipline,
+                IsTenacious = IsTenacious
             };
 
             foreach (var option in Options)

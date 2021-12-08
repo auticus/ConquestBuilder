@@ -138,7 +138,9 @@ namespace ConquestController.Models.Input
                 Spells = Spells.CopyList(),
                 RetinueMetaData = RetinueMetaData,
                 StandCount = StandCount,
-                WizardLevel = WizardLevel
+                WizardLevel = WizardLevel,
+                IsIronDiscipline = IsIronDiscipline,
+                IsTenacious = IsTenacious
             };
 
             foreach (var option in Options)

@@ -62,6 +62,9 @@ namespace ConquestController.Models.Input
         bool KissFarewell { get; set; }
         bool Reroll_ImpactHits { get; set; }
         int IsSmite { get; set; }
+        int IsIronDiscipline { get; set; }
+        int IsTenacious { get; set; }
+
         /// <summary>
         /// Similar to NoObscure - this means that no obscure from RANGE can be applied
         /// </summary>

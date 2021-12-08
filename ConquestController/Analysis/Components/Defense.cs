@@ -32,8 +32,10 @@ namespace ConquestController.Analysis.Components
             //regeneration is very tricky.  If you throw high quality attacks at the unit and a lot of them they will go down quick, but if you throw not very many attacks
             //they can hang out literally all game.  This is hard to nail a solid value down with.
             //not to mention deadly shot/blow will also be their bane 
-            if (model.IsRegen == 1)
+            if (model.IsRegen > 0)
             {
+                // update on 12/8/2021 - regen is now a score saying how many wounds a turn they get back
+
                 defense[0] *= 1.5;
                 defense[1] *= 1.5;
             }
@@ -119,6 +121,7 @@ namespace ConquestController.Analysis.Components
             var mainQ = new Queue<Tuple<int, int>>();
             double defenseScore = 0;
             double defenseResolve = 0;
+            double defenseResolveWhenFlanked = 0;
 
             foreach (var defenseMod in defenseModificationValues)
             {
@@ -180,20 +183,43 @@ namespace ConquestController.Analysis.Components
                     //healing is tricky.  We're going to just add it to each tier of models
                     var hits = defenseProbability * (output.Item2 + model.Healing); //keeping this separate because this value is needed below
 
+                    //tenacious models get to ignore a failed save every round
+                    if (model.IsTenacious == 1)
+                    {
+                        // we will assume 10 hits per batch (yes arbitrary bad I know), so divide the hits by 10.  This is how many extra hits need to be done to the unit to kill them
+                        // tenacious gets better the more batches you throw at it
+                        var extraHits = hits / 10d;
+                        hits += extraHits;
+                    }
+
                     defenseScore += hits;
+
+                    // if they have shields but not iron discipline, then drop the defense score a tad to represent loss of shield situationally from flanking
+                    if (!noShields && model.IsShields == 1 && model.IsIronDiscipline == 1)
+                    {
+                        //arbitrarily boost score by half a D6 pip
+                        defenseScore += defenseScore * 0.083;
+                    }
 
                     //now how many hits does it take when you take into account the resolve score?
                     var resolveFailureProbability = 1 - Probabilities[output.Item1];
+                    var resolveFailureProbabilityWithRerollSuccesses = 1 - (Probabilities[output.Item1] * Probabilities[output.Item1]);
 
                     //so if defense score was 15.96 and they have a resolve of 2, that means 0.67 models will run for every hit (as 0.33 will stay)
                     //so it takes much less than 15.96 hits to run the unit off, it would be 15.96 - (6 * 0.66) or 12 (15.96 - 3.96)
                     defenseResolve += (hits - (6 * resolveFailureProbability)); //6 represents d6
+                    defenseResolveWhenFlanked += (hits - (6 * resolveFailureProbabilityWithRerollSuccesses)); // for things like flanking where they have to re-roll success
 
                     copyQ.Enqueue(output); //put the item back in the copyQ so that we can do this all over again
                 }
             }
 
             //get the average defense score and then the average defense resolve
+            if (model.IsIronDiscipline == 0) //if not iron discipline, return the average between resolve and resolve with re-roll successes, otherwise they are the same since immune to that effect
+            {
+                defenseResolve = (defenseResolve + defenseResolveWhenFlanked) / 2d;
+            }
+
             defenseScore /= (defenseModificationValues.Count);
             defenseResolve /= (defenseModificationValues.Count);
 
