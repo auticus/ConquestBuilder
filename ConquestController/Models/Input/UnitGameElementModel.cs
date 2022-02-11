@@ -95,7 +95,9 @@ namespace ConquestController.Models.Input
                 UserName = Unit,
                 StandCount = StandCount,
                 IsIronDiscipline = IsIronDiscipline,
-                IsTenacious = IsTenacious
+                IsTenacious = IsTenacious,
+                IsOvercharge = IsOvercharge,
+                IsStrongArm = IsStrongArm
             };
 
             foreach (var option in Options)

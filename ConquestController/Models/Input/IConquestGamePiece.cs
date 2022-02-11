@@ -64,6 +64,8 @@ namespace ConquestController.Models.Input
         int IsSmite { get; set; }
         int IsIronDiscipline { get; set; }
         int IsTenacious { get; set; }
+        int IsStrongArm { get; set; }
+        int IsOvercharge { get; set; }
 
         /// <summary>
         /// Similar to NoObscure - this means that no obscure from RANGE can be applied

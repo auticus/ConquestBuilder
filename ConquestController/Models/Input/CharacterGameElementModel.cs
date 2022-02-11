@@ -140,7 +140,9 @@ namespace ConquestController.Models.Input
                 StandCount = StandCount,
                 WizardLevel = WizardLevel,
                 IsIronDiscipline = IsIronDiscipline,
-                IsTenacious = IsTenacious
+                IsTenacious = IsTenacious,
+                IsStrongArm =  IsStrongArm,
+                IsOvercharge = IsOvercharge
             };
 
             foreach (var option in Options)

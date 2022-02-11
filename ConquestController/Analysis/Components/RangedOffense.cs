@@ -25,12 +25,20 @@ namespace ConquestController.Analysis.Components
             var outputsByDefense = new List<RangedOutput>(); //collection more for debug purposes
             var totalOutput = 0.0;
             var totalScoreCount = 0;
+            var armorPiercing = model.ArmorPiercing;
+
+            //if overcharging every action they can put a token down that gives +2 shots and +1AP.  We will be modeling an overcharge and shot in one turn here.
+            if (model.IsOvercharge == 1)
+            {
+                shotsFired += (2 * model.Models);
+                armorPiercing++;
+            }
 
             foreach (var defense in defenseValues)
             {
                 var rangedOutput = new RangedOutput() { DefenseValue = defense };
 
-                var finalD = Math.Clamp(defense - model.ArmorPiercing, 0, 6);
+                var finalD = Math.Clamp(defense - armorPiercing, 0, 6);
                 var defenseProbability = Probabilities[finalD];
                 var hits = shotsFired * shotsHitProbability;
                 var aimedHits = shotsFired * shotsHitProbabilityAim;
@@ -83,8 +91,17 @@ namespace ConquestController.Analysis.Components
 
                 if (model.IsPrecise == 0) preciseHits = 0;
 
-                rangedOutput.ObscureHits = CalculateActualRangedHits((hits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
-                rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                if (model.IsStrongArm == 1)
+                {
+                    //strong arm means it ignores obscure for range.  For this we'll just ignore obscure entirely to get a boost to volley score
+                    rangedOutput.ObscureHits = CalculateActualRangedHits((hits), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                    rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                }
+                else
+                {
+                    rangedOutput.ObscureHits = CalculateActualRangedHits((hits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                    rangedOutput.ObscureAimedHits = CalculateActualRangedHits((aimedHits / obscureDivider), defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
+                }
 
                 rangedOutput.FullHits = CalculateActualRangedHits(hits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);
                 rangedOutput.FullAimedHits = CalculateActualRangedHits(aimedHits, defenseProbability, model.IsDeadlyShot == 1, applyFullDeadly, preciseHits);

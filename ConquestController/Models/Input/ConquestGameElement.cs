@@ -146,6 +146,8 @@ namespace ConquestController.Models.Input
         public int IsSmite { get; set; } //melee gets smite attacks
         public int IsIronDiscipline { get; set; } //no penalty for flank or rear (does not re-roll success morale and can always use shields)
         public int IsTenacious { get; set; } //when rolling injury roll - discard one failed dice without effect - this is making your save.  so basically a failed save is ignored.
+        public int IsStrongArm { get; set; } //ignores obscure when long range, for this we'll just ignore obscure to get a boosted volley output
+        public int IsOvercharge { get; set; } //every action they can overcharge, for this we'll add 1 token and then fire with +2 shots and +1 AP and then not aim
 
         /// <summary>
         /// When set to 1 indicates do not show this in the army builder, it is just there to display for Analysis purposes

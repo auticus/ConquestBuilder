@@ -42,7 +42,7 @@ namespace ConquestController.Analysis.Components
 
             if (supportOnly)
             {
-                attacks = model.IsSupport == 1 ? 2 : 1;
+                attacks = model.IsSupport > 0 ? model.IsSupport + 1 : 1; // support is now a score that says how many extra attacks the unit provides
             }
             else
             {
